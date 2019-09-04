@@ -16,22 +16,31 @@ public:
 	std::string getDBPath() const;
 
 	//×¢²áÒ»¸öÕËºÅ
-	void registerAccount(const std::string &id, const std::string &password, const std::string &nickname);
+	void regist(const std::string &userID, const std::string &password, const std::string &nickname);
 
 	//×¢ÏúÒ»¸öÕËºÅ
-	void deleteAccount(const std::string &id);
+	void remove(const std::string &userID);
+
+	//µÇÂ¼
+	bool login(const std::string &userID, const std::string &password);
+	bool logout(const std::string &userID, const std::string & password);
+	bool isOnline(const std::string &userID) const;
 
 	//ÃÜÂë
-	void setPassword(const std::string &id, const std::string &password);
-	std::string getPassword(const std::string &id) const;
+	void setPassword(const std::string &userID, const std::string &password);
+	std::string getPassword(const std::string &userID) const;
 
 	//êÇ³Æ
-	void setNickname(const std::string &id, const std::string &nickname);
-	std::string getNickname(const std::string &id) const;
+	void setNickname(const std::string &userID, const std::string &nickname);
+	std::string getNickname(const std::string &userID) const;
+
+	//Ç©Ãû
+	void setSignaTure(const std::string &userID, const std::string &signaTure);
+	std::string getSignaTure(const std::string &userID);
 
 	//Í·Ïñ
-	void setPhoto(const std::string &id, const Poco::Buffer<char> &photo);
-	Poco::Buffer<char> getPhoto(const std::string &id) const;
+	void setPhoto(const std::string &userID, const Poco::Buffer<char> &photo);
+	Poco::Buffer<char> getPhoto(const std::string &userID) const;
 
 private:
 	std::string								m_DBpath;

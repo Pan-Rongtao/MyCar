@@ -1,8 +1,11 @@
 #include "AccountStubImpl.h"
 #include "Poco/File.h"
+#include "core/Log.h"
+#include "Share.h"
 
 using namespace uit;
 using namespace Poco;
+using namespace Poco::Data;
 using namespace Poco::Data::Keywords;
 
 bool AccountStubImpl::load(const std::string & path)
@@ -26,80 +29,146 @@ std::string AccountStubImpl::getDBPath() const
 	return m_DBpath;
 }
 
-void AccountStubImpl::registerAccount(const std::string & id, const std::string & password, const std::string & nickname)
+void AccountStubImpl::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
-	Data::Statement sm(*m_session);
-	Poco::Tuple<std::string, std::string, std::string, Poco::DateTime> record(id, password, nickname, Poco::DateTime());
-	sm << "insert into account values(?, ?)", use(record), now;
+	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, int, DateTime> record{ userID, password, nickname, "", "", 0, DateTime() };
+	*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?)", use(record), now;
+	Log::info(LOG_TAG, "user[%s] regist, password[%s], nickname[%s]", userID.data(), password.data(), nickname.data());
 }
 
-void AccountStubImpl::deleteAccount(const std::string & id)
+void AccountStubImpl::remove(const std::string & userID)
 {
-	Data::Statement sm(*m_session);
-	auto _id = id;
-	sm << "delete from account where id=?", use(_id), now;
+	auto _id = userID;
+	*m_session << "delete from users where UserID=?", use(_id), now;
+	Log::info(LOG_TAG, "user[%s] remove", userID.data());
 }
 
-void AccountStubImpl::setPassword(const std::string &id, const std::string & password)
+bool AccountStubImpl::login(const std::string & userID, const std::string & password)
 {
-	Data::Statement sm(*m_session);
-	auto _id = id;
+	std::vector<std::string> recoreds;
+	auto _id = userID;
 	auto _pw = password;
-	sm << "update account set password=? where id=?", use(_pw), use(_id), now;
-
+	*m_session << "select UserID from users where UserID=? and Password=?", into(recoreds), use(_id), use(_pw), now;
+	bool bExists = recoreds.empty();
+	if (bExists)
+	{
+		*m_session << "update users set Online=1 where UserID=?", use(_id), now;
+		Log::info(LOG_TAG, "user[%s] longin", userID.data());
+	}
+	else
+	{
+		Log::info(LOG_TAG, "user[%s] longin fail for unmatched id & password", userID.data());
+	}
+	return bExists;
 }
 
-std::string AccountStubImpl::getPassword(const std::string &id) const
+bool AccountStubImpl::logout(const std::string & userID, const std::string & password)
 {
-	std::vector<std::string> ret;
+	std::vector<std::string> recoreds;
+	auto _id = userID;
+	auto _pw = password;
+	*m_session << "select UserID from users where UserID=? and Password=?", into(recoreds), use(_id), use(_pw), now;
+	bool bExists = recoreds.empty();
+	if (bExists)
+	{
+		*m_session << "update users set Online=1 where UserID=?", use(_id), now;
+		Log::info(LOG_TAG, "user[%s] logout", userID.data());
+	}
+	else
+	{
+		Log::info(LOG_TAG, "user[%s] logout fail for unmatched id & password", userID.data());
+	}
+	return bExists;
+}
+
+bool AccountStubImpl::isOnline(const std::string & userID) const
+{
+	std::vector<int> recoreds;
+	auto _id = userID;
 	auto ss = *m_session;
-	Data::Statement select(ss);
-	auto _id = id;
-	select << "select password from account where id=?", into(ret), use(_id), now;
-	return ret.empty() ? "" : ret.front();
+	ss << "select Online from users where UserID=?", into(recoreds), use(_id), now;
+	return recoreds.empty() ? false : recoreds.front();
 }
 
-void AccountStubImpl::setNickname(const std::string &id, const std::string & nickname)
+void AccountStubImpl::setPassword(const std::string &userID, const std::string & password)
 {
-	auto _id = id;
+	auto _id = userID;
+	auto _pw = password;
+	*m_session << "update users set Password=? where UserID=?", use(_pw), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setPassword[%s]", userID.data(), password.data());
+}
+
+std::string AccountStubImpl::getPassword(const std::string &userID) const
+{
+	std::vector<std::string> recoreds;
+	auto _id = userID;
+	auto ss = *m_session;
+	ss << "select Password from users where UserID=?", into(recoreds), use(_id), now;
+	auto ret = recoreds.empty() ? "" : recoreds.front();
+	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
+	return ret;
+}
+
+void AccountStubImpl::setNickname(const std::string &userID, const std::string & nickname)
+{
+	auto _id = userID;
 	auto _nn = nickname;
-	Data::Statement sm(*m_session);
-	sm << "update account set nickname=? where id=?", use(_nn), use(_id), now;
+	*m_session << "update users set NickName=? where UserID=?", use(_nn), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setNickname[%s]", userID.data(), nickname.data());
 }
 
-std::string AccountStubImpl::getNickname(const std::string &id) const
+std::string AccountStubImpl::getNickname(const std::string &userID) const
 {
-	auto _id = id;
-	std::vector<std::string> ret;
+	auto _id = userID;
+	std::vector<std::string> recoreds;
 	auto ss = *m_session;
-	Data::Statement sm(ss);
-	sm << "select nickname from account where id=?", into(ret), use(_id), now;
-	return ret.empty() ? "" : ret.front();
+	ss << "select NickName from users where UserID=?", into(recoreds), use(_id), now;
+	auto ret = recoreds.empty() ? "" : recoreds.front();
+	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
+	return ret;
 }
 
-void AccountStubImpl::setPhoto(const std::string &id, const Poco::Buffer<char>& photo)
+void AccountStubImpl::setSignaTure(const std::string & userID, const std::string & signaTure)
 {
-	auto path = "photo/" + id;
+	auto _id = userID;
+	auto _st = signaTure;
+	*m_session << "update users set SignaTure=? where UserID=?", use(_st), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setSignaTure[%s]", userID.data(), signaTure.data());
+}
+
+std::string AccountStubImpl::getSignaTure(const std::string & userID)
+{
+	auto _id = userID;
+	std::vector<std::string> recoreds;
+	auto ss = *m_session;
+	ss << "select SignaTure from users where UserID=?", into(recoreds), use(_id), now;
+	auto ret = recoreds.empty() ? "" : recoreds.front();
+	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
+	return ret;
+}
+
+void AccountStubImpl::setPhoto(const std::string &userID, const Poco::Buffer<char>& photo)
+{
+	auto path = "photo/" + userID;
 	FILE *pFile = fopen(path.data(), "rw");
 	if (pFile == nullptr)
 	{
-		printf("can't create photo.\n");
-		return;
-	}
-	fwrite(photo.begin(), 1, photo.size(), pFile);
-	fclose(pFile);
-}
-
-Poco::Buffer<char> AccountStubImpl::getPhoto(const std::string &id) const
-{
-	auto path = "photo/" + id;
-	FILE *pFile = fopen(path.data(), "rb");
-	if (pFile == nullptr)
-	{
-		fclose(pFile);
-		return Poco::Buffer<char>(0);
+		Log::error(LOG_TAG, "can't create photo.");
 	}
 	else
+	{
+		fwrite(photo.begin(), 1, photo.size(), pFile);
+	}
+	fclose(pFile);
+	Log::info(LOG_TAG, "user[%s] setPhoto[%s]", userID.data(), path.data());
+}
+
+Poco::Buffer<char> AccountStubImpl::getPhoto(const std::string &userID) const
+{
+	Poco::Buffer<char> ret(0);
+	auto path = "photo/" + userID;
+	FILE *pFile = fopen(path.data(), "rb");
+	if (pFile)
 	{
 		fseek(pFile, 0, SEEK_END);
 		int nLength = ftell(pFile);
@@ -107,7 +176,8 @@ Poco::Buffer<char> AccountStubImpl::getPhoto(const std::string &id) const
 		fseek(pFile, 0, SEEK_SET);
 		Poco::Buffer<char> ret(nLength);
 		fread(ret.begin(), nLength, 1, pFile);
-		fclose(pFile);
-		return ret;
 	}
+	fclose(pFile);
+	Log::info(LOG_TAG, "user[%s] getPhoto[%s]", userID.data(), path.data());
+	return ret;
 }

@@ -24,12 +24,12 @@ set(BIN_NAME "carservice")
 file(GLOB SRC_FILES "*.h" "*.cpp")
 
 add_executable(${BIN_NAME} ${SRC_FILES})
-target_link_libraries(${BIN_NAME} libcore optimized PocoFoundation debug PocoFoundationd optimized PocoJSON debug PocoJSONd)
+target_link_libraries(${BIN_NAME} libcore libcar optimized PocoFoundation debug PocoFoundationd optimized PocoJSON debug PocoJSONd)
 
 # 4. Project Install
 if(WIN32)
-    install(TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR}/debug CONFIGURATIONS debug)
-    install(TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR}/release CONFIGURATIONS release)
+    install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR}/debug CONFIGURATIONS debug)
+    install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR}/release CONFIGURATIONS release)
 else()
-	install(TARGETS ${LIB_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+	install(TARGETS ${BIN_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()

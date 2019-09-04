@@ -27,9 +27,9 @@ add_library(${LIB_NAME} SHARED ${SRC_FILES})
 set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME uit_car)
 
 if(WIN32)
-	target_link_libraries(${LIB_NAME} libcore optimized PocoFoundation debug PocoFoundationd optimized PocoUtil debug PocoUtild)
+	target_link_libraries(${LIB_NAME} libcore optimized PocoFoundation debug PocoFoundationd optimized PocoUtil debug PocoUtild RcfDll)
 else()
-	target_link_libraries(${LIB_NAME} libcore PocoFoundation PocoUtil)
+	target_link_libraries(${LIB_NAME} libcore PocoFoundation PocoUtil RcfDll)
 endif()
 
 # 4. Project Install

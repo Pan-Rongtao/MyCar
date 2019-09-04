@@ -1,6 +1,6 @@
 #pragma once
 #include <Poco/Util/ServerApplication.h>
-
+#include "car/ServerDomain.h"
 
 class CarServiceApp : public Poco::Util::ServerApplication
 {
@@ -11,7 +11,8 @@ public:
 	virtual void defineOptions(Poco::Util::OptionSet& options) override;
 
 private:
-
+	std::string getLocalIp() const;
+	std::shared_ptr<uit::ServerDomain>	m_server;
 };
 
 POCO_SERVER_MAIN(CarServiceApp)

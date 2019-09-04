@@ -4,14 +4,17 @@
 
 namespace uit {
 
-class AccountServerImpl;
+class AccountStubImpl;
 class UIT_API ServerDomain final
 {
 public:
-	ServerDomain();
-	~ServerDomain() = default;
+	ServerDomain(const std::string &ip, int port);
+	~ServerDomain();
 	ServerDomain(const ServerDomain &other) = delete;
 	void operator =(const ServerDomain &other) = delete;
+
+	std::string ip() const;
+	int port() const;
 
 	//≈‰÷√ ˝æ›ø‚¬∑æ∂
 	bool configDBPath(const std::string &path);
@@ -25,11 +28,10 @@ public:
 	uit::Event<ClientLoginEventArgs>		ClientLoginEvent;
 
 private:
-	bool initServerStub();
-
-	bool								m_running;
-	RCF::RcfServer						m_server;
-	std::shared_ptr<AccountServerImpl>	m_accountStub;
+	std::string							m_ip;
+	int									m_port;
+	std::shared_ptr<RCF::RcfServer>		m_server;
+	std::shared_ptr<AccountStubImpl>	m_accountStub;
 };
 
 
