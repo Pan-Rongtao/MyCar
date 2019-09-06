@@ -43,6 +43,15 @@ void AccountStubImpl::remove(const std::string & userID)
 	Log::info(LOG_TAG, "user[%s] remove", userID.data());
 }
 
+bool AccountStubImpl::isUserIDExists(const std::string & userID)
+{
+	std::vector<std::string> recoreds;
+	auto _id = userID;
+	*m_session << "select UserID from users where UserID=?", into(recoreds), use(_id), now;
+	bool bExists = !recoreds.empty();
+	return bExists;
+}
+
 bool AccountStubImpl::login(const std::string & userID, const std::string & password)
 {
 	std::vector<std::string> recoreds;
@@ -87,7 +96,7 @@ bool AccountStubImpl::isOnline(const std::string & userID) const
 	auto _id = userID;
 	auto ss = *m_session;
 	ss << "select Online from users where UserID=?", into(recoreds), use(_id), now;
-	return recoreds.empty() ? false : recoreds.front();
+	return recoreds.empty() ? false : (recoreds.front() == 0 ? false : true);
 }
 
 void AccountStubImpl::setPassword(const std::string &userID, const std::string & password)

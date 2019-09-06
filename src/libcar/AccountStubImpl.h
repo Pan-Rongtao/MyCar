@@ -21,6 +21,9 @@ public:
 	//注销一个账号
 	void remove(const std::string &userID);
 
+	//账号是否已经存在
+	bool isUserIDExists(const std::string &userID);
+
 	//登录
 	bool login(const std::string &userID, const std::string &password);
 	bool logout(const std::string &userID, const std::string & password);

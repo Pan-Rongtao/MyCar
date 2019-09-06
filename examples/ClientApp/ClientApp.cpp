@@ -50,9 +50,9 @@ void ClientApp::initialize(Application & app)
 {
 	Application::initialize(app);
 	uint64_t k = uit::getTickCount();
-	bool b = m_client.connect("10.219.125.39", 8888);
-	uit::Log::info(LOG_TAG, "connected, cost [%d] %s.\n", (int)(uit::getTickCount() - k), b ? "success" : "fail");
-	m_client.regist("13112657701", "Aa123456", "Pan.T");
+	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint("10.219.125.39", 8888));
+	uit::Log::info(LOG_TAG, "connected, cost [%d] %s.\n", (int)(uit::getTickCount() - k));
+	m_client->regist("13112657701", "Aa123456", "Pan.T");
 }
 
 void ClientApp::uninitialize()

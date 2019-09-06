@@ -2,7 +2,8 @@
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/Util/Application.h>
-#include "car/AccountClient.h"
+#include <RCF/RCF.hpp>
+#include "car/AccountInterface.h"
 
 namespace uit {
 
@@ -15,7 +16,7 @@ public:
 	virtual void defineOptions(Poco::Util::OptionSet& options) override;
 
 private:
-	AccountClient	m_client;
+	std::shared_ptr<RcfClient<AccountInterface>>	m_client;
 };
 
 }
