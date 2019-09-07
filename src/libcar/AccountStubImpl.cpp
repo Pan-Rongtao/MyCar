@@ -2,6 +2,7 @@
 #include "Poco/File.h"
 #include "core/Log.h"
 #include "Share.h"
+#include "car/AccountInterface.h"
 
 using namespace uit;
 using namespace Poco;
@@ -31,8 +32,8 @@ std::string AccountStubImpl::getDBPath() const
 
 void AccountStubImpl::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
-	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, int, DateTime> record{ userID, password, nickname, "", "", 0, DateTime() };
-	*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?)", use(record), now;
+	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> record{ userID, password, nickname, "", "", DateTime(), 0, 0, 0, 0 };
+	*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(record), now;
 	Log::info(LOG_TAG, "user[%s] regist, password[%s], nickname[%s]", userID.data(), password.data(), nickname.data());
 }
 
@@ -45,20 +46,20 @@ void AccountStubImpl::remove(const std::string & userID)
 
 bool AccountStubImpl::isUserIDExists(const std::string & userID)
 {
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto _id = userID;
-	*m_session << "select UserID from users where UserID=?", into(recoreds), use(_id), now;
-	bool bExists = !recoreds.empty();
+	*m_session << "select UserID from users where UserID=?", into(records), use(_id), now;
+	bool bExists = !records.empty();
 	return bExists;
 }
 
-bool AccountStubImpl::login(const std::string & userID, const std::string & password)
+bool AccountStubImpl::login(const std::string & userID, const std::string & password, int terminalType)
 {
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto _id = userID;
 	auto _pw = password;
-	*m_session << "select UserID from users where UserID=? and Password=?", into(recoreds), use(_id), use(_pw), now;
-	bool bExists = recoreds.empty();
+	*m_session << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
+	bool bExists = records.empty();
 	if (bExists)
 	{
 		*m_session << "update users set Online=1 where UserID=?", use(_id), now;
@@ -71,16 +72,17 @@ bool AccountStubImpl::login(const std::string & userID, const std::string & pass
 	return bExists;
 }
 
-bool AccountStubImpl::logout(const std::string & userID, const std::string & password)
+bool AccountStubImpl::logout(const std::string & userID, const std::string & password, int terminalType)
 {
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto _id = userID;
 	auto _pw = password;
-	*m_session << "select UserID from users where UserID=? and Password=?", into(recoreds), use(_id), use(_pw), now;
-	bool bExists = recoreds.empty();
+	*m_session << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
+	bool bExists = records.empty();
 	if (bExists)
 	{
-		*m_session << "update users set Online=1 where UserID=?", use(_id), now;
+		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=1 where UserID = ? ";
+		*m_session << s, use(_id), now;
 		Log::info(LOG_TAG, "user[%s] logout", userID.data());
 	}
 	else
@@ -90,13 +92,31 @@ bool AccountStubImpl::logout(const std::string & userID, const std::string & pas
 	return bExists;
 }
 
-bool AccountStubImpl::isOnline(const std::string & userID) const
+bool AccountStubImpl::getAccountInfo(const std::string & userID, std::string & password, std::string & nickname, std::string & signaTure,
+	std::string & Photo, std::string & registTime, bool & vehicleOnline, bool & pcOnline, bool & handeldOnline, bool & padOnline) const
 {
-	std::vector<int> recoreds;
-	auto _id = userID;
+	typedef Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> Record;
+	std::vector<Record> records;
 	auto ss = *m_session;
-	ss << "select Online from users where UserID=?", into(recoreds), use(_id), now;
-	return recoreds.empty() ? false : (recoreds.front() == 0 ? false : true);
+	auto _id = userID;
+	ss << "select * from users where UserID=?", into(records), use(_id), now;
+	if (records.empty())
+	{
+		return false;
+	}
+	else
+	{
+		password = records.front().get<1>();
+		nickname = records.front().get<2>();
+		signaTure = records.front().get<3>();
+		Photo = records.front().get<4>();
+		registTime = Poco::DateTimeFormatter::format(records.front().get<5>(), Poco::DateTimeFormat::SORTABLE_FORMAT);
+		vehicleOnline = records.front().get<6>() == 0 ? false : true;
+		pcOnline = records.front().get<7>() == 0 ? false : true;
+		handeldOnline = records.front().get<8>() == 0 ? false : true;
+		padOnline = records.front().get<9>() == 0 ? false : true;
+		return true;
+	}
 }
 
 void AccountStubImpl::setPassword(const std::string &userID, const std::string & password)
@@ -109,11 +129,11 @@ void AccountStubImpl::setPassword(const std::string &userID, const std::string &
 
 std::string AccountStubImpl::getPassword(const std::string &userID) const
 {
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto _id = userID;
 	auto ss = *m_session;
-	ss << "select Password from users where UserID=?", into(recoreds), use(_id), now;
-	auto ret = recoreds.empty() ? "" : recoreds.front();
+	ss << "select Password from users where UserID=?", into(records), use(_id), now;
+	auto ret = records.empty() ? "" : records.front();
 	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
 	return ret;
 }
@@ -129,10 +149,10 @@ void AccountStubImpl::setNickname(const std::string &userID, const std::string &
 std::string AccountStubImpl::getNickname(const std::string &userID) const
 {
 	auto _id = userID;
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto ss = *m_session;
-	ss << "select NickName from users where UserID=?", into(recoreds), use(_id), now;
-	auto ret = recoreds.empty() ? "" : recoreds.front();
+	ss << "select NickName from users where UserID=?", into(records), use(_id), now;
+	auto ret = records.empty() ? "" : records.front();
 	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
 	return ret;
 }
@@ -148,45 +168,41 @@ void AccountStubImpl::setSignaTure(const std::string & userID, const std::string
 std::string AccountStubImpl::getSignaTure(const std::string & userID)
 {
 	auto _id = userID;
-	std::vector<std::string> recoreds;
+	std::vector<std::string> records;
 	auto ss = *m_session;
-	ss << "select SignaTure from users where UserID=?", into(recoreds), use(_id), now;
-	auto ret = recoreds.empty() ? "" : recoreds.front();
+	ss << "select SignaTure from users where UserID=?", into(records), use(_id), now;
+	auto ret = records.empty() ? "" : records.front();
 	Log::info(LOG_TAG, "user[%s] getPassword[%s]", userID.data(), ret.data());
 	return ret;
 }
 
-void AccountStubImpl::setPhoto(const std::string &userID, const Poco::Buffer<char>& photo)
+void AccountStubImpl::setPhoto(const std::string &userID, const std::string &photoBuffer)
 {
-	auto path = "photo/" + userID;
-	FILE *pFile = fopen(path.data(), "rw");
-	if (pFile == nullptr)
-	{
-		Log::error(LOG_TAG, "can't create photo.");
-	}
-	else
-	{
-		fwrite(photo.begin(), 1, photo.size(), pFile);
-	}
-	fclose(pFile);
-	Log::info(LOG_TAG, "user[%s] setPhoto[%s]", userID.data(), path.data());
+	auto _id = userID;
+	auto _ft = photoBuffer;
+	*m_session << "update users set Photo=? where UserID=?", use(_ft), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
 }
 
-Poco::Buffer<char> AccountStubImpl::getPhoto(const std::string &userID) const
+std::string AccountStubImpl::getPhoto(const std::string &userID) const
 {
-	Poco::Buffer<char> ret(0);
-	auto path = "photo/" + userID;
-	FILE *pFile = fopen(path.data(), "rb");
-	if (pFile)
-	{
-		fseek(pFile, 0, SEEK_END);
-		int nLength = ftell(pFile);
-		unsigned char *pData = new unsigned char[nLength];
-		fseek(pFile, 0, SEEK_SET);
-		Poco::Buffer<char> ret(nLength);
-		fread(ret.begin(), nLength, 1, pFile);
-	}
-	fclose(pFile);
-	Log::info(LOG_TAG, "user[%s] getPhoto[%s]", userID.data(), path.data());
+	auto _id = userID;
+	std::vector<std::string> records;
+	auto ss = *m_session;
+	ss << "select Photo from users where UserID=?", into(records), use(_id), now;
+	auto ret = records.empty() ? "" : records.front();
+	Log::info(LOG_TAG, "user[%s] getPhoto[%d]", userID.data(), ret.size());
 	return ret;
+}
+
+std::string AccountStubImpl::terminalTypeToOnlineString(int terminalType) const
+{
+	switch (terminalType)
+	{
+	case vehicle:	return "VehicleOnline";
+	case pc:		return "PCOnline";
+	case handheld:	return "HandeldOnline";
+	case pad:		return "PadOnline";
+	default:		return "";
+	}
 }

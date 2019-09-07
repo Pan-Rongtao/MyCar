@@ -49,10 +49,13 @@ int ClientApp::main(const std::vector<std::string>& args)
 void ClientApp::initialize(Application & app)
 {
 	Application::initialize(app);
+	RCF::init();
 	uint64_t k = uit::getTickCount();
 	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint("10.219.125.39", 8888));
-	uit::Log::info(LOG_TAG, "connected, cost [%d] %s.\n", (int)(uit::getTickCount() - k));
+	m_client->getClientStub().ping();
+	uit::Log::info(LOG_TAG, "connected, cost [%d].\n", (int)(uit::getTickCount() - k));
 	m_client->regist("13112657701", "Aa123456", "Pan.T");
+	bool b = m_client->getClientStub().isConnected();
 }
 
 void ClientApp::uninitialize()

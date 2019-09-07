@@ -25,9 +25,12 @@ public:
 	bool isUserIDExists(const std::string &userID);
 
 	//登录
-	bool login(const std::string &userID, const std::string &password);
-	bool logout(const std::string &userID, const std::string & password);
-	bool isOnline(const std::string &userID) const;
+	bool login(const std::string &userID, const std::string &password, int terminalType);
+	bool logout(const std::string &userID, const std::string & password, int terminalType);
+
+	//获取账号信息
+	bool getAccountInfo(const std::string &userID, std::string &password, std::string &nickname, std::string &signaTure,
+		std::string &Photo, std::string &registTime, bool &vehicleOnline, bool &pcOnline, bool &handeldOnline, bool &padOnline) const;
 
 	//密码
 	void setPassword(const std::string &userID, const std::string &password);
@@ -42,10 +45,12 @@ public:
 	std::string getSignaTure(const std::string &userID);
 
 	//头像
-	void setPhoto(const std::string &userID, const Poco::Buffer<char> &photo);
-	Poco::Buffer<char> getPhoto(const std::string &userID) const;
+	void setPhoto(const std::string &userID, const std::string &photoBuffer);
+	std::string getPhoto(const std::string &userID) const;
 
 private:
+	std::string terminalTypeToOnlineString(int terminalType) const;
+
 	std::string								m_DBpath;
 	Poco::SharedPtr<Poco::Data::Session>	m_session;
 };
