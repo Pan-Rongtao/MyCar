@@ -52,6 +52,7 @@ void ClientApp::initialize(Application & app)
 	RCF::init();
 	uint64_t k = uit::getTickCount();
 	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint("10.219.125.39", 8888));
+	m_client->getClientStub().setAutoReconnect(true);
 	m_client->getClientStub().ping();
 	uit::Log::info(LOG_TAG, "connected, cost [%d].\n", (int)(uit::getTickCount() - k));
 	m_client->regist("13112657701", "Aa123456", "Pan.T");

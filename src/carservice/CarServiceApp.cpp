@@ -15,24 +15,50 @@ void CarServiceApp::initialize(Application & app)
 {
 	ServerApplication::initialize(app);
 	auto k = uit::getTickCount();
-	m_server = std::make_shared<uit::ServerDomain>(getLocalIp(), 8888);
-	if (m_server->configDBPath(DEFAULT_DB_DIR))
-	{
-		uit::Log::info(LOG_TAG, "load [%s] success, cost [%d] ms.", m_server->getDBPath().data(), (int)(uit::getTickCount() - k));
+	try {
+		m_server = std::make_shared<uit::ServerDomain>(getLocalIp(), 8888);
+		if (m_server->configDBPath(DEFAULT_DB_DIR))
+		{
+			uit::Log::info(LOG_TAG, "load [%s] success, cost [%d] ms.", m_server->getDBPath().data(), (int)(uit::getTickCount() - k));
+		}
+		else
+		{
+			uit::Log::info(LOG_TAG, "load [%s] fail.", m_server->getDBPath().data());
+			terminate();
+			return;
+		}
+		if (m_server->startup())
+		{
+			uit::Log::info(LOG_TAG, "server[%s] startup success, cost [%d] ms.", (m_server->ip() + ":" + std::to_string(m_server->port())).data(), (int)(uit::getTickCount() - k));
+		}
+		else
+		{
+			uit::Log::error(LOG_TAG, "server startup fail");
+			terminate();
+			return;
+		}
 	}
-	else
+	catch (RCF::Exception &e)
 	{
-		uit::Log::info(LOG_TAG, "load [%s] fail.", m_server->getDBPath().data());
+		uit::Log::error(LOG_TAG, "a RCF::Exception occur: %s", e.what());
 		terminate();
 		return;
 	}
-	if (m_server->startup())
+	catch (Poco::Exception &e)
 	{
-		uit::Log::info(LOG_TAG, "server[%s] startup success, cost [%d] ms.", (m_server->ip() + ":" + std::to_string(m_server->port())).data(), (int)(uit::getTickCount() - k));
+		uit::Log::error(LOG_TAG, "a Poco::Exception occur: %s", e.what());
+		terminate();
+		return;
 	}
-	else
+	catch (std::exception &e)
 	{
-		uit::Log::error(LOG_TAG, "server startup fail");
+		uit::Log::error(LOG_TAG, "a std::exception occur: %s", e.what());
+		terminate();
+		return;
+	}
+	catch (...)
+	{
+		uit::Log::error(LOG_TAG, "unknown exception");
 		terminate();
 		return;
 	}

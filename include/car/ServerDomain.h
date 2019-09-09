@@ -1,6 +1,7 @@
 #pragma once
 #include "core/Event.h"
 #include <RCF/RCF.hpp>
+#include "car/Account.h"
 
 namespace uit {
 
@@ -30,8 +31,11 @@ public:
 private:
 	std::string							m_ip;
 	int									m_port;
-	std::shared_ptr<RCF::RcfServer>		m_server;
+	std::shared_ptr<RCF::RcfServer>		m_interfaceServer;
 	std::shared_ptr<AccountStubImpl>	m_accountStub;
+	std::shared_ptr<RCF::RcfServer>		m_publisherServer;
+	std::shared_ptr<RCF::Publisher<AccountNofity>>	m_publisher;
+	friend class AccountStubImpl;
 };
 
 

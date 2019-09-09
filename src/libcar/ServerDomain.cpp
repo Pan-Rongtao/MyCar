@@ -1,20 +1,22 @@
 #include "car/ServerDomain.h"
 #include "AccountStubImpl.h"
-#include "car/AccountInterface.h"
 
 using namespace uit;
 
 ServerDomain::ServerDomain(const std::string &ip, int port)
 	: m_ip(ip)
 	, m_port(port)
-	, m_accountStub(std::make_shared<AccountStubImpl>())
+	, m_accountStub(std::make_shared<AccountStubImpl>(this))
 {
 	RCF::init();
-	m_server = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
+	m_interfaceServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
+	m_publisherServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
+	m_publisher = m_publisherServer->createPublisher<AccountNofity>();
 }
 
 ServerDomain::~ServerDomain()
 {
+	stop();
 	RCF::deinit();
 }
 
@@ -40,16 +42,18 @@ std::string ServerDomain::getDBPath() const
 
 bool ServerDomain::startup()
 {
-	if (m_server->isStarted())
+	if (m_interfaceServer->isStarted())
 		return true;
 
-	m_server->bind<AccountInterface>(*m_accountStub);
-	m_server->start();
+	m_interfaceServer->bind<AccountInterface>(*m_accountStub);
+	m_interfaceServer->start();
 	return true;
 }
 
 bool ServerDomain::stop()
 {
-	m_server->stop();
+	m_publisher->close();
+	m_interfaceServer->stop();
+	m_publisherServer->stop();
 	return true;
 }

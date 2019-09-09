@@ -5,12 +5,15 @@
 #include <Poco/Data/Session.h>
 #include <Poco/Data/SQLite/Connector.h>
 #include <Poco/Buffer.h>
+#include "core/Event.h"
 
 namespace uit{
 
+class ServerDomain;
 class UIT_API AccountStubImpl
 {
 public:
+	AccountStubImpl(ServerDomain *p);
 	//加载数据库
 	bool load(const std::string &path);
 	std::string getDBPath() const;
@@ -47,12 +50,13 @@ public:
 	//头像
 	void setPhoto(const std::string &userID, const std::string &photoBuffer);
 	std::string getPhoto(const std::string &userID) const;
-
+	
 private:
 	std::string terminalTypeToOnlineString(int terminalType) const;
 
 	std::string								m_DBpath;
 	Poco::SharedPtr<Poco::Data::Session>	m_session;
+	ServerDomain	*m_serverDomain;
 };
 
 }

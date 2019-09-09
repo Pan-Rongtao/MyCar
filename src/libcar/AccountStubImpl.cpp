@@ -2,12 +2,18 @@
 #include "Poco/File.h"
 #include "core/Log.h"
 #include "Share.h"
-#include "car/AccountInterface.h"
+#include "car/Account.h"
+#include "car/ServerDomain.h"
 
 using namespace uit;
 using namespace Poco;
 using namespace Poco::Data;
 using namespace Poco::Data::Keywords;
+
+AccountStubImpl::AccountStubImpl(ServerDomain * p)
+	: m_serverDomain(p)
+{
+}
 
 bool AccountStubImpl::load(const std::string & path)
 {
@@ -59,10 +65,11 @@ bool AccountStubImpl::login(const std::string & userID, const std::string & pass
 	auto _id = userID;
 	auto _pw = password;
 	*m_session << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = records.empty();
+	bool bExists = !records.empty();
 	if (bExists)
 	{
-		*m_session << "update users set Online=1 where UserID=?", use(_id), now;
+		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=1 where UserID = ? ";
+		*m_session << s, use(_id), now;
 		Log::info(LOG_TAG, "user[%s] longin", userID.data());
 	}
 	else
@@ -78,7 +85,7 @@ bool AccountStubImpl::logout(const std::string & userID, const std::string & pas
 	auto _id = userID;
 	auto _pw = password;
 	*m_session << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = records.empty();
+	bool bExists = !records.empty();
 	if (bExists)
 	{
 		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=1 where UserID = ? ";
@@ -89,6 +96,7 @@ bool AccountStubImpl::logout(const std::string & userID, const std::string & pas
 	{
 		Log::info(LOG_TAG, "user[%s] logout fail for unmatched id & password", userID.data());
 	}
+	m_serverDomain->m_publisher->publish().onUserLogout(userID, terminalType);
 	return bExists;
 }
 
@@ -144,6 +152,7 @@ void AccountStubImpl::setNickname(const std::string &userID, const std::string &
 	auto _nn = nickname;
 	*m_session << "update users set NickName=? where UserID=?", use(_nn), use(_id), now;
 	Log::info(LOG_TAG, "user[%s] setNickname[%s]", userID.data(), nickname.data());
+	m_serverDomain->m_publisher->publish().onUserNicknameChanged(userID, nickname);
 }
 
 std::string AccountStubImpl::getNickname(const std::string &userID) const
@@ -163,6 +172,7 @@ void AccountStubImpl::setSignaTure(const std::string & userID, const std::string
 	auto _st = signaTure;
 	*m_session << "update users set SignaTure=? where UserID=?", use(_st), use(_id), now;
 	Log::info(LOG_TAG, "user[%s] setSignaTure[%s]", userID.data(), signaTure.data());
+	m_serverDomain->m_publisher->publish().onUserSignaTureChanged(userID, signaTure);
 }
 
 std::string AccountStubImpl::getSignaTure(const std::string & userID)
@@ -182,6 +192,7 @@ void AccountStubImpl::setPhoto(const std::string &userID, const std::string &pho
 	auto _ft = photoBuffer;
 	*m_session << "update users set Photo=? where UserID=?", use(_ft), use(_id), now;
 	Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
+	m_serverDomain->m_publisher->publish().onUserPhotoChanged(userID, photoBuffer);
 }
 
 std::string AccountStubImpl::getPhoto(const std::string &userID) const

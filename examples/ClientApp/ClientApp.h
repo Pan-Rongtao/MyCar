@@ -3,7 +3,7 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/Util/Application.h>
 #include <RCF/RCF.hpp>
-#include "car/AccountInterface.h"
+#include "car/Account.h"
 
 namespace uit {
 
