@@ -39,12 +39,22 @@ std::string AccountStubImpl::getDBPath() const
 void AccountStubImpl::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
 	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> record{ userID, password, nickname, "", "", DateTime(), 0, 0, 0, 0 };
-	*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(record), now;
+	try {
+		*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(record), now;
+	}
+	catch (Poco::Exception &e) {
+		Log::error(LOG_TAG, "regist userID[%s] is existed , password[%s], nickname[%s], ignore.", userID.data(), password.data(), nickname.data());
+		return;
+	}
 	Log::info(LOG_TAG, "user[%s] regist, password[%s], nickname[%s]", userID.data(), password.data(), nickname.data());
 }
 
-void AccountStubImpl::remove(const std::string & userID)
+void AccountStubImpl::remove(const std::string & userID, const std::string &password)
 {
+	logout(userID, password, vehicle, true);
+	logout(userID, password, pc, true);
+	logout(userID, password, handheld, true);
+	logout(userID, password, pad, true);
 	auto _id = userID;
 	*m_session << "delete from users where UserID=?", use(_id), now;
 	Log::info(LOG_TAG, "user[%s] remove", userID.data());
@@ -71,6 +81,7 @@ bool AccountStubImpl::login(const std::string & userID, const std::string & pass
 		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=1 where UserID = ? ";
 		*m_session << s, use(_id), now;
 		Log::info(LOG_TAG, "user[%s] longin", userID.data());
+		m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, terminalType, true, false);
 	}
 	else
 	{
@@ -79,7 +90,7 @@ bool AccountStubImpl::login(const std::string & userID, const std::string & pass
 	return bExists;
 }
 
-bool AccountStubImpl::logout(const std::string & userID, const std::string & password, int terminalType)
+bool AccountStubImpl::logout(const std::string & userID, const std::string & password, int terminalType, bool kickout)
 {
 	std::vector<std::string> records;
 	auto _id = userID;
@@ -88,15 +99,15 @@ bool AccountStubImpl::logout(const std::string & userID, const std::string & pas
 	bool bExists = !records.empty();
 	if (bExists)
 	{
-		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=1 where UserID = ? ";
+		std::string s = "update users set " + terminalTypeToOnlineString(terminalType) + "=0 where UserID = ? ";
 		*m_session << s, use(_id), now;
 		Log::info(LOG_TAG, "user[%s] logout", userID.data());
+		m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, terminalType, false, kickout);
 	}
 	else
 	{
 		Log::info(LOG_TAG, "user[%s] logout fail for unmatched id & password", userID.data());
 	}
-	m_serverDomain->m_publisher->publish().onUserLogout(userID, terminalType);
 	return bExists;
 }
 
@@ -132,6 +143,11 @@ void AccountStubImpl::setPassword(const std::string &userID, const std::string &
 	auto _id = userID;
 	auto _pw = password;
 	*m_session << "update users set Password=? where UserID=?", use(_pw), use(_id), now;
+	m_serverDomain->m_publisher->publish().onPasswordChanged(userID, password);
+	m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, vehicle, false, true);
+	m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, pc, false, true);
+	m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, handheld, false, true);
+	m_serverDomain->m_publisher->publish().onUserLoggingStateChanged(userID, pad, false, true);
 	Log::info(LOG_TAG, "user[%s] setPassword[%s]", userID.data(), password.data());
 }
 
@@ -151,8 +167,8 @@ void AccountStubImpl::setNickname(const std::string &userID, const std::string &
 	auto _id = userID;
 	auto _nn = nickname;
 	*m_session << "update users set NickName=? where UserID=?", use(_nn), use(_id), now;
-	Log::info(LOG_TAG, "user[%s] setNickname[%s]", userID.data(), nickname.data());
 	m_serverDomain->m_publisher->publish().onUserNicknameChanged(userID, nickname);
+	Log::info(LOG_TAG, "user[%s] setNickname[%s]", userID.data(), nickname.data());
 }
 
 std::string AccountStubImpl::getNickname(const std::string &userID) const
@@ -171,8 +187,8 @@ void AccountStubImpl::setSignaTure(const std::string & userID, const std::string
 	auto _id = userID;
 	auto _st = signaTure;
 	*m_session << "update users set SignaTure=? where UserID=?", use(_st), use(_id), now;
-	Log::info(LOG_TAG, "user[%s] setSignaTure[%s]", userID.data(), signaTure.data());
 	m_serverDomain->m_publisher->publish().onUserSignaTureChanged(userID, signaTure);
+	Log::info(LOG_TAG, "user[%s] setSignaTure[%s]", userID.data(), signaTure.data());
 }
 
 std::string AccountStubImpl::getSignaTure(const std::string & userID)
@@ -191,8 +207,8 @@ void AccountStubImpl::setPhoto(const std::string &userID, const std::string &pho
 	auto _id = userID;
 	auto _ft = photoBuffer;
 	*m_session << "update users set Photo=? where UserID=?", use(_ft), use(_id), now;
-	Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
 	m_serverDomain->m_publisher->publish().onUserPhotoChanged(userID, photoBuffer);
+	Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
 }
 
 std::string AccountStubImpl::getPhoto(const std::string &userID) const

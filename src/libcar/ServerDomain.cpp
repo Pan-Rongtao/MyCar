@@ -10,7 +10,7 @@ ServerDomain::ServerDomain(const std::string &ip, int port)
 {
 	RCF::init();
 	m_interfaceServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
-	m_publisherServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
+	m_publisherServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, 9999));
 	m_publisher = m_publisherServer->createPublisher<AccountNofity>();
 }
 
@@ -47,6 +47,7 @@ bool ServerDomain::startup()
 
 	m_interfaceServer->bind<AccountInterface>(*m_accountStub);
 	m_interfaceServer->start();
+	m_publisherServer->start();
 	return true;
 }
 

@@ -15,7 +15,14 @@ public:
 	virtual void uninitialize() override;
 	virtual void defineOptions(Poco::Util::OptionSet& options) override;
 
+	void onPasswordChanged(const std::string &userID, const std::string &password);
+	void onUserNicknameChanged(const std::string &userID, const std::string &nickname);
+	void onUserSignaTureChanged(const std::string &userID, const std::string &signaTure);
+	void onUserPhotoChanged(const std::string &userID, const std::string &photoBuffer);
+	void onUserLoggingStateChanged(const std::string &userID, int terminalType, bool login, bool kickout);
+
 private:
+
 	std::shared_ptr<RcfClient<AccountInterface>>	m_client;
 };
 

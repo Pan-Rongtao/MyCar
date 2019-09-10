@@ -51,12 +51,23 @@ void ClientApp::initialize(Application & app)
 	Application::initialize(app);
 	RCF::init();
 	uint64_t k = uit::getTickCount();
-	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint("10.219.125.39", 8888));
+	std::string ip = "10.219.125.39";
+	int port = 8888;
+	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, port));
 	m_client->getClientStub().setAutoReconnect(true);
 	m_client->getClientStub().ping();
 	uit::Log::info(LOG_TAG, "connected, cost [%d].\n", (int)(uit::getTickCount() - k));
 	m_client->regist("13112657701", "Aa123456", "Pan.T");
 	bool b = m_client->getClientStub().isConnected();
+
+	RCF::RcfServer subServer(RCF::TcpEndpoint(-1));
+	subServer.start();
+	//PrintService printService;
+	RCF::SubscriptionParms subParms;
+	subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, 9999));
+	RCF::SubscriptionPtr subscriptionPtr = subServer.createSubscription<AccountNofity>(
+		*this,
+		subParms);
 }
 
 void ClientApp::uninitialize()
@@ -70,4 +81,24 @@ void ClientApp::defineOptions(OptionSet & options)
 	//shortName有很多限制，比如必须是fullName的开头，不能有多个Option shortName相似等。不设置了
 
 	
+}
+
+void uit::ClientApp::onPasswordChanged(const std::string & userID, const std::string & password)
+{
+}
+
+void uit::ClientApp::onUserNicknameChanged(const std::string & userID, const std::string & nickname)
+{
+}
+
+void uit::ClientApp::onUserSignaTureChanged(const std::string & userID, const std::string & signaTure)
+{
+}
+
+void uit::ClientApp::onUserPhotoChanged(const std::string & userID, const std::string & photoBuffer)
+{
+}
+
+void uit::ClientApp::onUserLoggingStateChanged(const std::string & userID, int terminalType, bool login, bool kickout)
+{
 }

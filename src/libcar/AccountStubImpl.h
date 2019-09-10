@@ -22,14 +22,14 @@ public:
 	void regist(const std::string &userID, const std::string &password, const std::string &nickname);
 
 	//注销一个账号
-	void remove(const std::string &userID);
+	void remove(const std::string &userID, const std::string &password);
 
 	//账号是否已经存在
 	bool isUserIDExists(const std::string &userID);
 
 	//登录
 	bool login(const std::string &userID, const std::string &password, int terminalType);
-	bool logout(const std::string &userID, const std::string & password, int terminalType);
+	bool logout(const std::string &userID, const std::string & password, int terminalType, bool kickout = false);
 
 	//获取账号信息
 	bool getAccountInfo(const std::string &userID, std::string &password, std::string &nickname, std::string &signaTure,
