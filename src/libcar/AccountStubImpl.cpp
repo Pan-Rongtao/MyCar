@@ -36,17 +36,19 @@ std::string AccountStubImpl::getDBPath() const
 	return m_DBpath;
 }
 
-void AccountStubImpl::regist(const std::string & userID, const std::string & password, const std::string & nickname)
+bool AccountStubImpl::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
-	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> record{ userID, password, nickname, "", "", DateTime(), 0, 0, 0, 0 };
+	Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> record{ userID, password, nickname, "该用户很懒，懒得签名.", "", DateTime(), 0, 0, 0, 0 };
 	try {
 		*m_session << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(record), now;
 	}
 	catch (Poco::Exception &e) {
+		(void)e;
 		Log::error(LOG_TAG, "regist userID[%s] is existed , password[%s], nickname[%s], ignore.", userID.data(), password.data(), nickname.data());
-		return;
+		return false;
 	}
 	Log::info(LOG_TAG, "user[%s] regist, password[%s], nickname[%s]", userID.data(), password.data(), nickname.data());
+	return true;
 }
 
 void AccountStubImpl::remove(const std::string & userID, const std::string &password)
@@ -112,7 +114,7 @@ bool AccountStubImpl::logout(const std::string & userID, const std::string & pas
 }
 
 bool AccountStubImpl::getAccountInfo(const std::string & userID, std::string & password, std::string & nickname, std::string & signaTure,
-	std::string & Photo, std::string & registTime, bool & vehicleOnline, bool & pcOnline, bool & handeldOnline, bool & padOnline) const
+	std::string & photo, std::string & registTime, bool & vehicleOnline, bool & pcOnline, bool & handeldOnline, bool & padOnline) const
 {
 	typedef Poco::Tuple<std::string, std::string, std::string, std::string, std::string, DateTime, int, int, int, int> Record;
 	std::vector<Record> records;
@@ -128,7 +130,11 @@ bool AccountStubImpl::getAccountInfo(const std::string & userID, std::string & p
 		password = records.front().get<1>();
 		nickname = records.front().get<2>();
 		signaTure = records.front().get<3>();
-		Photo = records.front().get<4>();
+		photo = loadImage(records.front().get<4>());
+		//if (photo.empty())
+		//{
+		//	photo = loadImage("default.jpg");
+		//}
 		registTime = Poco::DateTimeFormatter::format(records.front().get<5>(), Poco::DateTimeFormat::SORTABLE_FORMAT);
 		vehicleOnline = records.front().get<6>() == 0 ? false : true;
 		pcOnline = records.front().get<7>() == 0 ? false : true;
@@ -202,13 +208,28 @@ std::string AccountStubImpl::getSignaTure(const std::string & userID)
 	return ret;
 }
 
-void AccountStubImpl::setPhoto(const std::string &userID, const std::string &photoBuffer)
+bool AccountStubImpl::setPhoto(const std::string &userID, const std::string &photoBuffer)
 {
-	auto _id = userID;
-	auto _ft = photoBuffer;
-	*m_session << "update users set Photo=? where UserID=?", use(_ft), use(_id), now;
-	m_serverDomain->m_publisher->publish().onUserPhotoChanged(userID, photoBuffer);
-	Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
+	if (photoBuffer.size() > 256 * 1024)
+	{
+		Log::info(LOG_TAG, "user[%s] setPhoto[%d] fail, too big", userID.data(), photoBuffer.size());
+		return false;
+	}
+	else
+	{
+		auto path = userID + ".pic";
+		FILE *pf = fopen(path.data(), "wb");
+		if (pf)
+		{
+			fwrite(photoBuffer.data(), 1, photoBuffer.size(), pf);
+		}
+		fclose(pf);
+		auto _id = userID;
+		*m_session << "update users set Photo=? where UserID=?", use(path), use(_id), now;
+		m_serverDomain->m_publisher->publish().onUserPhotoChanged(userID, photoBuffer);
+		Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
+		return true;
+	}
 }
 
 std::string AccountStubImpl::getPhoto(const std::string &userID) const
@@ -217,9 +238,10 @@ std::string AccountStubImpl::getPhoto(const std::string &userID) const
 	std::vector<std::string> records;
 	auto ss = *m_session;
 	ss << "select Photo from users where UserID=?", into(records), use(_id), now;
-	auto ret = records.empty() ? "" : records.front();
-	Log::info(LOG_TAG, "user[%s] getPhoto[%d]", userID.data(), ret.size());
-	return ret;
+	auto path = records.empty() ? "" : records.front();
+	Log::info(LOG_TAG, "user[%s] getPhoto[%d]", userID.data(), path.size());
+
+	return loadImage(path);
 }
 
 std::string AccountStubImpl::terminalTypeToOnlineString(int terminalType) const
@@ -232,4 +254,21 @@ std::string AccountStubImpl::terminalTypeToOnlineString(int terminalType) const
 	case pad:		return "PadOnline";
 	default:		return "";
 	}
+}
+
+std::string AccountStubImpl::loadImage(const std::string &path) const
+{
+	FILE *pFile = fopen(path.data(), "rb");
+	if (pFile == nullptr)
+		return std::string();
+
+	fseek(pFile, 0, SEEK_END);
+	int nLength = ftell(pFile);
+	char *pData = new char[nLength];
+	fseek(pFile, 0, SEEK_SET);
+	fread(pData, nLength, 1, pFile);
+	std::string ret(pData, nLength);
+	delete[]pData;
+	fclose(pFile);
+	return ret;
 }
