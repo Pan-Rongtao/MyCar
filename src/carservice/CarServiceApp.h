@@ -1,5 +1,6 @@
 #pragma once
 #include <Poco/Util/ServerApplication.h>
+#include <iostream>
 #include "car/ServerDomain.h"
 
 class CarServiceApp : public Poco::Util::ServerApplication
@@ -15,4 +16,4 @@ private:
 	std::shared_ptr<uit::ServerDomain>	m_server;
 };
 
-POCO_SERVER_MAIN(CarServiceApp)
+//POCO_SERVER_MAIN(CarServiceApp)

@@ -1,5 +1,7 @@
 #include "car/ServerDomain.h"
 #include "AccountStubImpl.h"
+#include "CarStubImpl.h"
+#include "DB.h"
 
 using namespace uit;
 
@@ -7,6 +9,7 @@ ServerDomain::ServerDomain(const std::string &ip, int port)
 	: m_ip(ip)
 	, m_port(port)
 	, m_accountStub(std::make_shared<AccountStubImpl>(this))
+	, m_carStub(std::make_shared<CarStubImpl>(this))
 {
 	RCF::init();
 	m_interfaceServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, port));
@@ -32,12 +35,12 @@ int ServerDomain::port() const
 
 bool ServerDomain::configDBPath(const std::string &path)
 {
-	return m_accountStub->load(path);
+	return DB::instance()->load(path);
 }
 
 std::string ServerDomain::getDBPath() const
 {
-	return m_accountStub->getDBPath();
+	return DB::instance()->getDBPath();
 }
 
 bool ServerDomain::startup()
@@ -46,6 +49,7 @@ bool ServerDomain::startup()
 		return true;
 
 	m_interfaceServer->bind<AccountInterface>(*m_accountStub);
+	m_interfaceServer->bind<CarInterface>(*m_carStub);
 	m_interfaceServer->start();
 	m_publisherServer->start();
 	return true;

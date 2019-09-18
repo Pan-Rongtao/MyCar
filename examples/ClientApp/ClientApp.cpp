@@ -51,8 +51,10 @@ void ClientApp::initialize(Application & app)
 	Application::initialize(app);
 	RCF::init();
 	uint64_t k = uit::getTickCount();
-	std::string ip = "10.219.125.39";
-	int port = 8888;
+	//std::string ip = "192.168.160.133";
+	//int port = 8888;
+	std::string ip = "3s.dkys.org";
+	int port = 25380;
 	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, port));
 	m_client->getClientStub().setAutoReconnect(true);
 	m_client->getClientStub().ping();

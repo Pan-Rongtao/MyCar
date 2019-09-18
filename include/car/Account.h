@@ -1,6 +1,5 @@
 #pragma once
 #include <RCF/Idl.hpp>
-#include <SF/vector.hpp>
 
 enum TerminalType
 {

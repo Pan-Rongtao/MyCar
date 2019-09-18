@@ -2,10 +2,12 @@
 #include "core/Event.h"
 #include <RCF/RCF.hpp>
 #include "car/Account.h"
+#include "car/Car.h"
 
 namespace uit {
 
 class AccountStubImpl;
+class CarStubImpl;
 class UIT_API ServerDomain final
 {
 public:
@@ -33,9 +35,11 @@ private:
 	int									m_port;
 	std::shared_ptr<RCF::RcfServer>		m_interfaceServer;
 	std::shared_ptr<AccountStubImpl>	m_accountStub;
+	std::shared_ptr<CarStubImpl>		m_carStub;
 	std::shared_ptr<RCF::RcfServer>		m_publisherServer;
 	std::shared_ptr<RCF::Publisher<AccountNofity>>	m_publisher;
 	friend class AccountStubImpl;
+	friend class CarStubImpl;
 };
 
 

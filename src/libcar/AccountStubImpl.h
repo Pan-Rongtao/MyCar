@@ -4,7 +4,6 @@
 #include <Poco/Data/SQLite/SQLite.h>
 #include <Poco/Data/Session.h>
 #include <Poco/Data/SQLite/Connector.h>
-#include <Poco/Buffer.h>
 #include "core/Event.h"
 
 namespace uit{
@@ -14,9 +13,6 @@ class UIT_API AccountStubImpl
 {
 public:
 	AccountStubImpl(ServerDomain *p);
-	//加载数据库
-	bool load(const std::string &path);
-	std::string getDBPath() const;
 
 	//注册一个账号
 	bool regist(const std::string &userID, const std::string &password, const std::string &nickname);
@@ -55,8 +51,6 @@ private:
 	std::string terminalTypeToOnlineString(int terminalType) const;
 	std::string loadImage(const std::string &path) const;
 
-	std::string								m_DBpath;
-	Poco::SharedPtr<Poco::Data::Session>	m_session;
 	ServerDomain	*m_serverDomain;
 };
 

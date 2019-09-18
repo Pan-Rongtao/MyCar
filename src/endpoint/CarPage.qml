@@ -32,7 +32,7 @@ Column{
     GroupBox{
         id:carInfoGroup
         title: "车辆信息"
-        width: parent.width - 20
+        width: parent.width - 10
         height: 100
         GridLayout{
             columns:2

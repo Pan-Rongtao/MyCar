@@ -5,6 +5,30 @@
 #define LOG_TAG	"SVCar"
 #define DEFAULT_DB_DIR		uit::Runtime::getUitEtcDirectory() + "account.db"
 
+int main(int argc, char **argv)
+{
+	try {
+		CarServiceApp app;
+		app.run(argc, argv);
+	}
+	catch (RCF::Exception &e)
+	{
+		uit::Log::error(LOG_TAG, "a RCF::Exception occur: %s", e.what());
+	}
+	catch (Poco::Exception &e)
+	{
+		uit::Log::error(LOG_TAG, "a Poco::Exception occur: %s", e.what());
+	}
+	catch (std::exception &e)
+	{
+		uit::Log::error(LOG_TAG, "a std::exception occur: %s", e.what());
+	}
+	catch (...)
+	{
+		uit::Log::error(LOG_TAG, "unknown exception");
+	}
+}
+
 int CarServiceApp::main(const std::vector<std::string>& args)
 {
 	waitForTerminationRequest();

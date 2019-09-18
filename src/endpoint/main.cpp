@@ -10,7 +10,9 @@ int main(int argc, char *argv[])
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     QGuiApplication app(argc, argv);
-
+    //3s.dkys.org:25380
+    //http://prt.ngrok2.xiaomiqiu.cn
+    //https://prt.ngrok2.xiaomiqiu.cn
     nb::Singleton<Account>::instance()->connectServer("10.219.125.39", 8888);
 
     QQmlApplicationEngine engine;
