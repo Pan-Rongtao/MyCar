@@ -13,19 +13,19 @@
 
 # 1. Project Name
 
-project(clientapp)
+project(client)
 
 # 2. Project Env (Include/Lib Path, C/CXX/LD FLAGS)
 
 # 3. Project Build
 
-set(BIN_NAME "clientapp")
+set(BIN_NAME "client")
 
 file(GLOB SRC_FILES "*.h" "*.cpp")
 
 add_executable(${BIN_NAME} ${SRC_FILES})
-set_target_properties(${BIN_NAME} PROPERTIES OUTPUT_NAME uit.clientapp)
-target_link_libraries(${BIN_NAME} libcore libcar)
+set_target_properties(${BIN_NAME} PROPERTIES OUTPUT_NAME uit.client)
+target_link_libraries(${BIN_NAME} core RcfLib)
 
 # 4. Project Install
 if(WIN32)

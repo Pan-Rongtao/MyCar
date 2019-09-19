@@ -67,7 +67,7 @@ void ClientApp::initialize(Application & app)
 	//PrintService printService;
 	RCF::SubscriptionParms subParms;
 	subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, 9999));
-	RCF::SubscriptionPtr subscriptionPtr = subServer.createSubscription<AccountNofity>(
+	RCF::SubscriptionPtr subscriptionPtr = subServer.createSubscription<AccountNotify>(
 		*this,
 		subParms);
 }

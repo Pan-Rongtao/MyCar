@@ -8,9 +8,8 @@ project(src)
 
 # 4. Sub Projects
 
-add_subdirectory(libcore)
-add_subdirectory(libcar)
-add_subdirectory(carservice)
+add_subdirectory(core)
+add_subdirectory(service)
 
 # 5. Project Install
 # N/A
