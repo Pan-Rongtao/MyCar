@@ -12,6 +12,7 @@ public:
 	virtual void defineOptions(Poco::Util::OptionSet& options) override;
 
 private:
+	std::string getDeviceIp(const std::string &sDev) const;
 	std::string getLocalIp() const;
 	std::shared_ptr<uit::ServerDomain>	m_server;
 };

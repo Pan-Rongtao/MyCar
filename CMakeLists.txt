@@ -11,11 +11,12 @@ project(mycar)
 
 # 2. Env (Include/Lib Path, C/CXX/LD FLAGS)
 #set(CMAKE_DEBUG_POSTFIX d)
+ADD_DEFINITIONS( -D_WIN32_WINNT=0x601 -DWIN32_LEAN_AND_MEAN )
 
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL QNX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 else()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
@@ -30,10 +31,11 @@ SET(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_PREFIX}/doc)
 
 
 include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/3rdparty/include)
 if(WIN32)
-	ADD_DEFINITIONS( -D_WIN32_WINNT=0x601 -DWIN32_LEAN_AND_MEAN )
-	include_directories(${CMAKE_SOURCE_DIR}/3rdparty/include)
 	link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/win32)
+else()
+	link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/linux-arm)
 endif()
 
 # 4. Sub Projects

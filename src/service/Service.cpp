@@ -1,6 +1,8 @@
 #include "Service.h"
 #include "core/Log.h"
 #include "core/Runtime.h"
+#include <Poco/Net/TCPServer.h>
+#include <Poco/Net/TCPServerConnectionFactory.h>
 
 #define LOG_TAG	"SVCar"
 #define DEFAULT_DB_DIR		uit::Runtime::getUitEtcDirectory() + "account.db"
@@ -98,8 +100,26 @@ void Service::defineOptions(Poco::Util::OptionSet & options)
 {
 }
 
+std::string Service::getDeviceIp(const std::string &sDev) const
+{
+#ifdef WIN32
+	return "";
+#else
+	char ip[80] = { 0 };
+	struct ifreq ifr;
+	int sk = socket(AF_INET, SOCK_DGRAM, 0);
+	strcpy(ifr.ifr_name, sDev.data());
+	if (ioctl(sk, SIOCGIFADDR, &ifr) == 0)
+		strcpy(ip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+
+	close(sk);
+	return ip;
+#endif
+}
+
 std::string Service::getLocalIp() const
 {
+#ifdef WIN32
 	WSADATA Data;
 	if (WSAStartup(MAKEWORD(1, 1), &Data) == 0)
 	{
@@ -116,4 +136,11 @@ std::string Service::getLocalIp() const
 		uit::Log::error(LOG_TAG, "can't startup winSock when get ip.");
 		return "";
 	}
+#else
+	auto eth0 = getDeviceIp("eth0");
+	if(!eth0.empty())
+		return eth0;
+	else
+		return getDeviceIp("mlan0");
+#endif
 }

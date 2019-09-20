@@ -24,7 +24,11 @@ set(BIN_NAME "service")
 file(GLOB SRC_FILES "${CMAKE_SOURCE_DIR}/include/server/*.h" "*.h" "*.cpp")
 
 add_executable(${BIN_NAME} ${SRC_FILES})
-target_link_libraries(${BIN_NAME} core optimized PocoFoundation debug PocoFoundationd optimized PocoJSON debug PocoJSONd RcfLib)
+if(WIN32)
+	target_link_libraries(${BIN_NAME} core optimized PocoFoundation debug PocoFoundationd optimized PocoJSON debug PocoJSONd RcfLib)
+else()
+	target_link_libraries(${BIN_NAME} core PocoFoundation PocoJSON PocoData PocoDataSQLite PocoNet RcfLib pthread dl uuid)
+endif()
 
 # 4. Project Install
 if(WIN32)

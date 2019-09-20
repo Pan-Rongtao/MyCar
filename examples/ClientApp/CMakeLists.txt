@@ -25,7 +25,7 @@ file(GLOB SRC_FILES "*.h" "*.cpp")
 
 add_executable(${BIN_NAME} ${SRC_FILES})
 set_target_properties(${BIN_NAME} PROPERTIES OUTPUT_NAME uit.client)
-target_link_libraries(${BIN_NAME} core RcfLib)
+target_link_libraries(${BIN_NAME} core RcfLib pthread dl uuid)
 
 # 4. Project Install
 if(WIN32)

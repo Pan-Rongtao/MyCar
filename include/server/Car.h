@@ -22,7 +22,7 @@ struct CarInfo
 	std::string shutdownPhoto;
 	bool driving{ false };
 
-	void CarInfo::serialize(SF::Archive& ar)
+	void serialize(SF::Archive& ar)
 	{
 		ar & availableFuel;
 		ar & averageFuel;
