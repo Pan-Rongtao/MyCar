@@ -3,6 +3,7 @@
 #include "Poco/Dynamic/Var.h"
 #include <QDebug>
 #include <QFile>
+#include <iostream>
 #include "Poco/Platform.h"
 #include "ImageProvider.h"
 #include "Singleton.h"

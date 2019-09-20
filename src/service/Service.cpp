@@ -137,7 +137,7 @@ std::string Service::getLocalIp() const
 		return "";
 	}
 #else
-	auto eth0 = getDeviceIp("eth0");
+	auto eth0 = getDeviceIp("eth1");
 	if(!eth0.empty())
 		return eth0;
 	else

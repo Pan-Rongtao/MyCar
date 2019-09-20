@@ -1,5 +1,4 @@
-#ifndef LOGIC_H
-#define LOGIC_H
+#pragma once
 
 #define WIN32_WINNT 0x60
 #define WIN32_LEAN_AND_MEAN
@@ -122,4 +121,3 @@ private:
     TerminalType    m_t{pc};
 };
 
-#endif // LOGIC_H
