@@ -1,7 +1,14 @@
 #pragma once
 #include <Poco/Util/ServerApplication.h>
+#include <RCF/RCF.hpp>
 #include <iostream>
-#include "server/ServerDomain.h"
+#include "AccountStub.h"
+#include "CarStub.h"
+#include "DB.h"
+#include "server/Account.h"
+#include "server/Car.h"
+
+namespace uit{
 
 class Service : public Poco::Util::ServerApplication
 {
@@ -9,12 +16,19 @@ public:
 	virtual int main(const std::vector<std::string>& args) override;
 	virtual void initialize(Application& app) override;
 	virtual void uninitialize() override;
-	virtual void defineOptions(Poco::Util::OptionSet& options) override;
+
+	void onAccountChanged(const AccountStub::AccountChangedArgs &args);
+	void onCarChanged(const CarStub::CarChangedArgs &args);
 
 private:
-	std::string getDeviceIp(const std::string &sDev) const;
 	std::string getLocalIp() const;
-	std::shared_ptr<uit::ServerDomain>	m_server;
+
+	std::shared_ptr<RCF::RcfServer>		m_interfaceServer;
+	std::shared_ptr<RCF::RcfServer>		m_publisherServer;
+	std::shared_ptr<RCF::Publisher<AccountNotify>>	m_publisherAccount;
+	std::shared_ptr<RCF::Publisher<CarNotify>>		m_publisherCar;
+
 };
 
+}
 //POCO_SERVER_MAIN(Service)

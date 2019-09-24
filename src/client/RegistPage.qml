@@ -32,7 +32,7 @@ Column{
                 width: parent.width - txt.width - userIDCheck.width
                 height: 30
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
-                onTextChanged: {userIDCheck.state = userID.text==="" ? -1 : (Account.isUserIDExists(userID.text) ? 0 : 1); tip.visible=false}
+                onTextChanged: {userIDCheck.state = userID.text==="" ? -1 : (Account.isRegisted(userID.text) ? 0 : 1); tip.visible=false}
                 onPressed: vk.visible=true
             }
             Check{ id:userIDCheck; width: 150; height: 30; emptyTip: "账号不能为空"; refuseTip: "账号已存在" }

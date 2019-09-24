@@ -29,13 +29,16 @@ SET(CMAKE_INSTALL_BINDIR ${CMAKE_INSTALL_PREFIX}/bin)
 SET(CMAKE_INSTALL_ETCDIR ${CMAKE_INSTALL_PREFIX}/etc)
 SET(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_PREFIX}/doc)
 
-
 include_directories(include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdparty/include)
 if(WIN32)
 	link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/win32)
 else()
-	link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/linux-arm)
+	if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL x86_64)
+		link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/linux-x11)
+	else()
+		link_directories(${CMAKE_SOURCE_DIR}/3rdparty/lib/linux-arm)
+	endif()
 endif()
 
 # 4. Sub Projects

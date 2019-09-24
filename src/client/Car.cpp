@@ -3,16 +3,13 @@
 #include "Account.h"
 #include "Singleton.h"
 
-Car::Car()
-{
-
-}
-
 void Car::setavailableFuel(float availableFuel)
 {
     if(m_availableFuel != availableFuel)
+    {
         m_availableFuel = availableFuel;
-    emit availableFuelChanged();
+        emit availableFuelChanged();
+    }
 }
 
 float Car::availableFuel() const
@@ -23,8 +20,10 @@ float Car::availableFuel() const
 void Car::setaverageFuel(float averageFuel)
 {
     if(m_averageFuel != averageFuel)
+    {
         m_averageFuel = averageFuel;
-    emit averageFuelChanged();
+        emit averageFuelChanged();
+    }
 }
 
 float Car::averageFuel() const
@@ -35,8 +34,10 @@ float Car::averageFuel() const
 void Car::settotalKm(float totalKm)
 {
     if(m_totalKm != totalKm)
+    {
         m_totalKm = totalKm;
-    emit totalKmChanged();
+        emit totalKmChanged();
+    }
 }
 
 float Car::totalKm() const
@@ -47,8 +48,10 @@ float Car::totalKm() const
 void Car::setsubKmA(float subKmA)
 {
     if(m_subKmA != subKmA)
+    {
         m_subKmA = subKmA;
-    emit subKmAChanged();
+        emit subKmAChanged();
+    }
 }
 
 float Car::subKmA() const
@@ -59,8 +62,10 @@ float Car::subKmA() const
 void Car::setsubKmB(float subKmB)
 {
     if(m_subKmB != subKmB)
+    {
         m_subKmB = subKmB;
-    emit subKmBChanged();
+        emit subKmBChanged();
+    }
 }
 
 float Car::subKmB() const
@@ -71,8 +76,10 @@ float Car::subKmB() const
 void Car::setleftFrontDoor(bool leftFrontDoor)
 {
     if(m_leftFrontDoor != leftFrontDoor)
+    {
         m_leftFrontDoor = leftFrontDoor;
-    emit leftFrontDoorChanged();
+        emit leftFrontDoorChanged();
+    }
 }
 
 bool Car::leftFrontDoor() const
@@ -83,8 +90,10 @@ bool Car::leftFrontDoor() const
 void Car::setrightFrontDoor(bool rightFrontDoor)
 {
     if(m_rightFrontDoor != rightFrontDoor)
+    {
         m_rightFrontDoor = rightFrontDoor;
-    emit rightFrontDoorChanged();
+        emit rightFrontDoorChanged();
+    }
 }
 
 bool Car::rightFrontDoor() const
@@ -95,8 +104,10 @@ bool Car::rightFrontDoor() const
 void Car::setleftRearDoor(bool leftRearDoor)
 {
     if(m_leftRearDoor != leftRearDoor)
+    {
         m_leftRearDoor = leftRearDoor;
-    emit leftRearDoorChanged();
+        emit leftRearDoorChanged();
+    }
 }
 
 bool Car::leftRearDoor() const
@@ -107,8 +118,10 @@ bool Car::leftRearDoor() const
 void Car::setrightRearDoor(bool rightRearDoor)
 {
     if(m_rightRearDoor != rightRearDoor)
+    {
         m_rightRearDoor = rightRearDoor;
-    emit rightRearDoorChanged();
+        emit rightRearDoorChanged();
+    }
 }
 
 bool Car::rightRearDoor() const
@@ -119,8 +132,10 @@ bool Car::rightRearDoor() const
 void Car::setleftFrontWindow(bool leftFrontWindow)
 {
     if(m_leftFrontWindow != leftFrontWindow)
+    {
         m_leftFrontWindow = leftFrontWindow;
-    emit leftFrontWindowChanged();
+        emit leftFrontWindowChanged();
+    }
 }
 
 bool Car::leftFrontWindow() const
@@ -131,8 +146,10 @@ bool Car::leftFrontWindow() const
 void Car::setrightFrontWindow(bool rightFrontWindow)
 {
     if(m_rightFrontWindow != rightFrontWindow)
+    {
         m_rightFrontWindow = rightFrontWindow;
-    emit rightFrontWindowChanged();
+        emit rightFrontWindowChanged();
+    }
 }
 
 bool Car::rightFrontWindow() const
@@ -143,8 +160,10 @@ bool Car::rightFrontWindow() const
 void Car::setleftRearWindow(bool leftRearWindow)
 {
     if(m_leftRearWindow != leftRearWindow)
+    {
         m_leftRearWindow = leftRearWindow;
-    emit leftRearWindowChanged();
+        emit leftRearWindowChanged();
+    }
 }
 
 bool Car::leftRearWindow() const
@@ -155,8 +174,10 @@ bool Car::leftRearWindow() const
 void Car::setrightRearWindow(bool rightRearWindow)
 {
     if(m_rightRearWindow != rightRearWindow)
+    {
         m_rightRearWindow = rightRearWindow;
-    emit rightRearWindowChanged();
+        emit rightRearWindowChanged();
+    }
 }
 
 bool Car::rightRearWindow() const
@@ -167,8 +188,10 @@ bool Car::rightRearWindow() const
 void Car::setAC(bool AC)
 {
     if(m_AC != AC)
+    {
         m_AC = AC;
-    emit ACChanged();
+        emit ACChanged();
+    }
 }
 
 bool Car::AC() const
@@ -179,8 +202,10 @@ bool Car::AC() const
 void Car::setACTemp(int ACTemp)
 {
     if(m_ACTemp != ACTemp)
+    {
         m_ACTemp = ACTemp;
-    emit ACTempChanged();
+        emit ACTempChanged();
+    }
 }
 
 int Car::ACTemp() const
@@ -201,8 +226,10 @@ QString Car::shutdownPhoto() const
 void Car::setdriving(bool driving)
 {
     if(m_driving != driving)
+    {
         m_driving = driving;
-    emit drivingChanged();
+        emit drivingChanged();
+    }
 }
 
 bool Car::driving() const
@@ -212,23 +239,26 @@ bool Car::driving() const
 
 void Car::onCarChanged(const std::string &userID, CarInfo &info)
 {
-    setavailableFuel(info.availableFuel);
-    setaverageFuel(info.averageFuel);
-    settotalKm(info.totalKm);
-    setsubKmA(info.subKmA);
-    setsubKmB(info.subKmB);
-    setleftFrontDoor(info.leftFrontDoor);
-    setrightFrontDoor(info.rightFrontDoor);
-    setleftRearDoor(info.leftRearDoor);
-    setrightRearDoor(info.rightRearDoor);
-    setleftFrontWindow(info.leftFrontWindow);
-    setrightFrontWindow(info.rightFrontWindow);
-    setleftRearWindow(info.leftRearWindow);
-    setrightRearWindow(info.rightRearWindow);
-    setAC(info.AC);
-    setACTemp(info.ACTemp);
-    //setshutdownPhoto(info.shutdownPhoto);
-    setdriving(info.driving);
+    if(userID == nb::Singleton<Account>::instance()->userID().toStdString())
+    {
+        setavailableFuel(info.availableFuel);
+        setaverageFuel(info.averageFuel);
+        settotalKm(info.totalKm);
+        setsubKmA(info.subKmA);
+        setsubKmB(info.subKmB);
+        setleftFrontDoor(info.leftFrontDoor);
+        setrightFrontDoor(info.rightFrontDoor);
+        setleftRearDoor(info.leftRearDoor);
+        setrightRearDoor(info.rightRearDoor);
+        setleftFrontWindow(info.leftFrontWindow);
+        setrightFrontWindow(info.rightFrontWindow);
+        setleftRearWindow(info.leftRearWindow);
+        setrightRearWindow(info.rightRearWindow);
+        setAC(info.AC);
+        setACTemp(info.ACTemp);
+        //setshutdownPhoto(info.shutdownPhoto);
+        setdriving(info.driving);
+    }
 }
 
 void Car::updateCar()
@@ -277,162 +307,70 @@ void Car::updateCar()
     }
 }
 
-bool Car::connectServer(const QString &ip, int port)
+bool Car::connectServer(const std::string &ip, int interfacePort, int publisherPort)
 {
-    m_client = std::make_shared<RcfClient<CarInterface>>(RCF::TcpEndpoint(ip.toStdString(), port));
+    m_client = std::make_shared<RcfClient<CarInterface>>(RCF::TcpEndpoint(ip, interfacePort));
     m_client->getClientStub().setAutoReconnect(true);
     m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
     m_subscribServer->start();
 
     RCF::SubscriptionParms subParms;
-    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip.toStdString(), 9999));
-    try
-    {
-        m_subscription = m_subscribServer->createSubscription<CarNotify>(*this, subParms);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
-    try{
-        m_client->getClientStub().ping();
-    }catch(...)
-    {
-        //setconnected(false);
-        return false;
-    }
-    //setconnected(true);
+    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
+    m_subscription = m_subscribServer->createSubscription<CarNotify>(*this, subParms);
     return true;
 }
 
 void Car::switchLeftFrontDoor(bool b)
 {
-    try
-    {
-        m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontDoor(bool b)
 {
-    try
-    {
-        m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearDoor(bool b)
 {
-    try
-    {
-        m_client->switchLeftRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchLeftRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearDoor(bool b)
 {
-    try
-    {
-        m_client->switchRightRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchRightRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftFrontWindow(bool b)
 {
-    try
-    {
-        m_client->switchLeftFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchLeftFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontWindow(bool b)
 {
-    try
-    {
-        m_client->switchRightFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchRightFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearWindow(bool b)
 {
-    try
-    {
-        m_client->switchLeftRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchLeftRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearWindow(bool b)
 {
-    try
-    {
-        m_client->switchRightRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchRightRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchAC(bool b)
 {
-    try
-    {
-        m_client->switchAC(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->switchAC(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }
 
 void Car::switchACTemp(int v)
 {
-    try
-    {
-        m_client->setACTemp(nb::Singleton<Account>::instance()->userID().toStdString(), v);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->setACTemp(nb::Singleton<Account>::instance()->userID().toStdString(), v);
 }
 
 void Car::switchDriving(bool b)
 {
-    try
-    {
-        m_client->setDriving(nb::Singleton<Account>::instance()->userID().toStdString(), b);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
+    m_client->setDriving(nb::Singleton<Account>::instance()->userID().toStdString(), b);
 }

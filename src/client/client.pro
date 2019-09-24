@@ -1,7 +1,7 @@
 TEMPLATE = app
 
 QT += qml quick
-CONFIG += resources_big
+CONFIG += c++14 resources_big
 QT_IM_MODULE=qtvirtualkeyboard
 
 HEADERS += \
@@ -32,13 +32,28 @@ win32{
 }
 
 unix{
-	LIBS += -L$$uit_dist/lib \
-	-L../../3rdparty/lib/linux-arm \
-	-luit_core \
-	-lPocoFoundation \
-	-lPocoJSON \
-	-lRcfLib \
-	-lpthread \
-	-luuid \
-	-ldl
+    contains(QT_ARCH, arm) {
+            LIBS += -L$$uit_dist/lib \
+            -L../../3rdparty/lib/linux-arm \
+            -luit_core \
+            -lPocoFoundation \
+            -lPocoJSON \
+            -lRcfLib \
+            -lpthread \
+            -luuid \
+            -ldl
+    }else{
+            LIBS += -L$$uit_dist/lib \
+            -L../../3rdparty/lib/linux-x11 \
+            -luit_core \
+            -lPocoFoundation \
+            -lPocoJSON \
+            -lPocoNet \
+            -lPocoUtil \
+            -lPocoXML \
+            -lRcfLib \
+            -lpthread \
+            -luuid \
+            -ldl
+    }
 }

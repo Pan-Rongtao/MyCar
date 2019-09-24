@@ -9,7 +9,7 @@ namespace uit {
 class DB
 {
 public:
-	//
+	//单例
 	static DB *instance();
 
 	//加载数据库

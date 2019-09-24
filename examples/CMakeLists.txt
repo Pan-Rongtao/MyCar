@@ -14,6 +14,6 @@ project(examples)
 
 # 4. Sub Projects
 
-add_subdirectory(ClientApp)
+add_subdirectory(client)
 
 # 5. Project Install

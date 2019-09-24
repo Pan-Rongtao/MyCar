@@ -13,8 +13,6 @@ class Car : public QObject
 {
     Q_OBJECT
 public:
-    Car();
-
     Q_PROPERTY(float availableFuel READ availableFuel WRITE setavailableFuel NOTIFY availableFuelChanged)
     Q_PROPERTY(float averageFuel READ averageFuel WRITE setaverageFuel NOTIFY averageFuelChanged)
     Q_PROPERTY(float totalKm READ totalKm WRITE settotalKm NOTIFY totalKmChanged)
@@ -108,7 +106,7 @@ signals:
     void drivingChanged();
 
 public slots:
-    bool connectServer(const QString &ip, int port);
+    bool connectServer(const std::string &ip, int interfacePort, int publisherPort);
     void switchLeftFrontDoor(bool b);
     void switchRightFrontDoor(bool b);
     void switchLeftRearDoor(bool b);

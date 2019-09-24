@@ -64,11 +64,7 @@ public:
 
     Account();
 
-    void onPasswordChanged(const std::string &userID, const std::string &password);
-    void onUserNicknameChanged(const std::string &userID, const std::string &nickname);
-    void onUserSignaTureChanged(const std::string &userID, const std::string &signaTure);
-    void onUserPhotoChanged(const std::string &userID, const std::string &photoBuffer);
-    void onUserLoggingStateChanged(const std::string &userID, int terminalType, bool bLogin, bool kickout);
+    void onAccountChanged(const std::string &userID, const AccountInfo &info);
 
 signals:
     void connectedChanged();
@@ -84,11 +80,9 @@ signals:
     void padOnlineChanged();
     void isloginChanged();
 
-    void signalPhotoChanged(std::string buffer);
-
 public slots:
-    bool connectServer(const QString &ip, int port);
-    bool isUserIDExists(const QString &userID);
+    bool connectServer(const std::string &ip, int interfacePort, int publisherPort);
+    bool isRegisted(const QString &userID);
     bool regist(const QString &userID, const QString &password, const QString &nickname);
     bool login(const QString &userID, const QString &password);
     bool logout();
@@ -97,14 +91,21 @@ public slots:
     bool modifySignaTure(const QString &signaTure);
     bool modifyPhoto(const QUrl &file);
 
-    void slotPhotoChanged(std::string buffer);
-
 private:
-    void updateAccountInfo(const QString &userID);
+    enum TerminalType
+    {
+        pc,
+        vehicle,
+        handheld,
+        pad,
+    };
+
+    void updateAccountInfo(const AccountInfo &info);
 
     std::shared_ptr<RcfClient<AccountInterface>>	m_client;
     std::shared_ptr<RCF::RcfServer>                 m_subscribServer;
     RCF::SubscriptionPtr                            m_subscription;
+
     bool    m_connected{false};
     QString m_userID;
     QString m_password;

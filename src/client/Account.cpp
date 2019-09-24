@@ -1,6 +1,5 @@
 #include "Account.h"
 #include "core/Log.h"
-#include "Poco/Dynamic/Var.h"
 #include <QDebug>
 #include <QFile>
 #include <iostream>
@@ -12,8 +11,10 @@
 void Account::setconnected(bool connected)
 {
     if(connected != m_connected)
+    {
         m_connected = connected;
-    emit connectedChanged();
+        emit connectedChanged();
+    }
 }
 
 bool Account::connected()
@@ -24,8 +25,10 @@ bool Account::connected()
 void Account::setuserID(const QString &useID)
 {
     if(m_userID != useID)
+    {
         m_userID = useID;
-    emit userIDChanged();
+        emit userIDChanged();
+    }
 }
 
 QString Account::userID()
@@ -36,8 +39,10 @@ QString Account::userID()
 void Account::setpassword(const QString &password)
 {
     if(m_password != password)
+    {
         m_password = password;
-    emit passwordChanged();
+        emit passwordChanged();
+    }
 }
 
 QString Account::password()
@@ -48,8 +53,10 @@ QString Account::password()
 void Account::setnickname(const QString &nickname)
 {
     if(m_nickname != nickname)
+    {
         m_nickname = nickname;
-    emit nicknameChanged();
+        emit nicknameChanged();
+    }
 }
 
 QString Account::nickname()
@@ -60,8 +67,10 @@ QString Account::nickname()
 void Account::setsignaTure(const QString &signaTure)
 {
     if(m_signaTure != signaTure)
+    {
         m_signaTure = signaTure;
-    emit signaTureChanged();
+        emit signaTureChanged();
+    }
 }
 
 QString Account::signaTure()
@@ -72,8 +81,10 @@ QString Account::signaTure()
 void Account::setphoto(const QString &photo)
 {
     if(m_photo != photo)
+    {
         m_photo = photo;
-    emit photoChanged();
+        emit photoChanged();
+    }
 }
 
 QString Account::photo()
@@ -84,8 +95,10 @@ QString Account::photo()
 void Account::setregistTime(const QString &registTime)
 {
     if(m_registTime != registTime)
+    {
         m_registTime = registTime;
-    emit registTimeChanged();
+        emit registTimeChanged();
+    }
 }
 
 QString Account::registTime()
@@ -96,8 +109,10 @@ QString Account::registTime()
 void Account::setvehicleOnline(bool vehicleOnline)
 {
     if(m_vehicleOnline != vehicleOnline)
+    {
         m_vehicleOnline = vehicleOnline;
-    emit vehicleOnlineChanged();
+        emit vehicleOnlineChanged();
+    }
 }
 
 bool Account::vehicleOnline()
@@ -108,8 +123,10 @@ bool Account::vehicleOnline()
 void Account::setpcOnline(bool pcOnline)
 {
     if(m_pcOnline != pcOnline)
+    {
         m_pcOnline = pcOnline;
-    emit pcOnlineChanged();
+        emit pcOnlineChanged();
+    }
 }
 
 bool Account::pcOnline()
@@ -120,8 +137,10 @@ bool Account::pcOnline()
 void Account::sethandeldOnline(bool handeldOnline)
 {
     if(m_handeldOnline != handeldOnline)
+    {
         m_handeldOnline = handeldOnline;
-    emit handeldOnlineChanged();
+        emit handeldOnlineChanged();
+    }
 }
 
 bool Account::handeldOnline()
@@ -132,8 +151,10 @@ bool Account::handeldOnline()
 void Account::setpadOnline(bool padOnline)
 {
     if(m_padOnline != padOnline)
+    {
         m_padOnline = padOnline;
-    emit padOnlineChanged();
+        emit padOnlineChanged();
+    }
 }
 
 bool Account::padOnline()
@@ -144,8 +165,10 @@ bool Account::padOnline()
 void Account::setislogin(bool islogin)
 {
     if(m_islogin != islogin)
+    {
         m_islogin = islogin;
-    emit isloginChanged();
+        emit isloginChanged();
+    }
 }
 
 bool Account::islogin()
@@ -155,8 +178,6 @@ bool Account::islogin()
 
 Account::Account()
 {
-    qRegisterMetaType<std::string>("std::string");
-    connect(this, SIGNAL(signalPhotoChanged(std::string)), this, SLOT(slotPhotoChanged(std::string)));
     RCF::init();
 #if POCO_OS == POCO_OS_WINDOWS_NT
     m_t = pc;
@@ -167,76 +188,38 @@ Account::Account()
 #endif
 }
 
-void Account::onPasswordChanged(const std::string &userID, const std::string &password)
-{
-    if(userID == m_userID.toStdString())
-        setpassword(QString::fromStdString(password));
-}
-
-void Account::onUserNicknameChanged(const std::string &userID, const std::string &nickname)
-{
-    if(userID == m_userID.toStdString())
-        setnickname(QString::fromStdString(nickname));
-}
-
-void Account::onUserSignaTureChanged(const std::string &userID, const std::string &signaTure)
-{
-    if(userID == m_userID.toStdString())
-        setsignaTure(QString::fromStdString(signaTure));
-}
-
-void Account::onUserPhotoChanged(const std::string &userID, const std::string &photoBuffer)
+void Account::onAccountChanged(const std::string &userID, const AccountInfo &info)
 {
     if(userID == m_userID.toStdString())
     {
-        ImageProvider::current()->setImage((const unsigned char *)photoBuffer.data(), photoBuffer.size());
-    //    updateAccountInfo(m_userID);
-    //    emit signalPhotoChanged(photoBuffer);
+#if POCO_OS == POCO_OS_WINDOWS_NT
+        setislogin(info.pcOnline);
+#elif POCO_OS == POCO_OS_ANDROID
+        setislogin(info.handeldOnline);
+#elif POCO_OS == POCO_OS_LINUX
+        setislogin(info.vehicleOnline);
+#endif
+        updateAccountInfo(info);
     }
 }
 
-void Account::onUserLoggingStateChanged(const std::string &userID, int terminalType, bool bLogin, bool kickout)
+bool Account::connectServer(const std::string &ip, int interfacePort, int publisherPort)
 {
-    if(userID == m_userID.toStdString())
-    {
-        if(bLogin)
-        {
-
-        }
-    }
-}
-
-bool Account::connectServer(const QString &ip, int port)
-{
-    m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip.toStdString(), port));
+    m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, interfacePort));
     m_client->getClientStub().setAutoReconnect(true);
     m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
     m_subscribServer->start();
 
     RCF::SubscriptionParms subParms;
-    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip.toStdString(), 9999));
-    try
-    {
-        m_subscription = m_subscribServer->createSubscription<AccountNotify>(*this, subParms);
-    }
-    catch ( const RCF::Exception & e )
-    {
-        std::cout << "Error: " << e.getErrorMessage() << std::endl;
-    }
-    try{
-        m_client->getClientStub().ping();
-    }catch(...)
-    {
-        setconnected(false);
-        return false;
-    }
+    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
+    m_subscription = m_subscribServer->createSubscription<AccountNotify>(*this, subParms);
     setconnected(true);
     return true;
 }
 
-bool Account::isUserIDExists(const QString &userID)
+bool Account::isRegisted(const QString &userID)
 {
-    return m_client->isUserIDExists(userID.toStdString());
+    return m_client->isRegisted(userID.toStdString());
 }
 
 bool Account::regist(const QString &userID, const QString &password, const QString &nickname)
@@ -246,10 +229,16 @@ bool Account::regist(const QString &userID, const QString &password, const QStri
 
 bool Account::login(const QString &userID, const QString &password)
 {
-    bool b = m_client->login(userID.toStdString(), password.toStdString(), m_t);
-    if(b)
-        setislogin(true);
-    updateAccountInfo(userID);
+    bool b = false;
+    switch (m_t) {
+    case pc:        b = m_client->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+    case vehicle:   b = m_client->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+    case handheld:  b = m_client->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+    }
+    setislogin(b);
+    AccountInfo info;
+    m_client->getAccountInfo(userID.toStdString(), info);
+    updateAccountInfo(info);
     nb::Singleton<Car>::instance()->updateCar();
     return b;
 }
@@ -258,9 +247,16 @@ bool Account::logout()
 {
     if(!m_islogin)  return false;
 
-    bool b = m_client->logout(m_userID.toStdString(), m_password.toStdString(), m_t, false);
+    bool b = false;
+    switch (m_t) {
+    case pc:        b = m_client->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
+    case vehicle:   b = m_client->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case handheld:  b = m_client->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    }
     setislogin(false);
-    updateAccountInfo(m_userID);
+    AccountInfo info;
+    m_client->getAccountInfo(m_userID.toStdString(), info);
+    updateAccountInfo(info);
     nb::Singleton<Car>::instance()->updateCar();
     return b;
 }
@@ -300,14 +296,7 @@ bool Account::modifyPhoto(const QUrl &file)
     return b;
 }
 
-void Account::slotPhotoChanged(std::string buffer)
-{
-    ImageProvider::current()->setImage((const unsigned char *)buffer.data(), buffer.size());
-    //updateAccountInfo(m_userID);
-    qDebug() << "photo changed, size=" << buffer.size();
-}
-
-void Account::updateAccountInfo(const QString &userID)
+void Account::updateAccountInfo(const AccountInfo &info)
 {
     if(!m_islogin)
     {
@@ -324,24 +313,15 @@ void Account::updateAccountInfo(const QString &userID)
     }
     else
     {
-        std::string sPassword, sNickname, sSignaTure, sPhoto, sRegTime;
-        bool bVehicleOnline, bPCOnline, bHandeldOnline, bPadOnline;
-        try{
-        m_client->getAccountInfo(userID.toStdString(), sPassword, sNickname, sSignaTure, sPhoto, sRegTime, bVehicleOnline, bPCOnline, bHandeldOnline, bPadOnline);
-        }catch(RCF::Exception &e)
-        {
-            std::cout << "Error: " << e.getErrorMessage() << std::endl;
-        }
-
-        setuserID(QString::fromStdString(userID.toStdString()));
-        setpassword(QString::fromStdString(sPassword));
-        setnickname(QString::fromStdString(sNickname));
-        setsignaTure(QString::fromStdString(sSignaTure));
-        ImageProvider::current()->setImage((const unsigned char *)sPhoto.data(), sPhoto.size());
-        setregistTime(QString::fromStdString(sRegTime));
-        setvehicleOnline(bVehicleOnline);
-        setpcOnline(bPCOnline);
-        sethandeldOnline(bHandeldOnline);
-        setpadOnline(bPadOnline);
+        setuserID(QString::fromStdString(info.userID));
+        setpassword(QString::fromStdString(info.password));
+        setnickname(QString::fromStdString(info.nickname));
+        setsignaTure(QString::fromStdString(info.signaTure));
+        ImageProvider::current()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
+        setregistTime(QString::fromStdString(info.registTime));
+        setvehicleOnline(info.vehicleOnline);
+        setpcOnline(info.pcOnline);
+        sethandeldOnline(info.handeldOnline);
+        setpadOnline(info.padOnline);
     }
 }
