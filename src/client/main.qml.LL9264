@@ -21,11 +21,11 @@ Window {
             horizontal: window.width < window.height
             anchors.bottom: parent.bottom
             onNaviTo: {
-                if(page === "me")               pageContainer.source = Account.islogin ? "MePage.qml" : "LoginPage.qml"
+                if(page === "me")               pageContainer.source = "MePage.qml"
                 else if(page === "car")         pageContainer.source = "CarPage.qml"
                 else if(page === "pc")          pageContainer.source = "PCPage.qml"
                 else if(page === "cellphone")   pageContainer.source = "HandledPage.qml"
-                else if(page === "message")     pageContainer.source = "MessagePage.qml"
+                else if(page === "message")     pageContainer.source = "NessagePage.qml"
                 else if(page === "contacts")    pageContainer.source = "ContactsPage.qml"
             }
         }
@@ -39,14 +39,7 @@ Window {
                 id:pageContainer
                 width: parent.width
                 height: parent.height
-                source: "LoginPage.qml"
-            }
-            Connections{
-                target: pageContainer.item
-                onNaviToLogin: pageContainer.source = "LoginPage.qml"
-                onNaviToRegist: pageContainer.source = "RegistPage.qml"
-                onLoginResult: if(success) pageContainer.source = "MePage.qml"
-                onLogout: pageContainer.source = "LoginPage.qml"
+                //source: "PCPage.qml"
             }
 
             Image{
@@ -58,6 +51,10 @@ Window {
          //   RegistPage{ onNaviToLogin: pageContainer.switchPage(6) }
          //   LoginPage{onNaviToRegist: pageContainer.switchPage(7); onNaviToMe: pageContainer.switchPage(6)}
           //  MePage{onNaviToLogin: pageContainer.switchPage(6)}
+           //   CarPage{}
+          //    PCPage{}
+          //  HandledPage{}
+          //  MessagePage{}
 
         }
     }

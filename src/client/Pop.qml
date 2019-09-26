@@ -1,11 +1,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.1
 
-
 Popup {
     property string title: "提示"
     property string content: ""
     property int autohide: 1500
+    property int mode: 0
+
+    signal btnClick(int btn)
 
     id: root
     x: parent.width/2 - root.width/2
@@ -15,7 +17,7 @@ Popup {
     modal: true
     focus: true
     //设置窗口关闭方式为按“Esc”键关闭
-    closePolicy: Popup.OnEscape
+    //closePolicy: Popup.OnEscape
     //设置窗口的背景控件，不设置的话Popup的边框会显示出来
     background: rect
 
@@ -74,19 +76,21 @@ Popup {
             font.pixelSize: 14
             font.bold: true
         }
-
- /*       Label {
+/*
+        Label {
             x: 189
             y: 128
             width: 171
             height: 15
             text: content
         }
-
+*/
         Button {
             x: 103
             y: 204
-            text: "ok"
+            text: "取消"
+            visible: mode == 1
+            font.bold: true
             onClicked: {
                 root.close()
             }
@@ -95,11 +99,13 @@ Popup {
         Button {
             x: 341
             y: 204
-            text: qsTr("cancel")
+            text: qsTr("确定")
+            visible: mode == 1
+            font.bold: true
             onClicked: {
                 root.close()
             }
-        }*/
+        }
     }
 
     function setDlgPoint(dlgX ,dlgY)

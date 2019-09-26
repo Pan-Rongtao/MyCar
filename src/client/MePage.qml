@@ -4,11 +4,10 @@ import QtQuick.Dialogs 1.2
 
 Rectangle{
     id:root
-    width: parent.width
-    height: parent.height
-    color: "#00000000"
+    anchors.fill: parent
+    color: "transparent"
 
-    signal naviToLogin()
+    signal logout()
     property bool bRegist: false
     property int item0Width: 100
     property int item2Width: 80
@@ -40,17 +39,15 @@ Rectangle{
                     width: parent.width;height: 30
                     font.pixelSize: 24;font.bold: true
                     verticalAlignment: Text.AlignVCenter
-                    text: "Pan.瞳"
+                    text: Account.userID
                 }
                 Text {
-                    width: parent.width
-                    height: parent.height - nk.height
+                    width: parent.width; height: parent.height - nk.height
                     font.bold: true; font.pixelSize: 14
                     color: "gray"
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    x:0
                     verticalAlignment: Text.AlignVCenter
-                    text: "该用户很懒，懒得签名！abadafsdgadgadgadgafaoeifhaefaoeihfo"
+                    text: Account.signaTure
                 }
             }
         }
@@ -76,25 +73,19 @@ Rectangle{
 
             Text{ text: "密码："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
             TextField{id:password; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
-            Button{ width: item2Width;height:item0Height ;text:"修改"; onClicked: Account.modifyPassword(password.text) }
+            Button{ width: 30;height:item0Height ; onClicked: Account.modifyPassword(password.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "昵称："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
             TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
-            Button{ width: item2Width;height:item0Height ;text:"修改"; onClicked: Account.modifyNickname(nickname.text) }
+            Button{ width: 30;height:item0Height ; onClicked: Account.modifyNickname(nickname.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "签名："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
-            Button{ width: item2Width;height:item0Height ;text:"修改"; onClicked: Account.modifySignaTure(signaTure.text) }
-
+            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
+            Button{ width: 30;height:item0Height ; onClicked: Account.modifySignaTure(signaTure.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Item{ width: item0Width; height: item0Height  }
-            Rectangle{
-
-            }
-
-            Button{ width: parent.width - item0Width - item2Width; height: 50;
-                text: "退出账号";
-                onClicked: { Account.logout(); switchPage(6) }
+            Button{ width: parent.width - item0Width - item2Width; height: 50; text: "退出账号"; font.bold: true;font.pixelSize: 20
+                onClicked: { Account.logout(); logout() }
             }
         }
     }
@@ -105,8 +96,6 @@ Rectangle{
     {
         id:picChoose
         title: qsTr("选择头像")
-        selectFolder: false
-        selectMultiple: false
         modality: "WindowModal"
         nameFilters: ["图片文件 (*.jpg *.bmp)"]   //png刷新有点问题，不支持png
         onAccepted: {

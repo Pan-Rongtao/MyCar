@@ -1,29 +1,19 @@
 import QtQuick 2.0
 
-Column{
-    signal switchToRegPage()
+Rectangle{
+    id:root
+    anchors.fill: parent
+    color: "transparent"
 
-    width: parent.width
-    height: parent.height
-    Item{width: parent.width; height: 100}
-    spacing: 30
-
-    Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        horizontalAlignment: Text.AlignHCenter
-        width: 80
-        height: 50
-        text: qsTr("我的手机")
-        font.pixelSize: 45
-    }
-    Row{
-        spacing: 10
+    Column{
         width: parent.width
-        Item{id:xx; width: 30;height: txt.height}
-        Row{
-            width: parent.width - xx.width
-            Text{ id:txt; text: "账号："; width: 100; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
+        height: parent.height
+        spacing: 30
+        Text {
+            text: qsTr("我的手机")
+            width: parent.width;height: 100
+            font.pixelSize: 45
+            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
         }
-
     }
 }

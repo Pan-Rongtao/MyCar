@@ -1,10 +1,9 @@
 import QtQuick 2.0
 
 Column{
+    anchors.fill: parent
     signal switchToRegPage()
 
-    width: parent.width
-    height: parent.height
     Item{width: parent.width; height: 100}
     spacing: 30
 

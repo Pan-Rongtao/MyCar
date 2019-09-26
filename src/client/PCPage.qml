@@ -1,49 +1,43 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 
-Column{
-    signal switchToRegPage()
+Rectangle{
+    id:root
+    anchors.fill: parent
+    color: "transparent"
 
-    width: parent.width
-    height: parent.height
-    Item{width: parent.width; height: 100}
-    spacing: 30
-
-    Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-        horizontalAlignment: Text.AlignHCenter
-        width: 80
-        height: 50
-        text: qsTr("我的电脑")
-        font.pixelSize: 45
-    }
-    Row{
-        spacing: 10
+    Column{
         width: parent.width
-        Item{id:xx; width: 30;height: txt.height}
+        height: parent.height
+        spacing: 30
+        Text {
+            text: qsTr("我的电脑")
+            width: parent.width;height: 100
+            font.pixelSize: 45
+            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+        }
+
         Row{
-            width: parent.width - xx.width
-            Text{ id:txt; text: "在线状态："; width: 100; font.pixelSize:20; verticalAlignment: Text.AlignVCenter }
-            Image{
-                width: 30
-                height: 30
-                source: Account.pcOnline ? "images/yes.png" : "images/cancel.png"
+            spacing: 10
+            width: parent.width; height: 30
+            Item{width: 30;height: parent.height}
+            Row{
+                width: 80
+                Text{ text: "在线状态："; width: 100; height: parent.height; font.pixelSize:20; verticalAlignment: Text.AlignVCenter }
+                Image{ width: 30;height: 30; source: Account.pcOnline ? "images/yes.png" : "images/cancel.png" }
             }
+
         }
 
+        Row{
+            spacing: 10
+            width: parent.width; height: 50
+            Item{ width: (parent.width - btn.width) / 2; height: parent.height}
+            Button{ id:btn; width: 200; height: 50; text: "关机"; onClicked: pop.open(); }
+        }
     }
-    Row{
-        spacing: 10
-        width: parent.width
-        Item{ width: 30;height: txt.height}
-        Button{
-            width: 200
-            height: 50
-            text: "关机"
-            onClicked: {
 
-            }
-        }
-
+    Pop{id:pop; autohide : 100000; mode:1; content: "该操作将关闭您的远程计算机，确定要这么做么？"
+        onBtnClick:  if(btn === 1);
     }
 }

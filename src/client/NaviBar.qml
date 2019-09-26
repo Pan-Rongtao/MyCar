@@ -7,7 +7,7 @@ Item{
     width: parent.width
     height: parent.height
 
-    signal naviTo(int page);
+    signal naviTo(string page);
     property bool horizontal : false
     property int itemCount: 6
 
@@ -28,7 +28,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(0)
+            onClicked: naviTo("me")
         }
 
         ImageButton{
@@ -39,7 +39,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(1)
+            onClicked: naviTo("car")
         }
 
         ImageButton{
@@ -50,7 +50,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(2)
+            onClicked: naviTo("pc")
         }
 
         ImageButton{
@@ -61,7 +61,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(3)
+            onClicked: naviTo("cellphone")
         }
 
         ImageButton{
@@ -72,7 +72,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(4)
+            onClicked: naviTo("message")
         }
 
         ImageButton{
@@ -83,7 +83,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
-            onClicked: naviTo(5)
+            onClicked: naviTo("contacts")
         }
     }
 }

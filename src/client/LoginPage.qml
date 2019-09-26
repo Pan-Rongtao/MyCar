@@ -4,12 +4,11 @@ import Qt.labs.settings 1.0
 
 Rectangle{
     id:root
-    width: parent.width
-    height: parent.height
-    color: "#00000000"
+    anchors.fill: parent
+    color: "transparent"
 
     signal naviToRegist()
-    signal naviToMe()
+    signal loginResult(bool success)
     property int item0Width: 100
     property int item2Width: 80
     property int item0Height: 30
@@ -63,7 +62,7 @@ Rectangle{
             Button{
                 width: parent.width - item0Width - item2Width; height: 50
                 text: "登录"; font.bold: true; font.pixelSize: 28
-                onClicked:  if(login()) naviToMe()
+                onClicked:  loginResult(login())
             }
             Rectangle{width: item2Width;height: item0Height}
 

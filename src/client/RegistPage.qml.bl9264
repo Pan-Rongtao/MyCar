@@ -109,6 +109,6 @@ Rectangle{
     }
 
 
-    Pop{ id:pop; onClosed: { userID.focus = true; if(bRegist) naviToLogin() } }
+    Pop{ id:pop; onClosed: { userID.focus = true; if(bRegist) switchPage(6) } }
     Component.onCompleted: userID.focus = true
 }
