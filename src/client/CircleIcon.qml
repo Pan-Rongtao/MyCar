@@ -7,7 +7,6 @@ Rectangle {
 
     id:root
     radius: width / 2
-    border.color: "green"
     Image {
         id: _image
         smooth: true

@@ -4,19 +4,45 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
 
 Window {
-    id:w
+    id:window
     visible: true
-    width: 1080
+    width: 400
     height: 720
+    minimumWidth: 400
+    minimumHeight: 720
     title: "svcar:  [" + (Account.connected ? "connected" : "disconnected") + "]"
 
-    NaviBar{
-        id:bar
-        width: parent.width * (1.5/5)
-        visible: true
-        onSwitchPage: pages.switchPage(page)
+    Rectangle{
+        anchors.fill: parent
+        NaviBar{
+            id:bar
+            width: horizontal ? window.width : window.width * 0.2
+            height: horizontal ? window.height * 0.2 : window.height
+            horizontal: window.width < window.height
+            anchors.bottom: parent.bottom
+            onNaviTo: pageContainer.switchPage(page)
+        }
+
+        Item{
+            id:pageContainer
+            width: bar.horizontal ? window.width : window.width - bar.width
+            height: bar.horizontal ? window.height - bar.height : window.height
+            anchors.left: bar.horizontal ? parent.left : bar.right
+
+            Image{
+                width:parent.width
+                height: parent.height
+                source: "images/bg.jpg"
+                opacity: 0.3
+            }
+         //   RegistPage{ onNaviToLogin: pageContainer.switchPage(6) }
+         //   LoginPage{onNaviToRegist: pageContainer.switchPage(7); onNaviToMe: pageContainer.switchPage(6)}
+            MePage{}
+        }
     }
 
+
+/*
     Item
     {
         id:pages
@@ -67,5 +93,5 @@ Window {
     }
 
     Component.onDestruction: Account.logout(Account.userID, Account.password)
-
+*/
 }

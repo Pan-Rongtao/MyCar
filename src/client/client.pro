@@ -2,7 +2,6 @@ TEMPLATE = app
 
 QT += qml quick
 CONFIG += c++14 resources_big
-QT_IM_MODULE=qtvirtualkeyboard
 
 HEADERS += \
     Account.h \

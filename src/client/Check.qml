@@ -1,8 +1,7 @@
 import QtQuick 2.0
 
-Item {
+Rectangle {
     id:root
-    //-1:emptyState, 0:not pass, 1:pass
     property int state: -1
     property string emptyTip: ""
     property string refuseTip: ""
@@ -10,7 +9,7 @@ Item {
 
     Image{
         id:img
-        source: "img/NewModelPage/yes.png"
+        source: "images/yes.png"
         width: 30
         height: 30
         visible: root.state===1
@@ -19,16 +18,12 @@ Item {
     Text{
         id:txt
         visible: text!==""
+        width: parent.width
+        height: parent.height
         verticalAlignment: Text.AlignHCenter
+        font.bold: true
         color: "red"
     }
 
-    onStateChanged: {
-        if(state == -1)
-            txt.text = emptyTip
-        else if(state == 0)
-            txt.text = refuseTip
-        else
-            txt.text = ""
-    }
+    onStateChanged: txt.text = state == -1 ? emptyTip : (state == 0 ? refuseTip : "")
 }

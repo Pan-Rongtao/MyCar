@@ -50,7 +50,6 @@ std::string getLocalIp()
 int main(int argc, char *argv[])
 {
     try{
-        qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
         QGuiApplication app(argc, argv);
         app.setOrganizationName("Some Company");
         app.setOrganizationDomain("somecompany.com");

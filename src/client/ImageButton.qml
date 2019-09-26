@@ -28,7 +28,7 @@ Rectangle {
 
     width: 80; height: 60
     color: mouseArea.pressed?pressedColor:releaseColor
-    border.width: 0
+    border.width: 1
     border.color: mouseArea.pressed?pressdBorderColor:borderColor
     focus : true
     radius: btRadius

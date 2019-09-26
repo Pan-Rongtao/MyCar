@@ -27,7 +27,7 @@ Column{
             Image{
                 width: 30
                 height: 30
-                source: Account.pcOnline ? "img/NewModelPage/yes.png" : "img/Clock/cancel.png"
+                source: Account.pcOnline ? "images/yes.png" : "images/cancel.png"
             }
         }
 
