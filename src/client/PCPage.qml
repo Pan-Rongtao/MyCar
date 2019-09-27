@@ -12,8 +12,8 @@ Rectangle{
         spacing: 30
         Text {
             text: qsTr("我的电脑")
-            width: parent.width;height: 100
-            font.pixelSize: 45
+            width: parent.width;height: 80
+            font.pixelSize: 32
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
         }
 

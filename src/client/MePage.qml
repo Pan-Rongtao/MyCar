@@ -20,15 +20,18 @@ Rectangle{
 
         Row{
             id:head
-            width: parent.width; height: 100
+            width: parent.width; height: 80
             spacing: 10
             CircleIcon{
                 id:photo
-                width: 90; height: 90; source: "images/icon.jpg"
+                width: 90; height: 90; //source: "images/icon.jpg"
                 onImgClick: { picChoose.open() }
                 Connections{
                     target:ImageProvider
                     onRefreshImage: {photo.source=""; photo.source="image://ImgProvider"}
+                }
+                Component.onCompleted: {
+                    photo.source=""; photo.source="image://ImgProvider"
                 }
             }
             Column{
@@ -39,7 +42,7 @@ Rectangle{
                     width: parent.width;height: 30
                     font.pixelSize: 24;font.bold: true
                     verticalAlignment: Text.AlignVCenter
-                    text: Account.userID
+                    text: Account.nickname
                 }
                 Text {
                     width: parent.width; height: parent.height - nk.height
@@ -99,7 +102,7 @@ Rectangle{
         modality: "WindowModal"
         nameFilters: ["图片文件 (*.jpg *.bmp)"]   //png刷新有点问题，不支持png
         onAccepted: {
-            if(!Account.modifyPhoto(fileChoose.fileUrl))
+            if(!Account.modifyPhoto(picChoose.fileUrl))
             {
                 pop.content = "修改头像失败，请注意图片大小应该小于256kb"
                 pop.open()

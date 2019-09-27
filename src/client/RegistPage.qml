@@ -20,8 +20,8 @@ Rectangle{
             id:head
             text: qsTr("注册")
             width: parent.width
-            height: 100
-            font.pixelSize: 45
+            height: 80
+            font.pixelSize: 32
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

@@ -12,6 +12,7 @@ Rectangle{
     property int item0Width: 100
     property int item2Width: 80
     property int item0Height: 30
+    property bool loginSuccess: false
 
     Column{
         width: parent.width
@@ -21,8 +22,8 @@ Rectangle{
             id:head
             text: qsTr("登录")
             width: parent.width
-            height: 100
-            font.pixelSize: 45
+            height: 80
+            font.pixelSize: 32
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -62,7 +63,7 @@ Rectangle{
             Button{
                 width: parent.width - item0Width - item2Width; height: 50
                 text: "登录"; font.bold: true; font.pixelSize: 28
-                onClicked:  loginResult(login())
+                onClicked: login()
             }
             Rectangle{width: item2Width;height: item0Height}
 
@@ -80,7 +81,7 @@ Rectangle{
         }
     }
 
-    Pop{ id:pop; onClosed: userID.focus = true }
+    Pop{ id:pop; onClosed: {userID.focus = true; loginResult(loginSuccess)}}
 
     Component.onCompleted: userID.focus = true
     Component.onDestruction: {
@@ -90,10 +91,9 @@ Rectangle{
 
     function login()
     {
-        var b = Account.login(userID.text, password.text)
-        pop.content = b ? "登陆成功" : "账号密码错误"
+        loginSuccess = Account.login(userID.text, password.text)
+        pop.content = loginSuccess ? "登陆成功，正在加载..." : "账号密码错误"
         pop.open()
-        return b;
     }
 
     Settings{ id:setting; property string saveUseID: ""; property string savePassword: "" }

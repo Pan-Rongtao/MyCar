@@ -29,5 +29,9 @@
         <file>images/notes.png</file>
         <file>CircularProgress.qml</file>
         <file>Dial.qml</file>
+        <file>images/line.png</file>
+        <file>images/add.png</file>
+        <file>images/add_p.png</file>
+        <file>Users.qml</file>
     </qresource>
 </RCC>

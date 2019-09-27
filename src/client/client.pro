@@ -7,12 +7,16 @@ HEADERS += \
     Account.h \
     Singleton.h \
     ImageProvider.h \
-    Car.h
+    Car.h \
+    Contacts.h \
+    Users.h
 
 SOURCES += main.cpp \
 	Account.cpp \
     ImageProvider.cpp \
-    Car.cpp
+    Car.cpp \
+    Contacts.cpp \
+    Users.cpp
 
 RESOURCES += qml.qrc
 
