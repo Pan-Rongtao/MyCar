@@ -8,6 +8,7 @@ Rectangle{
     color: "transparent"
 
     property int item0Width: 50
+    property int removeIndex: -1
 
     Column{
         id:cotactsLayout
@@ -84,12 +85,33 @@ Rectangle{
                     }
                 }
 
+                Menu{
+                    id: menu
+                    width: parent.width
+                    MenuItem {
+                        id: menuItem1
+                        height: bkg.height
+                        contentItem: Text {
+                            id: text1
+                            text: "删除"
+                            font.bold: true;font.pixelSize: 18
+                            anchors.fill: parent
+                            opacity: enabled ? 1.0 : 0.3
+                            color: menuItem1.down ? "#AA0000" : "#148014"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onTriggered: Contacts.remove(removeIndex)
+                    }
+                }
                 MouseArea{
                     anchors.fill: bkg
                     onPressed: bkg.color = "#33003300"
                     onReleased:  bkg.color = "transparent"
                     onCanceled:  bkg.color = "transparent"
+                    onPressAndHold: {removeIndex = index; menu.open()}
                 }
+
             }
         }
     }
@@ -102,5 +124,6 @@ Rectangle{
         visible: false
         onFinished: visible = false
     }
+
 
 }

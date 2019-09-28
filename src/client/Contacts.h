@@ -23,8 +23,6 @@ public:
     Contacts();
 
     QList<CantactItem> &items();
-    void addFromUserList();
-
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
@@ -32,6 +30,8 @@ public:
 signals:
 
 public slots:
+    void addFromUserList(const QList<int> &indexs);
+    void remove(int index);
 
 
 private:

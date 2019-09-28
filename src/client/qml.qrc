@@ -33,5 +33,6 @@
         <file>images/add.png</file>
         <file>images/add_p.png</file>
         <file>Users.qml</file>
+        <file>images/trash.png</file>
     </qresource>
 </RCC>

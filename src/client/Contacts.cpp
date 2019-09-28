@@ -10,6 +10,16 @@ QList<CantactItem> &Contacts::items()
     return m_list;
 }
 
+void Contacts::addFromUserList(const QList<int> &indexs)
+{
+
+}
+
+void Contacts::remove(int index)
+{
+
+}
+
 int Contacts::rowCount(const QModelIndex &parent) const
 {
     return m_list.size();

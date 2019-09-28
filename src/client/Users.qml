@@ -7,6 +7,7 @@ Rectangle {
     signal finished()
     //color: "red"
     radius: 5
+    property var checkItems: []
 
     Image{
         anchors.fill: parent
@@ -38,52 +39,68 @@ Rectangle {
     }
     Button{id:ok;text: "确定"; anchors.horizontalCenter: parent.horizontalCenter;
         anchors.bottom: parent.bottom; anchors.bottomMargin: 20; anchors.horizontalCenterOffset: 80
-        onClicked: finished()
+        onClicked: {
+            Contacts.addFromUserList(checkItems)
+            finished()
+            }
     }
 
     Component{
         id:dlg
-            Rectangle{
-                id:bkg;radius: 5
-                width: list.width;height: 40
-                color: "transparent"
-                Column{
-                    width: list.width;height: parent.height
-                    Row{
-                        width: list.width;height: parent.height - line.height
-                        spacing: 30
-                        Text{
-                            id:img;width: height;height: parent.height
-                            font.pixelSize: 20; font.bold: true
-                            verticalAlignment: Text.AlignVCenter
-                            text:userID
-                        }
-                        Text{
-                            width: parent.width - img.width - check.width - 60; height: img.height
-                            font.pixelSize: 20; font.bold: true
-                            verticalAlignment: Text.AlignVCenter
-                            text:nickname
-                        }
-                        CheckBox{
-                            id:check
-                            width: 30;height: 30
-                        }
+        Rectangle{
+            id:bkg;radius: 5
+            width: list.width;height: 40
+            color: "transparent"
+            Column{
+                width: list.width;height: parent.height
+                Row{
+                    width: list.width;height: parent.height - line.height
+                    spacing: 30
+                    Text{
+                        id:img;width: height;height: parent.height
+                        font.pixelSize: 20; font.bold: true
+                        verticalAlignment: Text.AlignVCenter
+                        text:userID
                     }
-                    Image{
-                        id:line
-                        width: parent.width;height: 1
-                        source: "/images/line.png"
+                    Text{
+                        width: parent.width - img.width - check.width - 60; height: img.height
+                        font.pixelSize: 20; font.bold: true
+                        verticalAlignment: Text.AlignVCenter
+                        text:nickname
+                    }
+                    CheckBox{
+                        id:check
+                        width: 30;height: 30
                     }
                 }
+                Image{
+                    id:line
+                    width: parent.width;height: 1
+                    source: "/images/line.png"
+                }
+            }
 
-                MouseArea{
-                    anchors.fill: bkg
-                    onPressed: bkg.color = "#33003300"
-                    onReleased:  bkg.color = "transparent"
-                    onCanceled:  bkg.color = "transparent"
-                    onClicked: check.checked = !check.checked
+            MouseArea{
+                anchors.fill: bkg
+                onPressed: bkg.color = "#33003300"
+                onReleased:  bkg.color = "transparent"
+                onCanceled:  bkg.color = "transparent"
+                onClicked: {
+                    check.checked = !check.checked
+                    if(check.checked)
+                        checkItems.push(index)
+                    else
+                        checkItems.splice(checkItems.indexOf(index), 1)
+                }
+            }
+            Connections{
+                target: list
+                onVisibleChanged: {
+                    check.checked=false
+                    checkItems=[]
                 }
             }
         }
+    }
 
 }

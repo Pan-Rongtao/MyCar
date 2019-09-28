@@ -79,11 +79,11 @@ Rectangle{
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyPassword(password.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "昵称："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
+            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; }
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyNickname(nickname.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "签名："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
+            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; }
             Button{ width: 30;height:item0Height ; onClicked: Account.modifySignaTure(signaTure.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Item{ width: item0Width; height: item0Height  }
