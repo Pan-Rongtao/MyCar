@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <QFile>
 #include <iostream>
-#include "Poco/Platform.h"
 #include "ImageProvider.h"
 #include "Singleton.h"
 #include "Car.h"
@@ -179,11 +178,11 @@ bool Account::islogin()
 Account::Account()
 {
     RCF::init();
-#if POCO_OS == POCO_OS_WINDOWS_NT
+#if defined(Q_OS_WIN)
     m_t = pc;
-#elif POCO_OS == POCO_OS_ANDROID
+#elif defined(Q_OS_ANDROID)
     m_t = handheld;
-#elif POCO_OS == POCO_OS_LINUX
+#elif defined(Q_OS_LINUX)
     m_t = vehicle;
 #endif
 }
@@ -192,11 +191,11 @@ void Account::onAccountChanged(const std::string &userID, const AccountInfo &inf
 {
     if(userID == m_userID.toStdString())
     {
-#if POCO_OS == POCO_OS_WINDOWS_NT
+#if defined(Q_OS_WIN)
         setislogin(info.pcOnline);
-#elif POCO_OS == POCO_OS_ANDROID
+#elif defined(Q_OS_ANDROID)
         setislogin(info.handeldOnline);
-#elif POCO_OS == POCO_OS_LINUX
+#elif defined(Q_OS_LINUX)
         setislogin(info.vehicleOnline);
 #endif
         updateAccountInfo(info);

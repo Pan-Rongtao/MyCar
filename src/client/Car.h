@@ -1,10 +1,6 @@
 #ifndef CAR_H
 #define CAR_H
 
-
-#define WIN32_WINNT 0x60
-#define WIN32_LEAN_AND_MEAN
-
 #include <QObject>
 #include <RCF/RCF.hpp>
 #include "server/Car.h"

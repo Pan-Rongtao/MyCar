@@ -1,53 +1,17 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include <Poco/Util/IniFileConfiguration.h>
-#include <Poco/Net/TCPServer.h>
+#include <QDateTime>
+#include <QDebug>
+#include "Share.h"
 #include "Account.h"
 #include "Car.h"
 #include "Singleton.h"
 #include "ImageProvider.h"
 #include "Contacts.h"
 #include "Users.h"
-
-using namespace Poco;
-using namespace Poco::Util;
-#define CONFIGURE_FILE_PATH		"client.conf"
-
-std::string getLocalIp()
-{
-#ifdef WIN32
-    WSADATA Data;
-    WSAStartup(MAKEWORD(1, 1), &Data);
-    char hostName[256] = { 0 };
-    gethostname(hostName, sizeof(hostName));
-    PHOSTENT hostinfo;
-    hostinfo = gethostbyname(hostName);
-    std::string ip = inet_ntoa(*(struct in_addr*)*hostinfo->h_addr_list);
-    WSACleanup();
-    return ip;
-#else
-    auto getDeviceIp = [](const std::string &sDev)->std::string {
-        char ip[80] = { 0 };
-        struct ifreq ifr;
-        int sk = socket(AF_INET, SOCK_DGRAM, 0);
-        strcpy(ifr.ifr_name, sDev.data());
-        if (ioctl(sk, SIOCGIFADDR, &ifr) == 0)
-            strcpy(ip, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-        close(sk);
-        return ip;
-    };
-#if POCO_ARCH == ARM
-    auto eth = getDeviceIp("eth1");
-    if(!eth.empty())
-        return eth;
-    else
-        return getDeviceIp("mlan0");
-#else
-    return getDeviceIp("ens160");
-#endif
-#endif
-}
+#include "MessageList.h"
+#include "Chat.h"
 
 int main(int argc, char *argv[])
 {
@@ -57,23 +21,20 @@ int main(int argc, char *argv[])
         app.setOrganizationDomain("somecompany.com");
         app.setApplicationName("Amazing Application");
 
-        std::string ip = getLocalIp();
+        std::string ip = nb::Singleton<Share>::instance()->getLocalIp();
         auto interfacePort = 8888;
         auto publisherPort = 9999;
-        try {
-            Poco::AutoPtr<IniFileConfiguration> ini = new IniFileConfiguration(CONFIGURE_FILE_PATH);
-            ip = ini->getString("ip");
-        }
-        catch (...) {}
-        nb::Singleton<Account>::instance()->connectServer(getLocalIp(), interfacePort, publisherPort);
-        nb::Singleton<Car>::instance()->connectServer(getLocalIp(), interfacePort, publisherPort);
-        printf("connected to [%s:%d, %d].\n", ip.data(), interfacePort, publisherPort);
+        nb::Singleton<Account>::instance()->connectServer(ip, interfacePort, publisherPort);
+        nb::Singleton<Car>::instance()->connectServer(ip, interfacePort, publisherPort);
+        qDebug() << "connected to [" << QString::fromStdString(ip) << ":" << interfacePort << "," << publisherPort << "]";
 
         QQmlApplicationEngine engine;
         engine.rootContext()->setContextProperty("Account", nb::Singleton<Account>::instance());
+        engine.rootContext()->setContextProperty("Car", nb::Singleton<Car>::instance());
         engine.rootContext()->setContextProperty("Contacts", nb::Singleton<Contacts>::instance());
         engine.rootContext()->setContextProperty("Users", nb::Singleton<Users>::instance());
-        engine.rootContext()->setContextProperty("Car", nb::Singleton<Car>::instance());
+        engine.rootContext()->setContextProperty("MessageList", nb::Singleton<MessageList>::instance());
+        engine.rootContext()->setContextProperty("Chat", nb::Singleton<Chat>::instance());
         engine.rootContext()->setContextProperty("ImageProvider", ImageProvider::current());
         engine.addImageProvider("ImgProvider", ImageProvider::current());
 
@@ -86,12 +47,23 @@ int main(int argc, char *argv[])
         nb::Singleton<Users>::instance()->items().append(UserItem("2", "b"));
         nb::Singleton<Users>::instance()->items().append(UserItem("3", "c"));
         nb::Singleton<Users>::instance()->items().append(UserItem("4", "d"));
+
+        nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
+        nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
+        nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
+        nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
+
+        nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "000000", QTime::currentTime().toString(), false));
+        nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "111", QTime::currentTime().toString(), false));
+        nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "222", QTime::currentTime().toString(), false));
+        nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "hello1472347329eua4urq983ruq89y3tq98eur9q83y9rq8y39rqy9weyrq9wyr9qy39y34q9yr9", QTime::currentTime().toString(), true));
+
+
         engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
         return app.exec();
     }
     catch (RCF::Exception &e)	{ printf("a RCF::Exception occur: %s\n", e.what()); }
-    catch (Poco::Exception &e)	{ printf("a Poco::Exception occur: %s\n", e.what()); }
     catch (std::exception &e)	{ printf("a std::exception occur: %s\n", e.what()); }
     catch (...)					{ printf("unknown exception\n"); }
 }

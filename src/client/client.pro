@@ -9,14 +9,20 @@ HEADERS += \
     ImageProvider.h \
     Car.h \
     Contacts.h \
-    Users.h
+    Users.h \
+    MessageList.h \
+    Chat.h \
+    Share.h
 
 SOURCES += main.cpp \
 	Account.cpp \
     ImageProvider.cpp \
     Car.cpp \
     Contacts.cpp \
-    Users.cpp
+    Users.cpp \
+    MessageList.cpp \
+    Chat.cpp \
+    Share.cpp
 
 RESOURCES += qml.qrc
 
@@ -26,34 +32,19 @@ INCLUDEPATH += \
     $$uit_dist/include
 
 win32{
-	LIBS += -L$$uit_dist/lib/debug \
-	-L../../3rdparty/lib/win32/debug \
-	-luit_core \
-	-lPocoFoundationd \
-	-lPocoJSONd \
+        LIBS += -L../../3rdparty/lib/win32/debug \
 	-lRcfLib
 }
 
 unix{
     contains(QT_ARCH, arm) {
-            LIBS += -L$$uit_dist/lib \
-            -L../../3rdparty/lib/linux-arm \
-            -luit_core \
-            -lPocoFoundation \
-            -lPocoJSON \
+            LIBS += -L../../3rdparty/lib/linux-arm \
             -lRcfLib \
             -lpthread \
             -luuid \
             -ldl
     }else{
-            LIBS += -L$$uit_dist/lib \
-            -L../../3rdparty/lib/linux-x11 \
-            -luit_core \
-            -lPocoFoundation \
-            -lPocoJSON \
-            -lPocoNet \
-            -lPocoUtil \
-            -lPocoXML \
+            LIBS += -L../../3rdparty/lib/linux-x11 \
             -lRcfLib \
             -lpthread \
             -luuid \

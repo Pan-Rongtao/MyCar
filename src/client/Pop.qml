@@ -24,7 +24,7 @@ Popup {
     Rectangle {
         id: rect
         anchors.fill: parent
-        color: "SandyBrown"
+        color: "orange"
         border.width: 2
         opacity: 1
         radius: 8

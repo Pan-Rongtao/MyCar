@@ -47,6 +47,7 @@ Window {
                 onNaviToRegist: pageContainer.source = "RegistPage.qml"
                 onLoginResult: if(success) pageContainer.source = "MePage.qml"
                 onLogout: pageContainer.source = "LoginPage.qml"
+                onEnterChat: {pageContainer.source = "ChatPage.qml"}
             }
 
             Image{
@@ -54,6 +55,7 @@ Window {
                 height: parent.height
                 source: "images/bg.jpg"
                 opacity: 0.3
+                visible: false
             }
          //   RegistPage{ onNaviToLogin: pageContainer.switchPage(6) }
          //   LoginPage{onNaviToRegist: pageContainer.switchPage(7); onNaviToMe: pageContainer.switchPage(6)}
@@ -115,4 +117,5 @@ Window {
 
     Component.onDestruction: Account.logout(Account.userID, Account.password)
 */
+    Component.onDestruction: Account.logout(Account.userID, Account.password)
 }

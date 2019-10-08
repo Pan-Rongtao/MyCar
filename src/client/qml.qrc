@@ -34,5 +34,6 @@
         <file>images/add_p.png</file>
         <file>Users.qml</file>
         <file>images/trash.png</file>
+        <file>ChatPage.qml</file>
     </qresource>
 </RCC>

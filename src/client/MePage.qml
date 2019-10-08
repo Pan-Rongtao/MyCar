@@ -47,6 +47,7 @@ Rectangle{
                 Text {
                     width: parent.width; height: parent.height - nk.height
                     font.bold: true; font.pixelSize: 14
+                    x:10
                     color: "gray"
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     verticalAlignment: Text.AlignVCenter
