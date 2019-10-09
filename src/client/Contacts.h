@@ -7,11 +7,13 @@
 class CantactItem
 {
 public:
-    CantactItem(const QString &_nickname, const QString &_photo)
-        : nickname(_nickname)
+    CantactItem(const QString &_userID, const QString &_nickname, const QString &_photo)
+        : userID(_userID)
+        , nickname(_nickname)
         , photo(_photo)
     {}
 
+    QString userID;
     QString nickname;
     QString photo;
 };
@@ -32,6 +34,7 @@ signals:
 public slots:
     void addFromUserList(const QList<int> &indexs);
     void remove(int index);
+    void update();
 
 
 private:

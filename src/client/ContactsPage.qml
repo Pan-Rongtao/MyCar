@@ -7,7 +7,7 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    property int item0Width: 50
+    property int item0Width: 20
     property int removeIndex: -1
 
     Column{
@@ -69,7 +69,7 @@ Rectangle{
                         spacing: 30
                         Image{
                             id:img;width: height;height: parent.height
-                            source: "file:///" + photo
+                            source: "file:" + photo
                         }
                         Text{
                             width: parent.width - img.width; height: img.height
@@ -117,13 +117,22 @@ Rectangle{
     }
 
 
-    Users{
+    UsersPage{
         id:userlist
         anchors.fill: parent
         anchors.margins: 25
         visible: false
         onFinished: visible = false
+        onVisibleChanged:
+        {
+            if(visible)
+                Users.query()
+            else
+                Contacts.update()
+        }
+
     }
 
+    Component.onCompleted:    Contacts.update()
 
 }

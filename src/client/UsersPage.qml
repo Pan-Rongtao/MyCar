@@ -40,6 +40,7 @@ Rectangle {
     Button{id:ok;text: "确定"; anchors.horizontalCenter: parent.horizontalCenter;
         anchors.bottom: parent.bottom; anchors.bottomMargin: 20; anchors.horizontalCenterOffset: 80
         onClicked: {
+            checkItems.sort()
             Contacts.addFromUserList(checkItems)
             finished()
             }
@@ -56,11 +57,9 @@ Rectangle {
                 Row{
                     width: list.width;height: parent.height - line.height
                     spacing: 30
-                    Text{
+                    Image{
                         id:img;width: height;height: parent.height
-                        font.pixelSize: 20; font.bold: true
-                        verticalAlignment: Text.AlignVCenter
-                        text:userID
+                        source: "file:" + photo
                     }
                     Text{
                         width: parent.width - img.width - check.width - 60; height: img.height

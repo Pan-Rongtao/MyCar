@@ -263,7 +263,7 @@ void Car::onCarChanged(const std::string &userID, CarInfo &info)
 
 void Car::updateCar()
 {
-    if(nb::Singleton<Account>::instance()->islogin())
+    if(nb::Singleton<Account>::instance()->islogin() && m_client)
     {
         CarInfo info;
         m_client->getCarInfo(nb::Singleton<Account>::instance()->userID().toStdString(), info);

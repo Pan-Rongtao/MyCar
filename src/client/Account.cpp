@@ -229,16 +229,23 @@ bool Account::regist(const QString &userID, const QString &password, const QStri
 bool Account::login(const QString &userID, const QString &password)
 {
     bool b = false;
-    switch (m_t) {
-    case pc:        b = m_client->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
-    case vehicle:   b = m_client->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
-    case handheld:  b = m_client->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+    try{
+        switch (m_t) {
+        case pc:        b = m_client->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+        case vehicle:   b = m_client->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case handheld:  b = m_client->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+        }
+        setislogin(b);
+        AccountInfo info;
+        m_client->getAccountInfo(userID.toStdString(), info);
+        updateAccountInfo(info);
+        nb::Singleton<Car>::instance()->updateCar();
     }
-    setislogin(b);
-    AccountInfo info;
-    m_client->getAccountInfo(userID.toStdString(), info);
-    updateAccountInfo(info);
-    nb::Singleton<Car>::instance()->updateCar();
+    catch(RCF::Exception &e)
+    {
+        qDebug() << e.what();
+    }
+
     return b;
 }
 
@@ -258,6 +265,11 @@ bool Account::logout()
     updateAccountInfo(info);
     nb::Singleton<Car>::instance()->updateCar();
     return b;
+}
+
+void Account::getInfo(const QString &userID, AccountInfo &info)
+{
+    m_client->getAccountInfo(userID.toStdString(), info);
 }
 
 bool Account::modifyPassword(const QString &password)
@@ -293,6 +305,31 @@ bool Account::modifyPhoto(const QUrl &file)
     }
     f.close();
     return b;
+}
+
+void Account::queryAllAccount(std::vector<AccountInfo> &infos)
+{
+    m_client->queryAllAccountInfo(infos);
+}
+
+bool Account::addContacts(const QString &userID, const QString &friendID)
+{
+    return m_client->addContacts(userID.toStdString(), friendID.toStdString());
+}
+
+bool Account::removeContacts(const QString &userID, const QString &friendID)
+{
+    return m_client->removeContacts(userID.toStdString(), friendID.toStdString());
+}
+
+bool Account::getContacts(const QString &userID, std::vector<std::string> &friends)
+{
+    try{
+        return m_client->getContacts(userID.toStdString(), friends);
+    }catch(RCF::Exception &e)
+    {
+        qDebug() << e.what();
+    }
 }
 
 void Account::updateAccountInfo(const AccountInfo &info)

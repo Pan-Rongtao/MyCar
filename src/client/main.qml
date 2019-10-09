@@ -118,4 +118,14 @@ Window {
     Component.onDestruction: Account.logout(Account.userID, Account.password)
 */
     Component.onDestruction: Account.logout(Account.userID, Account.password)
+
+    Pop{
+        id:pop
+        width: parent.width
+        height: parent.height
+        content: "服务器已断开"
+        visible: false//!Account.connected
+        autohide: 2000000000
+    }
+
 }

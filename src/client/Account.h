@@ -86,10 +86,15 @@ public slots:
     bool regist(const QString &userID, const QString &password, const QString &nickname);
     bool login(const QString &userID, const QString &password);
     bool logout();
+    void getInfo(const QString &userID, AccountInfo &info);
     bool modifyPassword(const QString &password);
     bool modifyNickname(const QString &nickname);
     bool modifySignaTure(const QString &signaTure);
     bool modifyPhoto(const QUrl &file);
+    void queryAllAccount(std::vector<AccountInfo> &infos);
+    bool addContacts(const QString &userID, const QString &friendID);
+    bool removeContacts(const QString &userID, const QString &friendID);
+    bool getContacts(const QString &userID, std::vector<std::string> &friends);
 
 private:
     enum TerminalType

@@ -14,15 +14,9 @@ class UIT_API AccountStub
 public:
 	static AccountStub *instance();
 
-	//注册一个账号
+	//账号相关
 	bool regist(const std::string &userID, const std::string &password, const std::string &nickname);
-	//账号是否已经存在
 	bool isRegisted(const std::string &userID);
-
-	//登录
-	bool login(const std::string &userID, const std::string &password, int terminalType);
-	bool logout(const std::string &userID, const std::string & password, int terminalType, bool kickout = false);
-
 	void setPassword(const std::string &userID, const std::string &password);
 	void setNickname(const std::string &userID, const std::string &nickname);
 	void setSignaTure(const std::string &userID, const std::string &signaTure);
@@ -31,9 +25,13 @@ public:
 	bool setPCOnline(const std::string &userID, const std::string &password, bool online);
 	bool setHandeldOnline(const std::string &userID, const std::string &password, bool online);
 	bool setPadOnline(const std::string &userID, const std::string &password, bool online);
-
-	//获取账号信息
 	bool getAccountInfo(const std::string &userID, AccountInfo &info);
+	bool queryAllAccountInfo(std::vector<AccountInfo> &infos);
+
+	//联系人
+	bool addContacts(const std::string &userID, const std::string &friendID);
+	bool removeContacts(const std::string &userID, const std::string &friendID);
+	bool getContacts(const std::string &userID, std::vector<std::string> &friends);
 
 	struct AccountChangedArgs { std::string userID; AccountInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;

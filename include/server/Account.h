@@ -1,5 +1,6 @@
 #pragma once
 #include <RCF/Idl.hpp>
+#include <SF/vector.hpp>
 
 struct AccountInfo
 {
@@ -32,6 +33,12 @@ RCF_METHOD_R3(bool, setPCOnline, const std::string &, const std::string &, bool)
 RCF_METHOD_R3(bool, setHandeldOnline, const std::string &, const std::string &, bool);
 RCF_METHOD_R3(bool, setPadOnline, const std::string &, const std::string &, bool);
 RCF_METHOD_R2(bool, getAccountInfo, const std::string &, AccountInfo &);
+RCF_METHOD_R1(bool, queryAllAccountInfo, std::vector<AccountInfo> &);
+
+RCF_METHOD_R2(bool, addContacts, const std::string &, const std::string &);
+RCF_METHOD_R2(bool, removeContacts, const std::string &, const std::string &);
+RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &);
+
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")

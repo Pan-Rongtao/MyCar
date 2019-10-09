@@ -51,7 +51,7 @@ Rectangle{
                         Text{
                             id:sender
                             width: parent.width;height: 30
-                            font.pixelSize: 24;font.bold: true
+                            font.pixelSize: 22;font.bold: true
                             verticalAlignment: Text.AlignVCenter
                             text: from
                         }
