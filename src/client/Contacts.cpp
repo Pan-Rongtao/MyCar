@@ -1,13 +1,19 @@
 #include "Contacts.h"
-#include "Users.h"
-#include "Singleton.h"
-#include "Account.h"
 #include <QDir>
 #include <QFile>
+#include "Users.h"
+#include "Account.h"
 
 Contacts::Contacts()
 {
 
+}
+
+Contacts *Contacts::instance()
+{
+    static Contacts *p = nullptr;
+    if(!p)  p = new Contacts();
+    return p;
 }
 
 QList<CantactItem> &Contacts::items()
@@ -15,25 +21,23 @@ QList<CantactItem> &Contacts::items()
     return m_list;
 }
 
-void Contacts::addFromUserList(const QList<int> &indexs)
+void Contacts::add(const QList<int> &indexs)
 {
-    auto users = nb::Singleton<Users>::instance()->items();
-    auto userID = nb::Singleton<Account>::instance()->userID();
-
+    auto userID = Account::instance()->userID();
     for(auto i : indexs)
     {
-        auto friendID = users[i].userID;
+        auto friendID = Users::instance()->items()[i].userID;
         if(friendID != userID)
-            nb::Singleton<Account>::instance()->addContacts(userID, friendID);
+            Proxy::instance()->accountProxy()->addContacts(userID.toStdString(), friendID.toStdString());
     }
     update();
 }
 
 void Contacts::remove(int index)
 {
-    auto userID = nb::Singleton<Account>::instance()->userID();
+    auto userID = Account::instance()->userID();
     auto friendID = m_list[index].userID;
-    nb::Singleton<Account>::instance()->removeContacts(userID, friendID);
+    Proxy::instance()->accountProxy()->removeContacts(userID.toStdString(), friendID.toStdString());
     update();
 }
 
@@ -45,11 +49,11 @@ void Contacts::update()
     beginResetModel();
     m_list.clear();
     std::vector<std::string> friends;
-    nb::Singleton<Account>::instance()->getContacts(nb::Singleton<Account>::instance()->userID(), friends);
+    Proxy::instance()->accountProxy()->getContacts(Account::instance()->userID().toStdString(), friends);
     for(auto & friendID : friends)
     {
         AccountInfo info;
-        nb::Singleton<Account>::instance()->getInfo(QString::fromStdString(friendID), info);
+        Proxy::instance()->accountProxy()->getAccountInfo(friendID, info);
         QString photoPath = "friend/" + QString::fromStdString(info.userID) + ".jpg";
         QFile f(photoPath);
         if(f.open(QFile::WriteOnly))
@@ -62,6 +66,7 @@ void Contacts::update()
 
 int Contacts::rowCount(const QModelIndex &parent) const
 {
+    (void)parent;
     return m_list.size();
 }
 

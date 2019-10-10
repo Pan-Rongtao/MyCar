@@ -53,7 +53,7 @@ Rectangle{
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {passwordCheck.state = text==="" ? -1 : (text.length < 8 ? 0 : 1)}
             }
-            Check{ id:passwordCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "密码位数至少为8" }
+            Check{ id:passwordCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "密码至少8位" }
 
             Text{ text: "重复密码："; width: item0Width; font.bold: true; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter}
             TextField{

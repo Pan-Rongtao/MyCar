@@ -248,4 +248,6 @@ Rectangle{
         Item{width: (parent.width - cProBtn.width) / 2;height: parent.height}
 
     }
+
+    Component.onCompleted: Car.updateCar()
 }

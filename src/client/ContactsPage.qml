@@ -130,7 +130,7 @@ Rectangle{
         onVisibleChanged:
         {
             if(visible)
-                Users.query()
+                Users.update()
             else
                 Contacts.update()
         }

@@ -5,6 +5,13 @@ MessageList::MessageList()
 
 }
 
+MessageList *MessageList::instance()
+{
+    static MessageList *p = nullptr;
+    if(!p)  p = new MessageList();
+    return p;
+}
+
 QList<MessageItem> &MessageList::items()
 {
     return m_list;

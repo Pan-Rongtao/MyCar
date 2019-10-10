@@ -1,12 +1,18 @@
 #include "Users.h"
-#include "Account.h"
-#include "Singleton.h"
 #include <QFile>
 #include <QDir>
+#include "Proxy.h"
 
 Users::Users()
 {
 
+}
+
+Users *Users::instance()
+{
+    static Users *p = nullptr;
+    if(!p)  p = new Users();
+    return p;
 }
 
 QList<UserItem> &Users::items()
@@ -16,6 +22,7 @@ QList<UserItem> &Users::items()
 
 int Users::rowCount(const QModelIndex &parent) const
 {
+    (void)parent;
     return m_list.size();
 }
 
@@ -41,12 +48,12 @@ QHash<int, QByteArray> Users::roleNames() const
     return roles;
 }
 
-void Users::query()
+void Users::update()
 {
     beginResetModel();
     m_list.clear();
     std::vector<AccountInfo> infos;
-    nb::Singleton<Account>::instance()->queryAllAccount(infos);
+    Proxy::instance()->accountProxy()->queryAllAccountInfo(infos);
     QDir usersDir;
     usersDir.mkdir("users");
     for(auto &info : infos)

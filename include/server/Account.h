@@ -20,6 +20,17 @@ struct AccountInfo
 		ar & userID; ar & password; ar & nickname; ar & signaTure; ar & photo; ar & registTime; ar & vehicleOnline; ar & pcOnline; ar & handeldOnline; ar & padOnline;
 	}
 };
+struct P2PMessage
+{
+	std::string fromID;
+	std::string toID;
+	std::string	msg;
+	std::string	time;
+	void serialize(SF::Archive& ar)
+	{
+		ar & fromID; ar & toID; ar & msg; ar & time;
+	}
+};
 
 RCF_BEGIN(AccountInterface, "AccountInterface")
 RCF_METHOD_R3(bool, regist, const std::string &, const std::string &, const std::string &);
@@ -40,7 +51,7 @@ RCF_METHOD_R2(bool, removeContacts, const std::string &, const std::string &);
 RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &);
 
 RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
-RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<std::string> &);
+RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<P2PMessage> &);
 
 RCF_END(AccountInterface)
 

@@ -21,7 +21,7 @@ class Users : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    Users();
+    static Users *instance();
 
     QList<UserItem> &items();
 
@@ -30,12 +30,12 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 
-signals:
-
 public slots:
-    void query();
+    void update();
 
 private:
+    Users();
+
     QList<UserItem> m_list;
 };
 

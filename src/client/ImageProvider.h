@@ -7,11 +7,7 @@ class ImageProvider : public QObject, public QQuickImageProvider
 {
     Q_OBJECT
 public:
-    static ImageProvider *current();
-
-    ImageProvider();
-    ~ImageProvider();
-
+    static ImageProvider *instance();
 
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
     QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
@@ -26,7 +22,8 @@ public slots:
     bool setImage(const uchar *pData, int size);
 
 private:
-    static ImageProvider *g_sInstance;
+    ImageProvider();
+
 };
 
 #endif // IMAGEPROVIDER_H

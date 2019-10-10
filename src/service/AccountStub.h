@@ -35,7 +35,7 @@ public:
 
 	//ÏûÏ¢
 	void addP2PMessage(const std::string &fromID, const std::string &toID, const std::string &msg);
-	void getP2PMessage(const std::string &user0, const std::string &user1, std::vector<std::string> &msgs);
+	void getP2PMessage(const std::string &user0, const std::string &user1, std::vector<P2PMessage> &msgs);
 	
 	struct AccountChangedArgs { std::string userID; AccountInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;

@@ -1,26 +1,17 @@
 #include "ImageProvider.h"
 #include <QFile>
 
-#define CURRENT_PIC     "current"
-ImageProvider *ImageProvider::g_sInstance;
-ImageProvider *ImageProvider::current()
+ImageProvider *ImageProvider::instance()
 {
-    if(!g_sInstance)
-        g_sInstance = new ImageProvider();
-    return g_sInstance;
+    static ImageProvider *p = nullptr;
+    if(!p)  p = new ImageProvider();
+    return p;
 }
 
 ImageProvider::ImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Image)
 {
 
-}
-
-ImageProvider::~ImageProvider()
-{
-    QFile f(CURRENT_PIC);
-    if(f.exists())
-        f.remove();
 }
 
 bool ImageProvider::setImage(const QString &path)

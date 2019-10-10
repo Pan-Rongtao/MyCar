@@ -5,13 +5,11 @@ CONFIG += c++14 resources_big
 
 HEADERS += \
     Account.h \
-    Singleton.h \
     ImageProvider.h \
     Car.h \
     Contacts.h \
     Users.h \
     MessageList.h \
-    Share.h \
     P2PChat.h \
     Proxy.h
 
@@ -22,7 +20,6 @@ SOURCES += main.cpp \
     Contacts.cpp \
     Users.cpp \
     MessageList.cpp \
-    Share.cpp \
     P2PChat.cpp \
     Proxy.cpp
 
@@ -34,8 +31,9 @@ INCLUDEPATH += \
     $$uit_dist/include
 
 win32{
-        LIBS += -L../../3rdparty/lib/win32/debug \
-	-lRcfLib
+DEFINES +=
+    LIBS += -L../../3rdparty/lib/win32/debug \
+    -lRcfLib
 }
 
 unix{

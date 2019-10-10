@@ -2,13 +2,14 @@
 #define CAR_H
 
 #include <QObject>
-#include <RCF/RCF.hpp>
-#include "server/Car.h"
+#include "Proxy.h"
 
 class Car : public QObject
 {
     Q_OBJECT
 public:
+    static Car *instance();
+
     Q_PROPERTY(float availableFuel READ availableFuel WRITE setavailableFuel NOTIFY availableFuelChanged)
     Q_PROPERTY(float averageFuel READ averageFuel WRITE setaverageFuel NOTIFY averageFuelChanged)
     Q_PROPERTY(float totalKm READ totalKm WRITE settotalKm NOTIFY totalKmChanged)
@@ -80,8 +81,6 @@ public:
 
     void onCarChanged(const std::string &userID, CarInfo &info);
 
-    void updateCar();
-
 signals:
     void availableFuelChanged();
     void averageFuelChanged();
@@ -102,7 +101,7 @@ signals:
     void drivingChanged();
 
 public slots:
-    bool connectServer(const std::string &ip, int interfacePort, int publisherPort);
+    void updateCar();
     void switchLeftFrontDoor(bool b);
     void switchRightFrontDoor(bool b);
     void switchLeftRearDoor(bool b);
@@ -116,10 +115,6 @@ public slots:
     void switchDriving(bool b);
 
 private:
-    std::shared_ptr<RcfClient<CarInterface>>	m_client;
-    std::shared_ptr<RCF::RcfServer>             m_subscribServer;
-    RCF::SubscriptionPtr                        m_subscription;
-
     float m_availableFuel{0.0};
     float m_averageFuel{0.0};
     float m_totalKm{0.0};

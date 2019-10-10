@@ -1,22 +1,31 @@
 #include "P2PChat.h"
+#include "Proxy.h"
+#include "Account.h"
 
 P2PChat::P2PChat()
 {
 
 }
 
-void P2PChat::setwho(QString who)
+P2PChat *P2PChat::instance()
 {
-    if(m_who != who)
+    static P2PChat *p = nullptr;
+    if(!p)  p = new P2PChat();
+    return p;
+}
+
+void P2PChat::setfriendID(QString friendID)
+{
+    if(m_friendID != friendID)
     {
-        m_who = who;
-        emit whoChanged();
+        m_friendID = friendID;
+        emit friendIDChanged();
     }
 }
 
-QString P2PChat::who()
+QString P2PChat::friendID()
 {
-    return m_who;
+    return m_friendID;
 }
 
 QList<P2PChatItem> &P2PChat::items()
@@ -57,5 +66,18 @@ QHash<int, QByteArray> P2PChat::roleNames() const
 
 void P2PChat::sendMessage(const QString &msg)
 {
+    auto proxy = Proxy::instance()->accountProxy();
+    proxy->addP2PMessage(Account::instance()->userID().toStdString(), m_friendID.toStdString(), msg.toStdString());
+    update();
+}
 
+void P2PChat::update()
+{
+    auto proxy = Proxy::instance()->accountProxy();
+    std::vector<P2PMessage> msgs;
+    proxy->getP2PMessage(m_friendID.toStdString(), Account::instance()->userID().toStdString(), msgs);
+    for(auto msg : msgs)
+    {
+
+    }
 }

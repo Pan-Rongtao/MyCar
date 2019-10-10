@@ -262,14 +262,24 @@ void AccountStub::addP2PMessage(const std::string & fromID, const std::string & 
 	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
 }
 
-void AccountStub::getP2PMessage(const std::string & user0, const std::string & user1, std::vector<std::string>& msgs)
+void AccountStub::getP2PMessage(const std::string & user0, const std::string & user1, std::vector<P2PMessage>& msgs)
 {
 	auto _id0 = user0;
 	auto _id1 = user1;
-	typedef Poco::Tuple<std::string, std::string, std::string, std::string>	Record;
-	std::vector<Record> records;
-	DB::instance()->session() << "select * from p2p_messages where (FromID=? and ToID=?) or (FromID=? and ToID=?)", into(records), use(_id0),
-		use(_id1), use(_id1), use(_id0), now;
+	Statement select(DB::instance()->session());
+	select << "select * from p2p_messages where (FromID=? and ToID=?) or (FromID=? and ToID=?)", use(_id0), use(_id1), use(_id1), use(_id0), now;
+	RecordSet rs(select);
+	bool more = rs.moveFirst();
+	while (more)
+	{
+		P2PMessage record;
+		record.fromID = rs[0].convert<std::string>();
+		record.toID = rs[1].convert<std::string>();
+		record.msg = rs[2].convert<std::string>();
+		record.time = rs[3].convert<std::string>();
+		msgs.push_back(record);
+		more = rs.moveNext();
+	}
 }
 
 std::string AccountStub::loadImage(const std::string &path) const

@@ -1,24 +1,15 @@
 #include "Account.h"
-#include "core/Log.h"
 #include <QDebug>
 #include <QFile>
 #include <iostream>
 #include "ImageProvider.h"
-#include "Singleton.h"
 #include "Car.h"
 
-void Account::setconnected(bool connected)
+Account *Account::instance()
 {
-    if(connected != m_connected)
-    {
-        m_connected = connected;
-        emit connectedChanged();
-    }
-}
-
-bool Account::connected()
-{
-    return m_connected;
+    static Account *p = nullptr;
+    if(!p)  p = new Account();
+    return p;
 }
 
 void Account::setuserID(const QString &useID)
@@ -161,18 +152,15 @@ bool Account::padOnline()
     return m_padOnline;
 }
 
-void Account::setislogin(bool islogin)
-{
-    if(m_islogin != islogin)
-    {
-        m_islogin = islogin;
-        emit isloginChanged();
-    }
-}
-
 bool Account::islogin()
 {
-    return m_islogin;
+#if defined(Q_OS_WIN)
+        return pcOnline();
+#elif defined(Q_OS_ANDROID)
+        return handeldOnline();
+#elif defined(Q_OS_LINUX)
+        return vehicleOnline();
+#endif
 }
 
 Account::Account()
@@ -191,66 +179,35 @@ void Account::onAccountChanged(const std::string &userID, const AccountInfo &inf
 {
     if(userID == m_userID.toStdString())
     {
-#if defined(Q_OS_WIN)
-        setislogin(info.pcOnline);
-#elif defined(Q_OS_ANDROID)
-        setislogin(info.handeldOnline);
-#elif defined(Q_OS_LINUX)
-        setislogin(info.vehicleOnline);
-#endif
+        setpcOnline(info.pcOnline);
+        sethandeldOnline(info.handeldOnline);
+        setvehicleOnline(info.vehicleOnline);
+        setpadOnline(info.padOnline);
         updateAccountInfo(info);
     }
 }
 
-bool Account::ping()
-{
-    try{
-        m_client->getClientStubPtr()->ping();
-        return true;
-    }catch(...)
-    {
-        return false;
-    }
-}
-
-bool Account::connectServer(const std::string &ip, int interfacePort, int publisherPort)
-{
-    m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, interfacePort));
-    m_client->getClientStub().setAutoReconnect(true);
-    m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
-    m_subscribServer->start();
-
-    RCF::SubscriptionParms subParms;
-    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
-    m_subscription = m_subscribServer->createSubscription<AccountNotify>(*this, subParms);
-    setconnected(true);
-    return true;
-}
-
 bool Account::isRegisted(const QString &userID)
 {
-    return m_client->isRegisted(userID.toStdString());
+    return Proxy::instance()->accountProxy()->isRegisted(userID.toStdString());
 }
 
 bool Account::regist(const QString &userID, const QString &password, const QString &nickname)
 {
-    return m_client->regist(userID.toStdString(), password.toStdString(), nickname.toStdString());
+    return Proxy::instance()->accountProxy()->regist(userID.toStdString(), password.toStdString(), nickname.toStdString());
 }
 
 bool Account::login(const QString &userID, const QString &password)
 {
     bool b = false;
+    setuserID(userID);
+    auto proxy = Proxy::instance()->accountProxy();
     try{
         switch (m_t) {
-        case pc:        b = m_client->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
-        case vehicle:   b = m_client->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
-        case handheld:  b = m_client->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case pc:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+        case vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case handheld:  b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
         }
-        setislogin(b);
-        AccountInfo info;
-        m_client->getAccountInfo(userID.toStdString(), info);
-        updateAccountInfo(info);
-        nb::Singleton<Car>::instance()->updateCar();
     }
     catch(RCF::Exception &e)
     {
@@ -262,42 +219,33 @@ bool Account::login(const QString &userID, const QString &password)
 
 bool Account::logout()
 {
-    if(!m_islogin)  return false;
+    if(!islogin())  return false;
 
     bool b = false;
+    auto proxy = Proxy::instance()->accountProxy();
     switch (m_t) {
-    case pc:        b = m_client->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
-    case vehicle:   b = m_client->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
-    case handheld:  b = m_client->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case pc:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
+    case vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case handheld:  b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
     }
-    setislogin(false);
-    AccountInfo info;
-    m_client->getAccountInfo(m_userID.toStdString(), info);
-    updateAccountInfo(info);
-    nb::Singleton<Car>::instance()->updateCar();
     return b;
-}
-
-void Account::getInfo(const QString &userID, AccountInfo &info)
-{
-    m_client->getAccountInfo(userID.toStdString(), info);
 }
 
 bool Account::modifyPassword(const QString &password)
 {
-    m_client->setPassword(m_userID.toStdString(), password.toStdString());
+    Proxy::instance()->accountProxy()->setPassword(m_userID.toStdString(), password.toStdString());
     return true;
 }
 
 bool Account::modifyNickname(const QString &nickname)
 {
-    m_client->setNickname(m_userID.toStdString(), nickname.toStdString());
+    Proxy::instance()->accountProxy()->setNickname(m_userID.toStdString(), nickname.toStdString());
     return true;
 }
 
 bool Account::modifySignaTure(const QString &signaTure)
 {
-    m_client->setSignaTure(m_userID.toStdString(), signaTure.toStdString());
+    Proxy::instance()->accountProxy()->setSignaTure(m_userID.toStdString(), signaTure.toStdString());
     return true;
 }
 
@@ -308,7 +256,7 @@ bool Account::modifyPhoto(const QUrl &file)
     auto buffer = f.readAll();
     std::string photoBuffer(buffer.data(), buffer.size());
     try{
-        b = m_client->setPhoto(m_userID.toStdString(), photoBuffer);
+        b = Proxy::instance()->accountProxy()->setPhoto(m_userID.toStdString(), photoBuffer);
     }catch(...)
     {
         f.close();
@@ -318,40 +266,15 @@ bool Account::modifyPhoto(const QUrl &file)
     return b;
 }
 
-void Account::queryAllAccount(std::vector<AccountInfo> &infos)
-{
-    m_client->queryAllAccountInfo(infos);
-}
-
-bool Account::addContacts(const QString &userID, const QString &friendID)
-{
-    return m_client->addContacts(userID.toStdString(), friendID.toStdString());
-}
-
-bool Account::removeContacts(const QString &userID, const QString &friendID)
-{
-    return m_client->removeContacts(userID.toStdString(), friendID.toStdString());
-}
-
-bool Account::getContacts(const QString &userID, std::vector<std::string> &friends)
-{
-    try{
-        return m_client->getContacts(userID.toStdString(), friends);
-    }catch(RCF::Exception &e)
-    {
-        qDebug() << e.what();
-    }
-}
-
 void Account::updateAccountInfo(const AccountInfo &info)
 {
-    if(!m_islogin)
+    if(!islogin())
     {
         setuserID("");
         setpassword("");
         setnickname("");
         setsignaTure("");
-        ImageProvider::current()->setImage(nullptr, 0);
+        ImageProvider::instance()->setImage(nullptr, 0);
         setregistTime("");
         setvehicleOnline(false);
         setpcOnline(false);
@@ -364,7 +287,7 @@ void Account::updateAccountInfo(const AccountInfo &info)
         setpassword(QString::fromStdString(info.password));
         setnickname(QString::fromStdString(info.nickname));
         setsignaTure(QString::fromStdString(info.signaTure));
-        ImageProvider::current()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
+        ImageProvider::instance()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
         setregistTime(QString::fromStdString(info.registTime));
         setvehicleOnline(info.vehicleOnline);
         setpcOnline(info.pcOnline);

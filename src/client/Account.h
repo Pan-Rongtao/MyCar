@@ -1,17 +1,14 @@
 #pragma once
 
-#define WIN32_WINNT 0x60
-#define WIN32_LEAN_AND_MEAN
-
 #include <QObject>
-#include <RCF/RCF.hpp>
-#include "server/Account.h"
+#include "Proxy.h"
 
 class Account : public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(bool connected READ connected WRITE setconnected NOTIFY connectedChanged)
+    static Account *instance();
+
     Q_PROPERTY(QString userID READ userID WRITE setuserID NOTIFY userIDChanged)
     Q_PROPERTY(QString password READ password WRITE setpassword NOTIFY passwordChanged)
     Q_PROPERTY(QString nickname READ nickname WRITE setnickname NOTIFY nicknameChanged)
@@ -22,12 +19,6 @@ public:
     Q_PROPERTY(bool pcOnline READ pcOnline WRITE setpcOnline NOTIFY pcOnlineChanged)
     Q_PROPERTY(bool handeldOnline READ handeldOnline WRITE sethandeldOnline NOTIFY handeldOnlineChanged)
     Q_PROPERTY(bool padOnline READ padOnline WRITE setpadOnline NOTIFY padOnlineChanged)
-
-    Q_PROPERTY(bool islogin READ islogin WRITE setislogin NOTIFY isloginChanged)
-
-
-    void setconnected(bool connected);
-    bool connected();
 
     void setuserID(const QString &useID);
     QString userID();
@@ -59,15 +50,9 @@ public:
     void setpadOnline(bool padOnline);
     bool padOnline();
 
-    void setislogin(bool islogin);
-    bool islogin();
-
-    Account();
-
     void onAccountChanged(const std::string &userID, const AccountInfo &info);
 
 signals:
-    void connectedChanged();
     void userIDChanged();
     void passwordChanged();
     void nicknameChanged();
@@ -78,27 +63,21 @@ signals:
     void pcOnlineChanged();
     void handeldOnlineChanged();
     void padOnlineChanged();
-    void isloginChanged();
 
 public slots:
-    bool ping();
-
-    bool connectServer(const std::string &ip, int interfacePort, int publisherPort);
     bool isRegisted(const QString &userID);
     bool regist(const QString &userID, const QString &password, const QString &nickname);
     bool login(const QString &userID, const QString &password);
     bool logout();
-    void getInfo(const QString &userID, AccountInfo &info);
+    bool islogin();
     bool modifyPassword(const QString &password);
     bool modifyNickname(const QString &nickname);
     bool modifySignaTure(const QString &signaTure);
     bool modifyPhoto(const QUrl &file);
-    void queryAllAccount(std::vector<AccountInfo> &infos);
-    bool addContacts(const QString &userID, const QString &friendID);
-    bool removeContacts(const QString &userID, const QString &friendID);
-    bool getContacts(const QString &userID, std::vector<std::string> &friends);
 
 private:
+    Account();
+
     enum TerminalType
     {
         pc,
@@ -109,11 +88,6 @@ private:
 
     void updateAccountInfo(const AccountInfo &info);
 
-    std::shared_ptr<RcfClient<AccountInterface>>	m_client;
-    std::shared_ptr<RCF::RcfServer>                 m_subscribServer;
-    RCF::SubscriptionPtr                            m_subscription;
-
-    bool    m_connected{false};
     QString m_userID;
     QString m_password;
     QString m_nickname;
@@ -124,7 +98,6 @@ private:
     bool    m_pcOnline{false};
     bool    m_handeldOnline{false};
     bool    m_padOnline{false};
-    bool    m_islogin{false};
 
     TerminalType    m_t{pc};
 };

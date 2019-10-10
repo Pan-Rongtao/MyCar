@@ -26,7 +26,7 @@ class MessageList : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    MessageList();
+    static MessageList *instance();
 
     QList<MessageItem> &items();
 
@@ -35,6 +35,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
+    MessageList();
+
     QList<MessageItem> m_list;
 };
 

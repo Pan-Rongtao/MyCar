@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAbstractListModel>
+#include "Proxy.h"
 
 class P2PChatItem
 {
@@ -26,11 +27,12 @@ class P2PChat : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    P2PChat();
+    static P2PChat *instance();
 
-    Q_PROPERTY(QString who READ who WRITE setwho NOTIFY whoChanged)
-    void setwho(QString who);
-    QString who();
+    Q_PROPERTY(QString friendID READ friendID WRITE setfriendID NOTIFY friendIDChanged)
+
+    void setfriendID(QString friendID);
+    QString friendID();
 
     QList<P2PChatItem> &items();
     int rowCount(const QModelIndex &parent) const override;
@@ -38,14 +40,18 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 signals:
-    void whoChanged();
+    void friendIDChanged();
+    void friendNicknameChanged();
 
 public slots:
     void sendMessage(const QString &msg);
+    void update();
 
 private:
-    QList<P2PChatItem> m_list;
-    QString         m_who;
+    P2PChat();
+
+    QList<P2PChatItem>  m_list;
+    QString             m_friendID;
 };
 
 #endif // P2PChat_H

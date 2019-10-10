@@ -1,7 +1,13 @@
 #include "Car.h"
 #include <iostream>
 #include "Account.h"
-#include "Singleton.h"
+
+Car *Car::instance()
+{
+    static Car *p = nullptr;
+    if(!p)  p = new Car();
+    return p;
+}
 
 void Car::setavailableFuel(float availableFuel)
 {
@@ -239,34 +245,18 @@ bool Car::driving() const
 
 void Car::onCarChanged(const std::string &userID, CarInfo &info)
 {
-    if(userID == nb::Singleton<Account>::instance()->userID().toStdString())
+    if(userID == Account::instance()->userID().toStdString())
     {
-        setavailableFuel(info.availableFuel);
-        setaverageFuel(info.averageFuel);
-        settotalKm(info.totalKm);
-        setsubKmA(info.subKmA);
-        setsubKmB(info.subKmB);
-        setleftFrontDoor(info.leftFrontDoor);
-        setrightFrontDoor(info.rightFrontDoor);
-        setleftRearDoor(info.leftRearDoor);
-        setrightRearDoor(info.rightRearDoor);
-        setleftFrontWindow(info.leftFrontWindow);
-        setrightFrontWindow(info.rightFrontWindow);
-        setleftRearWindow(info.leftRearWindow);
-        setrightRearWindow(info.rightRearWindow);
-        setAC(info.AC);
-        setACTemp(info.ACTemp);
-        //setshutdownPhoto(info.shutdownPhoto);
-        setdriving(info.driving);
+        updateCar();
     }
 }
 
 void Car::updateCar()
 {
-    if(nb::Singleton<Account>::instance()->islogin() && m_client)
+    if(Account::instance()->islogin())
     {
         CarInfo info;
-        m_client->getCarInfo(nb::Singleton<Account>::instance()->userID().toStdString(), info);
+        Proxy::instance()->carProxy()->getCarInfo(Account::instance()->userID().toStdString(), info);
         setavailableFuel(info.availableFuel);
         setaverageFuel(info.averageFuel);
         settotalKm(info.totalKm);
@@ -307,70 +297,57 @@ void Car::updateCar()
     }
 }
 
-bool Car::connectServer(const std::string &ip, int interfacePort, int publisherPort)
-{
-    m_client = std::make_shared<RcfClient<CarInterface>>(RCF::TcpEndpoint(ip, interfacePort));
-    m_client->getClientStub().setAutoReconnect(true);
-    m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
-    m_subscribServer->start();
-
-    RCF::SubscriptionParms subParms;
-    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
-    m_subscription = m_subscribServer->createSubscription<CarNotify>(*this, subParms);
-    return true;
-}
-
 void Car::switchLeftFrontDoor(bool b)
 {
-    m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchLeftFrontDoor(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontDoor(bool b)
 {
-    m_client->switchLeftFrontDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchLeftFrontDoor(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearDoor(bool b)
 {
-    m_client->switchLeftRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchLeftRearDoor(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearDoor(bool b)
 {
-    m_client->switchRightRearDoor(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchRightRearDoor(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftFrontWindow(bool b)
 {
-    m_client->switchLeftFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchLeftFrontWindow(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontWindow(bool b)
 {
-    m_client->switchRightFrontWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchRightFrontWindow(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearWindow(bool b)
 {
-    m_client->switchLeftRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchLeftRearWindow(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearWindow(bool b)
 {
-    m_client->switchRightRearWindow(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchRightRearWindow(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchAC(bool b)
 {
-    m_client->switchAC(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchAC(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchACTemp(int v)
 {
-    m_client->setACTemp(nb::Singleton<Account>::instance()->userID().toStdString(), v);
+    Proxy::instance()->carProxy()->setACTemp(Account::instance()->userID().toStdString(), v);
 }
 
 void Car::switchDriving(bool b)
 {
-    m_client->setDriving(nb::Singleton<Account>::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->setDriving(Account::instance()->userID().toStdString(), b);
 }

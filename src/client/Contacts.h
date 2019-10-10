@@ -22,7 +22,7 @@ class Contacts : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    Contacts();
+    static Contacts *instance();
 
     QList<CantactItem> &items();
     int rowCount(const QModelIndex &parent) const override;
@@ -32,12 +32,14 @@ public:
 signals:
 
 public slots:
-    void addFromUserList(const QList<int> &indexs);
+    void add(const QList<int> &indexs);
     void remove(int index);
     void update();
 
 
 private:
+    Contacts();
+
     QList<CantactItem> m_list;
 };
 
