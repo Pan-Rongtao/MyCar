@@ -81,6 +81,8 @@ signals:
     void isloginChanged();
 
 public slots:
+    bool ping();
+
     bool connectServer(const std::string &ip, int interfacePort, int publisherPort);
     bool isRegisted(const QString &userID);
     bool regist(const QString &userID, const QString &password, const QString &nickname);

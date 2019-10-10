@@ -11,7 +11,7 @@
 #include "Contacts.h"
 #include "Users.h"
 #include "MessageList.h"
-#include "Chat.h"
+#include "P2PChat.h"
 
 int main(int argc, char *argv[])
 {
@@ -26,24 +26,19 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("Contacts", nb::Singleton<Contacts>::instance());
     engine.rootContext()->setContextProperty("Users", nb::Singleton<Users>::instance());
     engine.rootContext()->setContextProperty("MessageList", nb::Singleton<MessageList>::instance());
-    engine.rootContext()->setContextProperty("Chat", nb::Singleton<Chat>::instance());
+    engine.rootContext()->setContextProperty("P2PChat", nb::Singleton<P2PChat>::instance());
     engine.rootContext()->setContextProperty("ImageProvider", ImageProvider::current());
     engine.addImageProvider("ImgProvider", ImageProvider::current());
-/*
-    nb::Singleton<Contacts>::instance()->items().append(CantactItem("1", "e:/5.jpg"));
-    nb::Singleton<Contacts>::instance()->items().append(CantactItem("2", "b"));
-    nb::Singleton<Contacts>::instance()->items().append(CantactItem("3", "c"));
-    nb::Singleton<Contacts>::instance()->items().append(CantactItem("4", "d"));
-*/
+
     nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
     nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
     nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
     nb::Singleton<MessageList>::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
 
-    nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "000000", QTime::currentTime().toString(), false));
-    nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "111", QTime::currentTime().toString(), false));
-    nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "222", QTime::currentTime().toString(), false));
-    nb::Singleton<Chat>::instance()->items().append(ChatItem("Pan", "e:/5.jpg", "hello1472347329eua4urq983ruq89y3tq98eur9q83y9rq8y39rqy9weyrq9wyr9qy39y34q9yr9", QTime::currentTime().toString(), true));
+    nb::Singleton<P2PChat>::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "000000", QTime::currentTime().toString(), false));
+    nb::Singleton<P2PChat>::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "111", QTime::currentTime().toString(), false));
+    nb::Singleton<P2PChat>::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "222", QTime::currentTime().toString(), false));
+    nb::Singleton<P2PChat>::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "hello1472347329eua4urq983ruq89y3tq98eur9q83y9rq8y39rqy9weyrq9wyr9qy39y34q9yr9", QTime::currentTime().toString(), true));
 
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

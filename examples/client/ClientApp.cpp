@@ -59,7 +59,7 @@ void ClientApp::initialize(Application & app)
 	parms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
 	RCF::SubscriptionPtr subscriptionPtr = subscriptionServer.createSubscription<AccountNotify>(*this, parms);
 	m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, interfacePort));
-
+	
 	uit::Log::info(LOG_TAG, "connected to [%s], cost [%d].\n", ip.data(), (int)(uit::getTickCount() - k));
 	m_client->regist("13112657701", "Aa123456", "Pan.T");
 

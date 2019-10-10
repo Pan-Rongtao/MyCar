@@ -202,6 +202,17 @@ void Account::onAccountChanged(const std::string &userID, const AccountInfo &inf
     }
 }
 
+bool Account::ping()
+{
+    try{
+        m_client->getClientStubPtr()->ping();
+        return true;
+    }catch(...)
+    {
+        return false;
+    }
+}
+
 bool Account::connectServer(const std::string &ip, int interfacePort, int publisherPort)
 {
     m_client = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip, interfacePort));

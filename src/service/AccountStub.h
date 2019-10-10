@@ -33,6 +33,10 @@ public:
 	bool removeContacts(const std::string &userID, const std::string &friendID);
 	bool getContacts(const std::string &userID, std::vector<std::string> &friends);
 
+	//ÏûÏ¢
+	void addP2PMessage(const std::string &fromID, const std::string &toID, const std::string &msg);
+	void getP2PMessage(const std::string &user0, const std::string &user1, std::vector<std::string> &msgs);
+	
 	struct AccountChangedArgs { std::string userID; AccountInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;
 

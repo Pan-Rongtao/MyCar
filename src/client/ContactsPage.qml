@@ -7,6 +7,8 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
+    signal enterChat(string who)
+
     property int item0Width: 20
     property int removeIndex: -1
 
@@ -72,6 +74,7 @@ Rectangle{
                             source: "file:" + photo
                         }
                         Text{
+                            id:nick
                             width: parent.width - img.width; height: img.height
                             font.pixelSize: 20; font.bold: true
                             verticalAlignment: Text.AlignVCenter
@@ -110,6 +113,7 @@ Rectangle{
                     onReleased:  bkg.color = "transparent"
                     onCanceled:  bkg.color = "transparent"
                     onPressAndHold: {removeIndex = index; menu.open()}
+                    onClicked: enterChat(nick.text)
                 }
 
             }

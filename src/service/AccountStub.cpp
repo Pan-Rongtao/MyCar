@@ -252,6 +252,26 @@ bool AccountStub::getContacts(const std::string & userID, std::vector<std::strin
 	return true;
 }
 
+void AccountStub::addP2PMessage(const std::string & fromID, const std::string & toID, const std::string & msg)
+{
+	auto _fromID = fromID;
+	auto _toID = toID;
+	auto _msg = msg;
+	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
+	DB::instance()->session() << "insert into p2p_messages values(?, ?, ?, ?)", use(_fromID), use(_toID), use(_msg), use(_dt), now;
+	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
+}
+
+void AccountStub::getP2PMessage(const std::string & user0, const std::string & user1, std::vector<std::string>& msgs)
+{
+	auto _id0 = user0;
+	auto _id1 = user1;
+	typedef Poco::Tuple<std::string, std::string, std::string, std::string>	Record;
+	std::vector<Record> records;
+	DB::instance()->session() << "select * from p2p_messages where (FromID=? and ToID=?) or (FromID=? and ToID=?)", into(records), use(_id0),
+		use(_id1), use(_id1), use(_id0), now;
+}
+
 std::string AccountStub::loadImage(const std::string &path) const
 {
 	FILE *pFile = fopen(path.data(), "rb");

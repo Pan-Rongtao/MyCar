@@ -6,7 +6,7 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    signal enterChat()
+    signal enterChat(string who)
 
     Column{
         width: parent.width

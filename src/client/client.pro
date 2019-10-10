@@ -11,8 +11,9 @@ HEADERS += \
     Contacts.h \
     Users.h \
     MessageList.h \
-    Chat.h \
-    Share.h
+    Share.h \
+    P2PChat.h \
+    Proxy.h
 
 SOURCES += main.cpp \
 	Account.cpp \
@@ -21,8 +22,9 @@ SOURCES += main.cpp \
     Contacts.cpp \
     Users.cpp \
     MessageList.cpp \
-    Chat.cpp \
-    Share.cpp
+    Share.cpp \
+    P2PChat.cpp \
+    Proxy.cpp
 
 RESOURCES += qml.qrc
 

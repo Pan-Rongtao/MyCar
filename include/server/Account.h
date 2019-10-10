@@ -39,6 +39,9 @@ RCF_METHOD_R2(bool, addContacts, const std::string &, const std::string &);
 RCF_METHOD_R2(bool, removeContacts, const std::string &, const std::string &);
 RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &);
 
+RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
+RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<std::string> &);
+
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")

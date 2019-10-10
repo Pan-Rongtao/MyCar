@@ -14,7 +14,7 @@ Rectangle{
         spacing: 30
         Text {
             id:title
-            text: "uidp3575"
+            text: P2PChat.who
             width: parent.width;height: 60
             font.pixelSize: 26
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
@@ -26,7 +26,7 @@ Rectangle{
             width: parent.width; height: parent.height - title.height - tool.height - parent.spacing * 2
             anchors.leftMargin: 10;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin
-            model: Chat
+            model: P2PChat
             delegate: dlg
         }
         Row{
