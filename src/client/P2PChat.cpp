@@ -1,10 +1,12 @@
 #include "P2PChat.h"
+#include <QFile>
 #include "Proxy.h"
 #include "Account.h"
+#include "Contacts.h"
 
 P2PChat::P2PChat()
 {
-
+    QObject::connect(this, SIGNAL(signalUpdate()), this, SLOT(update()));
 }
 
 P2PChat *P2PChat::instance()
@@ -14,18 +16,18 @@ P2PChat *P2PChat::instance()
     return p;
 }
 
-void P2PChat::setfriendID(QString friendID)
+void P2PChat::setfriendNickname(QString friendNickname)
 {
-    if(m_friendID != friendID)
+    if(m_friendNickname != friendNickname)
     {
-        m_friendID = friendID;
-        emit friendIDChanged();
+        m_friendNickname = friendNickname;
+        emit friendNicknameChanged();
     }
 }
 
-QString P2PChat::friendID()
+QString P2PChat::friendNickname()
 {
-    return m_friendID;
+    return m_friendNickname;
 }
 
 QList<P2PChatItem> &P2PChat::items()
@@ -64,6 +66,12 @@ QHash<int, QByteArray> P2PChat::roleNames() const
     return roles;
 }
 
+void P2PChat::enter(int friendRowIndex)
+{
+    m_friendID = Contacts::instance()->items()[friendRowIndex].userID;
+    m_friendNickname = Contacts::instance()->items()[friendRowIndex].nickname;
+}
+
 void P2PChat::sendMessage(const QString &msg)
 {
     auto proxy = Proxy::instance()->accountProxy();
@@ -76,8 +84,15 @@ void P2PChat::update()
     auto proxy = Proxy::instance()->accountProxy();
     std::vector<P2PMessage> msgs;
     proxy->getP2PMessage(m_friendID.toStdString(), Account::instance()->userID().toStdString(), msgs);
+    beginResetModel();
+    m_list.clear();
     for(auto msg : msgs)
     {
-
+        bool bIamSender = msg.fromID == Account::instance()->userID().toStdString();
+        auto nick = bIamSender ? Account::instance()->nickname() : m_friendNickname;
+        auto photo = Account::instance()->getUserPhoto(msg.fromID);//bIamSender ? "me.jpg" : m_friendPhoto;
+        P2PChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
+        m_list.append(item);
     }
+    endResetModel();
 }

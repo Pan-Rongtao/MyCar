@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.7
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.1
 
@@ -32,7 +32,56 @@ Rectangle{
 
             Button{ id:add; width: 50;height:width;
                 Image{width: parent.width;height: parent.height; source: "images/add_p.png"}
-                onClicked: userlist.visible=true;
+                onClicked: menu.open()
+                Menu{
+                    id:menu
+                    width: 100
+                    MenuItem {
+                        id: menuItem0
+                        width: menu.width
+                        height: 40
+                        Row{
+                            width: parent.width;height: parent.height
+                            Image {
+                                height: 30; width: 30
+                                source: "qrc:/images/add_group.png"
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Text {
+                                width: parent.width;height: parent.height
+                                text: "添加群聊"
+                                color: menuItem0.down ? "#AA0000" : "#148014"
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                        onTriggered: { addfriend.visible = false; createGroup.visible = true}
+                    }
+                    MenuItem {
+                        id: menuItem1
+                        width: menu.width
+                        height: 40
+                        Row{
+                            width: parent.width;height: parent.height
+                            Image {
+                                height: 30; width: 30
+                                source: "qrc:/images/add_friend.png"
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Text {
+                                width: parent.width;height: parent.height
+                                text: "添加朋友"
+                                color: menuItem1.down ? "#AA0000" : "#148014"
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                        onTriggered: { addfriend.visible = true; createGroup.visible = false}
+                    }
+
+                }
             }
 
         }
@@ -104,7 +153,7 @@ Rectangle{
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
-                        onTriggered: Contacts.remove(removeIndex)
+                        onTriggered: Contacts.removeFriend(removeIndex)
                     }
                 }
                 MouseArea{
@@ -113,16 +162,15 @@ Rectangle{
                     onReleased:  bkg.color = "transparent"
                     onCanceled:  bkg.color = "transparent"
                     onPressAndHold: {removeIndex = index; menu.open()}
-                    onClicked: enterChat(nick.text)
+                    onClicked: {P2PChat.enter(index); enterChat(nick.text)}
                 }
 
             }
         }
     }
 
-
-    UsersPage{
-        id:userlist
+    AddFiendPage{
+        id:addfriend
         anchors.fill: parent
         anchors.margins: 25
         visible: false
@@ -132,11 +180,25 @@ Rectangle{
             if(visible)
                 Users.update()
             else
-                Contacts.update()
+                Contacts.updateFriend()
         }
-
     }
 
-    Component.onCompleted:    Contacts.update()
+    CreateGroupPage{
+        id:createGroup
+        anchors.fill: parent
+        anchors.margins: 25
+        visible: false
+        onFinished: visible = false
+        onVisibleChanged:
+        {
+            if(visible)
+                Users.update()
+            else
+                Contacts.updateFriend()
+        }
+    }
+
+    Component.onCompleted:    Contacts.updateFriend()
 
 }

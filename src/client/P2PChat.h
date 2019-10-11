@@ -29,10 +29,10 @@ class P2PChat : public QAbstractListModel
 public:
     static P2PChat *instance();
 
-    Q_PROPERTY(QString friendID READ friendID WRITE setfriendID NOTIFY friendIDChanged)
+    Q_PROPERTY(QString friendNickname READ friendNickname WRITE setfriendNickname NOTIFY friendNicknameChanged)
 
-    void setfriendID(QString friendID);
-    QString friendID();
+    void setfriendNickname(QString friendNickname);
+    QString friendNickname();
 
     QList<P2PChatItem> &items();
     int rowCount(const QModelIndex &parent) const override;
@@ -40,10 +40,11 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 signals:
-    void friendIDChanged();
+    void signalUpdate();
     void friendNicknameChanged();
 
 public slots:
+    void enter(int friendRowIndex);
     void sendMessage(const QString &msg);
     void update();
 
@@ -52,6 +53,8 @@ private:
 
     QList<P2PChatItem>  m_list;
     QString             m_friendID;
+    QString             m_friendNickname;
+    QString             m_friendPhoto;
 };
 
 #endif // P2PChat_H

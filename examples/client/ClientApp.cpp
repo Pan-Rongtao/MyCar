@@ -74,6 +74,10 @@ void ClientApp::onAccountChanged(const std::string & userID, const AccountInfo &
 {
 }
 
+void ClientApp::onP2PMessageArrived(const std::string & fromID, const P2PMessage & msg)
+{
+}
+
 std::string ClientApp::getLocalIp() const
 {
 #ifdef WIN32

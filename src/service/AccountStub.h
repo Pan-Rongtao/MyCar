@@ -36,9 +36,21 @@ public:
 	//消息
 	void addP2PMessage(const std::string &fromID, const std::string &toID, const std::string &msg);
 	void getP2PMessage(const std::string &user0, const std::string &user1, std::vector<P2PMessage> &msgs);
+
+	//群组
+	void addGroup(const std::string &name, const std::string &photo);
+	void removeGroup(const std::string &groupID);
+	void getGroup(const std::string &grouID, GroupInfo &info);
+	void setGroupName(const std::string &groupID, const std::string &name);
+	void setGroupInfo(const std::string &groupID, const std::string &info);
+	void addGroupMember(const std::string &groupID, const std::string &userID);
+	void removeGroupMember(const std::string &groupID, const std::string &userID);
 	
 	struct AccountChangedArgs { std::string userID; AccountInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;
+
+	struct P2PMessageArrivedArgs { std::string fromID; P2PMessage msg; };
+	uit::Event<P2PMessageArrivedArgs>	P2PMessageArrived;
 
 private:
 	std::string loadImage(const std::string &path) const;

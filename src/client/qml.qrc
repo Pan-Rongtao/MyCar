@@ -32,8 +32,12 @@
         <file>images/line.png</file>
         <file>images/add.png</file>
         <file>images/add_p.png</file>
-        <file>UsersPage.qml</file>
+        <file>AddFiendPage.qml</file>
         <file>images/trash.png</file>
         <file>ChatPage.qml</file>
+        <file>images/add_group.png</file>
+        <file>images/add_friend.png</file>
+        <file>CreateGroupPage.qml</file>
+        <file>images/list_bg.png</file>
     </qresource>
 </RCC>

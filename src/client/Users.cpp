@@ -1,6 +1,5 @@
 #include "Users.h"
-#include <QFile>
-#include <QDir>
+#include "Account.h"
 #include "Proxy.h"
 
 Users::Users()
@@ -54,15 +53,10 @@ void Users::update()
     m_list.clear();
     std::vector<AccountInfo> infos;
     Proxy::instance()->accountProxy()->queryAllAccountInfo(infos);
-    QDir usersDir;
-    usersDir.mkdir("users");
     for(auto &info : infos)
     {
-        QString photoPath = usersDir.dirName() + "/" + "users/" + QString::fromStdString(info.userID) + ".jpg";
-        QFile f(photoPath);
-        if(f.open(QFile::WriteOnly))
-            f.write(info.photo.data(), info.photo.size());
-        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), photoPath);
+        Account::instance()->saveUserPhoto(info.userID, info.photo);
+        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
         m_list.append(item);
     }
     endResetModel();

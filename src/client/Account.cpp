@@ -1,9 +1,11 @@
 #include "Account.h"
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <iostream>
 #include "ImageProvider.h"
 #include "Car.h"
+#include "P2PChat.h"
 
 Account *Account::instance()
 {
@@ -187,6 +189,26 @@ void Account::onAccountChanged(const std::string &userID, const AccountInfo &inf
     }
 }
 
+void Account::onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg)
+{
+    emit P2PChat::instance()->signalUpdate();
+}
+
+void Account::saveUserPhoto(const std::string &userID, const std::string &photoBuffer)
+{
+    QDir dir;
+    dir.mkdir("photos");
+    auto path = "photos/" + QString::fromStdString(userID) + ".jpg";
+    QFile f(path);
+    if(f.open(QFile::WriteOnly))
+        f.write(photoBuffer.data(), photoBuffer.size());
+}
+
+QString Account::getUserPhoto(const std::string &userID)
+{
+    return "photos/" + QString::fromStdString(userID) + ".jpg";
+}
+
 bool Account::isRegisted(const QString &userID)
 {
     return Proxy::instance()->accountProxy()->isRegisted(userID.toStdString());
@@ -293,5 +315,6 @@ void Account::updateAccountInfo(const AccountInfo &info)
         setpcOnline(info.pcOnline);
         sethandeldOnline(info.handeldOnline);
         setpadOnline(info.padOnline);
+
     }
 }

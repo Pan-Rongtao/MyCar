@@ -15,6 +15,7 @@ public:
 	virtual void uninitialize() override;
 
 	void onAccountChanged(const std::string &userID, const AccountInfo &info);
+	void onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg);
 
 private:
 	std::string getLocalIp() const;

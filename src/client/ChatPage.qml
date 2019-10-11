@@ -14,7 +14,7 @@ Rectangle{
         spacing: 30
         Text {
             id:title
-            text: P2PChat.who
+            text: P2PChat.friendNickname
             width: parent.width;height: 60
             font.pixelSize: 26
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
@@ -28,6 +28,7 @@ Rectangle{
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin
             model: P2PChat
             delegate: dlg
+            onCountChanged: list.positionViewAtEnd()
         }
         Row{
             id:tool
@@ -35,18 +36,25 @@ Rectangle{
             TextField{
                 id:txtMsg
                 width:parent.width-btnSend.width;height: parent.height
+                Keys.onReturnPressed: send()
             }
             Button{
                 id:btnSend
                 text:"发送"
                 font.bold: true;font.pixelSize: 24
                 width:80;height: parent.height
-                onClicked: {
-                    txtMsg.clear()
-                }
+                onClicked: send()
             }
         }
 
+    }
+
+    function send()
+    {
+        if(txtMsg.text === "")  return
+        P2PChat.sendMessage(txtMsg.text)
+        txtMsg.clear()
+        txtMsg.focus = true
     }
 
     Component{
@@ -60,7 +68,7 @@ Rectangle{
                 spacing: 10
                 Image{
                     id:img;width: height;height: 40
-                    source: "file:///" + photo
+                    source: "file:" + photo
                 }
                 Column{
                     id:x
@@ -72,7 +80,7 @@ Rectangle{
                         font.pixelSize: 16;font.bold: true
                         verticalAlignment: Text.AlignVCenter
                         color: "gray"
-                        text: iSend ? "" : nickname
+                        //text: iSend ? "" : nickname
                     }
                     Rectangle
                     {
@@ -98,6 +106,9 @@ Rectangle{
         }
     }
 
-    Component.onCompleted: txtMsg.focus=true
+    Component.onCompleted:{
+        P2PChat.update()
+        list.positionViewAtEnd()
+    }
 
 }

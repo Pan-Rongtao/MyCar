@@ -259,6 +259,7 @@ void AccountStub::addP2PMessage(const std::string & fromID, const std::string & 
 	auto _msg = msg;
 	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
 	DB::instance()->session() << "insert into p2p_messages values(?, ?, ?, ?)", use(_fromID), use(_toID), use(_msg), use(_dt), now;
+	P2PMessageArrived.dispatch({ _fromID, _toID, _msg, _dt });
 	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
 }
 
@@ -280,6 +281,88 @@ void AccountStub::getP2PMessage(const std::string & user0, const std::string & u
 		msgs.push_back(record);
 		more = rs.moveNext();
 	}
+}
+
+void AccountStub::addGroup(const std::string & name, const std::string & photo)
+{
+	std::vector<std::string> records;
+	DB::instance()->session() << "select GroupID from groups", into(records), now;
+	std::string _groupID = records.empty() ? "0" : std::to_string(std::stod(records.back()) + 1);
+	std::string _name = name;
+	std::string _info = "欢迎大家";
+	auto _path = "group_" + _groupID + ".jpg";
+	FILE *pf = fopen(_path.data(), "wb");
+	if (pf)
+		fwrite(photo.data(), 1, photo.size(), pf);
+	fclose(pf);
+	try {
+		DB::instance()->session() << "insert into groups values(?, ?, ?, ?)", use(_groupID), use(_name), use(_path), use(_info), now;
+		Log::info(LOG_TAG, "addGroup[%s]", _groupID.data());
+	}
+	catch (Poco::Exception &e) {
+		(void)e;
+		Log::error(LOG_TAG, "group[%s] already exists, ignore.", _groupID.data());
+	}
+}
+
+void AccountStub::removeGroup(const std::string & groupID)
+{
+	std::string _groupID = groupID;
+	DB::instance()->session() << "delete from groups where GroupID=?", use(_groupID), now;
+	Log::info(LOG_TAG, "removeGroup[%s]", _groupID.data());
+}
+
+void AccountStub::getGroup(const std::string & grouID, GroupInfo & info)
+{
+	auto _id = grouID;
+	Statement select(DB::instance()->session());
+	select << "select * from groups where GroupID=?", use(_id), now;
+	RecordSet rs(select);
+	if (rs.rowCount() != 0)
+	{
+		info.ID = rs[0].convert<std::string>();
+		info.name = rs[1].convert<std::string>();
+		info.photo = rs[2].convert<std::string>();
+		info.info = loadImage(rs[3].convert<std::string>());
+	}
+}
+
+void AccountStub::setGroupName(const std::string & groupID, const std::string & name)
+{
+	auto _id = groupID;
+	auto _nn = name;
+	DB::instance()->session() << "update groups set Name=? where GroupID=?", use(_nn), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setNickname[%s]", _id.data(), _nn.data());
+}
+
+void AccountStub::setGroupInfo(const std::string & groupID, const std::string & info)
+{
+	auto _id = groupID;
+	auto _nn = info;
+	DB::instance()->session() << "update groups set Info=? where GroupID=?", use(_nn), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setNickname[%s]", _id.data(), _nn.data());
+}
+
+void AccountStub::addGroupMember(const std::string & groupID, const std::string & userID)
+{
+	std::string _groupID = groupID;
+	std::string _userID = userID;
+	try {
+		DB::instance()->session() << "insert into groupmembers values(?, ?)", use(_groupID), use(_userID), now;
+		Log::info(LOG_TAG, "group[%s] addGroupMember[%s]", _groupID.data(), _userID.data());
+	}
+	catch (Poco::Exception &e) {
+		(void)e;
+		Log::error(LOG_TAG, "group[%s] already has member[%s], ignore.", _groupID.data(), _userID.data());
+	}
+}
+
+void AccountStub::removeGroupMember(const std::string & groupID, const std::string & userID)
+{
+	std::string _groupID = groupID;
+	std::string _userID = userID;
+	DB::instance()->session() << "delete from groupmembers where GroupID=? and userID=?", use(_groupID), use(_userID), now;
+	Log::info(LOG_TAG, "group[%s] removeGroup[%s]", _groupID.data(), _userID.data());
 }
 
 std::string AccountStub::loadImage(const std::string &path) const

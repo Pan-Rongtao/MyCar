@@ -20,6 +20,7 @@ struct AccountInfo
 		ar & userID; ar & password; ar & nickname; ar & signaTure; ar & photo; ar & registTime; ar & vehicleOnline; ar & pcOnline; ar & handeldOnline; ar & padOnline;
 	}
 };
+
 struct P2PMessage
 {
 	std::string fromID;
@@ -29,6 +30,18 @@ struct P2PMessage
 	void serialize(SF::Archive& ar)
 	{
 		ar & fromID; ar & toID; ar & msg; ar & time;
+	}
+};
+
+struct GroupInfo 
+{
+	std::string ID;
+	std::string	name;
+	std::string photo;
+	std::string info;
+	void serialize(SF::Archive& ar)
+	{
+		ar & ID; ar & name; ar & photo; ar & info;
 	}
 };
 
@@ -53,9 +66,19 @@ RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &
 RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<P2PMessage> &);
 
+RCF_METHOD_V2(void, addGroup, const std::string &, const std::string &);
+RCF_METHOD_V1(void, removeGroup, const std::string &);
+RCF_METHOD_V2(void, getGroup, const std::string &, GroupInfo &);
+RCF_METHOD_V2(void, setGroupName, const std::string &, const std::string &);
+RCF_METHOD_V2(void, setGroupInfo, const std::string &, const std::string &);
+RCF_METHOD_V2(void, addGroupMember, const std::string &, const std::string &);
+RCF_METHOD_V2(void, removeGroupMember, const std::string &, const std::string &);
+
+
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")
 RCF_METHOD_V2(void, onAccountChanged, const std::string &, const AccountInfo &);
+RCF_METHOD_V2(void, onP2PMessageArrived, const std::string &, const P2PMessage &);
 RCF_END(AccountNotify)
 

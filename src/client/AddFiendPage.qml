@@ -11,7 +11,7 @@ Rectangle {
 
     Image{
         anchors.fill: parent
-        source: "file:///D:/Qt_Project/svcar/img/CourseMgrPage/bg_790x431.png"
+        source: "images/list_bg.png"
     }
 
     Text {
@@ -41,7 +41,7 @@ Rectangle {
         anchors.bottom: parent.bottom; anchors.bottomMargin: 20; anchors.horizontalCenterOffset: 80
         onClicked: {
             checkItems.sort()
-            Contacts.add(checkItems)
+            Contacts.addFriend(checkItems)
             finished()
             }
     }

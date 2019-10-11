@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QAbstractListModel>
+#include "Proxy.h"
 
 class CantactItem
 {
@@ -32,10 +33,13 @@ public:
 signals:
 
 public slots:
-    void add(const QList<int> &indexs);
-    void remove(int index);
-    void update();
+    void addFriend(const QList<int> &indexs);
+    void removeFriend(int index);
+    void updateFriend();
 
+    void createGroup(const QList<int> &indexs);
+    void removeGroup(int index);
+    void updateGroup();
 
 private:
     Contacts();

@@ -10,7 +10,7 @@ Window {
     height: 720
     minimumWidth: 400
     minimumHeight: 720
-    title: "svcar:  [" + (Account.connected ? "connected" : "disconnected") + "]"
+    title: "svcar"
 
     Rectangle{
         anchors.fill: parent
@@ -21,7 +21,7 @@ Window {
             horizontal: window.width < window.height
             anchors.bottom: parent.bottom
             onNaviTo: {
-                if(!Account.islogin)            {pop.open(); return;}
+                if(!Account.islogin())            {pop.open(); return;}
                 if(page === "me")               pageContainer.source = Account.islogin ? "MePage.qml" : "LoginPage.qml"
                 else if(page === "car")         pageContainer.source = "CarPage.qml"
                 else if(page === "pc")          pageContainer.source = "PCPage.qml"
@@ -56,7 +56,7 @@ Window {
                 height: parent.height
                 source: "images/bg.jpg"
                 opacity: 0.3
-                visible: false
+                //visible: false
             }
 
             Pop{

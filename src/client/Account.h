@@ -51,6 +51,9 @@ public:
     bool padOnline();
 
     void onAccountChanged(const std::string &userID, const AccountInfo &info);
+    void onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg);
+    void saveUserPhoto(const std::string &userID, const std::string &photoBuffer);
+    QString getUserPhoto(const std::string &userID);
 
 signals:
     void userIDChanged();

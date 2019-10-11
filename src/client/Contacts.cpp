@@ -1,12 +1,13 @@
 #include "Contacts.h"
 #include <QDir>
 #include <QFile>
+#include <QPixmap>
+#include <QPainter>
 #include "Users.h"
 #include "Account.h"
 
 Contacts::Contacts()
 {
-
 }
 
 Contacts *Contacts::instance()
@@ -21,7 +22,7 @@ QList<CantactItem> &Contacts::items()
     return m_list;
 }
 
-void Contacts::add(const QList<int> &indexs)
+void Contacts::addFriend(const QList<int> &indexs)
 {
     auto userID = Account::instance()->userID();
     for(auto i : indexs)
@@ -30,22 +31,19 @@ void Contacts::add(const QList<int> &indexs)
         if(friendID != userID)
             Proxy::instance()->accountProxy()->addContacts(userID.toStdString(), friendID.toStdString());
     }
-    update();
+    updateFriend();
 }
 
-void Contacts::remove(int index)
+void Contacts::removeFriend(int index)
 {
     auto userID = Account::instance()->userID();
     auto friendID = m_list[index].userID;
     Proxy::instance()->accountProxy()->removeContacts(userID.toStdString(), friendID.toStdString());
-    update();
+    updateFriend();
 }
 
-void Contacts::update()
+void Contacts::updateFriend()
 {
-    QDir usersDir;
-    usersDir.mkdir("friend");
-
     beginResetModel();
     m_list.clear();
     std::vector<std::string> friends;
@@ -54,14 +52,45 @@ void Contacts::update()
     {
         AccountInfo info;
         Proxy::instance()->accountProxy()->getAccountInfo(friendID, info);
-        QString photoPath = "friend/" + QString::fromStdString(info.userID) + ".jpg";
-        QFile f(photoPath);
-        if(f.open(QFile::WriteOnly))
-            f.write(info.photo.data(), info.photo.size());
-        CantactItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), photoPath);
+        Account::instance()->saveUserPhoto(info.userID, info.photo);
+        CantactItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
         m_list.append(item);
     }
     endResetModel();
+}
+
+void Contacts::createGroup(const QList<int> &indexs)
+{
+    auto proxy = Proxy::instance()->accountProxy();
+    QString name;
+    QPixmap photo(300, 300);
+    int w = photo.width() / 3;
+    int h = photo.height() / 3;
+    QPainter painter(&photo);
+    for(auto i = 0; i != indexs.size(); ++i)
+    {
+        name += m_list[i].nickname;
+        if(i != indexs.size() - 1)
+            name += ",";
+        QPixmap img;
+        bool b = img.load(Account::instance()->getUserPhoto(m_list[i].userID.toStdString()));
+        int x = i % 3 * w;
+        int y = i / 3 * h;
+        painter.drawPixmap(x, y, w, h, img);
+    }
+    auto p = photo.toImage().bits();
+    std::string s((char *)p, 10);
+    proxy->addGroup(name.toStdString(), s);
+}
+
+void Contacts::removeGroup(int index)
+{
+
+}
+
+void Contacts::updateGroup()
+{
+
 }
 
 int Contacts::rowCount(const QModelIndex &parent) const
