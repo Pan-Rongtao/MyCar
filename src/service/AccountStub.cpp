@@ -383,6 +383,12 @@ void AccountStub::removeGroupMember(const std::string & groupID, const std::stri
 	Log::info(LOG_TAG, "group[%s] removeGroup[%s]", _groupID.data(), _userID.data());
 }
 
+void AccountStub::getGroupMembers(const std::string & groupID, std::vector<std::string>& members)
+{
+	auto _groupID = groupID;
+	DB::instance()->session() << "select UserID from groupmembers where GroupID=?", into(members), use(_groupID), now;
+}
+
 void AccountStub::addGroupMessage(const std::string & groupID, const std::string & fromID, const std::string & msg)
 {
 	auto _groupID = groupID;

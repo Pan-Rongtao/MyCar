@@ -46,6 +46,7 @@ public:
 	void setGroupInfo(const std::string &groupID, const std::string &info);
 	void addGroupMember(const std::string &groupID, const std::string &userID);
 	void removeGroupMember(const std::string &groupID, const std::string &userID);
+	void getGroupMembers(const std::string &groupID, std::vector<std::string> &members);
 
 	void addGroupMessage(const std::string &groupID, const std::string &fromID, const std::string &msg);
 	void getGroupMessage(const std::string &groupID, std::vector<GroupMessage> &msgs);

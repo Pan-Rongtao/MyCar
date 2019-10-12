@@ -40,5 +40,7 @@
         <file>CreateGroupPage.qml</file>
         <file>images/list_bg.png</file>
         <file>GroupChatPage.qml</file>
+        <file>images/option.png</file>
+        <file>EditGroupPage.qml</file>
     </qresource>
 </RCC>

@@ -86,6 +86,7 @@ RCF_METHOD_V2(void, setGroupName, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setGroupInfo, const std::string &, const std::string &);
 RCF_METHOD_V2(void, addGroupMember, const std::string &, const std::string &);
 RCF_METHOD_V2(void, removeGroupMember, const std::string &, const std::string &);
+RCF_METHOD_V2(void, getGroupMembers, const std::string &, std::vector<std::string> &);
 
 RCF_METHOD_V3(void, addGroupMessage, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_V2(void, getGroupMessage, const std::string &, std::vector<GroupMessage> &);

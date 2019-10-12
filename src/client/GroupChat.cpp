@@ -31,6 +31,20 @@ QString GroupChat::groupName()
     return m_groupName;
 }
 
+void GroupChat::setgroupID(QString groupID)
+{
+    if(m_groupID != groupID)
+    {
+        m_groupID = groupID;
+        emit groupIDChanged();
+    }
+}
+
+QString GroupChat::groupID()
+{
+    return m_groupID;
+}
+
 QList<GroupChatItem> &GroupChat::items()
 {
     return m_list;
@@ -98,4 +112,74 @@ void GroupChat::update()
         m_list.append(item);
     }
     endResetModel();
+}
+
+void GroupChat::modifyGroupName(const QString &name)
+{
+    auto proxy = Proxy::instance()->accountProxy();
+    proxy->setGroupName(m_groupID.toStdString(), name.toStdString());
+    setgroupName(name);
+}
+
+//////////////////////
+GroupMembers *GroupMembers::instance()
+{
+    static GroupMembers *p = nullptr;
+    if(!p)  p = new GroupMembers();
+    return p;
+}
+
+QList<UserItem> &GroupMembers::items()
+{
+    return m_list;
+}
+
+int GroupMembers::rowCount(const QModelIndex &parent) const
+{
+    return m_list.size();
+}
+
+QVariant GroupMembers::data(const QModelIndex &index, int role) const
+{
+    if(index.row() < 0 || index.row() >= m_list.size())
+        return QVariant();
+
+    switch (role) {
+    case 0: return m_list[index.row()].userID;
+    case 1: return m_list[index.row()].nickname;
+    case 2: return m_list[index.row()].photo;
+    default:return QVariant();
+    }
+}
+
+QHash<int, QByteArray> GroupMembers::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[0] = "userID";
+    roles[1] = "nickname";
+    roles[2] = "photo";
+    return roles;
+}
+
+void GroupMembers::update()
+{
+    auto proxy = Proxy::instance()->accountProxy();
+    std::vector<std::string> members;
+    proxy->getGroupMembers(GroupChat::instance()->groupID().toStdString(), members);
+    beginResetModel();
+    m_list.clear();
+    for(auto & userID : members)
+    {
+        AccountInfo info;
+        Proxy::instance()->accountProxy()->getAccountInfo(userID, info);
+        Account::instance()->saveUserPhoto(info.userID, info.photo);
+        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
+        m_list.append(item);
+    }
+    endResetModel();
+}
+
+GroupMembers::GroupMembers()
+{
+
 }

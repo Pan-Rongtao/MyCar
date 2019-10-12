@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("P2PChat", P2PChat::instance());
     engine.rootContext()->setContextProperty("Groups", Groups::instance());
     engine.rootContext()->setContextProperty("GroupChat", GroupChat::instance());
+    engine.rootContext()->setContextProperty("GroupMembers", GroupMembers::instance());
     engine.rootContext()->setContextProperty("ImageProvider", ImageProvider::instance());
     engine.addImageProvider("ImgProvider", ImageProvider::instance());
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

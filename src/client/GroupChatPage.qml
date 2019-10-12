@@ -6,23 +6,38 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
+    property int item0Width: 20
     signal leaveChat()
 
     Column{
         width: parent.width
         height: parent.height
         spacing: 30
-        Text {
-            id:title
-            text: GroupChat.groupName
-            width: parent.width;height: 60
-            font.pixelSize: 26
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+        Row{
+            width: parent.width;height: 80
+            Item{ width: item0Width;height: parent.height;  }
+            Rectangle{
+                id:head
+                width: parent.width - add.width - item0Width;height: parent.height
+                Text {
+                    id:title
+                    text: GroupChat.groupName
+                    width: parent.width;height: parent.height
+                    font.pixelSize: 26; font.bold: true
+                    horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            Button{ id:add; width: 30;height:width;
+                Image{width: parent.width;height: parent.height; source: "images/option.png"}
+                onClicked: editPage.visible = !editPage.visible
+            }
         }
 
 
         ListView{
             id:list
+            enabled: !editPage.visible
             width: parent.width; height: parent.height - title.height - tool.height - parent.spacing * 2
             anchors.leftMargin: 10;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin
@@ -104,6 +119,11 @@ Rectangle{
                 }
             }
         }
+    }
+
+    EditGroupPage{
+        id:editPage
+        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
     }
 
     Component.onCompleted:{
