@@ -7,7 +7,8 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    signal enterChat(string who)
+    signal enterP2PChat(string who)
+    signal enterGroupChat()
 
     property int item0Width: 20
     property int removeIndex: -1
@@ -132,7 +133,7 @@ Rectangle{
                             anchors.fill: bkg
                             onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
                             onPressAndHold: {removeIndex = index; menu.open()}
-                            onClicked: {P2PChat.enter(index); enterChat(nick.text)}
+                            onClicked: {P2PChat.enter(index); enterP2PChat(nick.text)}
                         }
                     }
                 }
@@ -174,7 +175,7 @@ Rectangle{
                             anchors.fill: bkg
                             onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
                             onPressAndHold: {removeIndex = index; menu.open()}
-                            onClicked: {P2PChat.enter(index); enterChat(nick.text)}
+                            onClicked: {GroupChat.enter(index); enterGroupChat()}
                         }
                     }
                 }
@@ -185,7 +186,7 @@ Rectangle{
 
         Text {
             id: tail
-            text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 位联系人" : "个群组")
+            text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 位联系人" : " 个群组")
             width: parent.width;height: 30
             font.pixelSize: 18;font.bold: true
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter

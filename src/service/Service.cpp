@@ -70,6 +70,9 @@ void Service::initialize(Application & app)
 	AccountStub::instance()->P2PMessageArrived.addHandler([&](const AccountStub::P2PMessageArrivedArgs &args) {
 		m_publisherAccount->publish().onP2PMessageArrived(args.fromID, args.msg);
 	});
+	AccountStub::instance()->GroupMessageArrived.addHandler([&](const AccountStub::GroupMessageArrivedArgs &args) {
+		m_publisherAccount->publish().onGroupMessageArrived(args.groupID, args.msg);
+	});
 	CarStub::instance()->CarChanged += ([&](const CarStub::CarChangedArgs &args) {
 		m_publisherCar->publish().onCarChanged(args.userID, args.info);
 	});

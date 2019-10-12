@@ -48,7 +48,8 @@ Window {
                 onNaviToRegist: pageContainer.source = "RegistPage.qml"
                 onLoginResult: if(success) pageContainer.source = "MePage.qml"
                 onLogout: pageContainer.source = "LoginPage.qml"
-                onEnterChat: {pageContainer.source = "ChatPage.qml"; P2PChat.who = who}
+                onEnterP2PChat: {pageContainer.source = "P2PChatPage.qml"; P2PChat.who = who}
+                onEnterGroupChat : {pageContainer.source = "GroupChatPage.qml"}
             }
 
             Image{

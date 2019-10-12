@@ -12,7 +12,8 @@ HEADERS += \
     MessageList.h \
     P2PChat.h \
     Proxy.h \
-    Groups.h
+    Groups.h \
+    GroupChat.h
 
 SOURCES += main.cpp \
 	Account.cpp \
@@ -23,7 +24,8 @@ SOURCES += main.cpp \
     MessageList.cpp \
     P2PChat.cpp \
     Proxy.cpp \
-    Groups.cpp
+    Groups.cpp \
+    GroupChat.cpp
 
 RESOURCES += qml.qrc
 

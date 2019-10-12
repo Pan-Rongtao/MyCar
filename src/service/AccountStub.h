@@ -46,12 +46,18 @@ public:
 	void setGroupInfo(const std::string &groupID, const std::string &info);
 	void addGroupMember(const std::string &groupID, const std::string &userID);
 	void removeGroupMember(const std::string &groupID, const std::string &userID);
+
+	void addGroupMessage(const std::string &groupID, const std::string &fromID, const std::string &msg);
+	void getGroupMessage(const std::string &groupID, std::vector<GroupMessage> &msgs);
 	
 	struct AccountChangedArgs { std::string userID; AccountInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;
 
 	struct P2PMessageArrivedArgs { std::string fromID; P2PMessage msg; };
 	uit::Event<P2PMessageArrivedArgs>	P2PMessageArrived;
+
+	struct GroupMessageArrivedArgs { std::string groupID; GroupMessage msg; };
+	uit::Event<GroupMessageArrivedArgs>	GroupMessageArrived;
 
 private:
 	std::string loadImage(const std::string &path) const;

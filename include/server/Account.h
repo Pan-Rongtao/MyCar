@@ -45,6 +45,18 @@ struct GroupInfo
 	}
 };
 
+struct GroupMessage
+{
+	std::string groupID;
+	std::string fromID;
+	std::string	msg;
+	std::string	time;
+	void serialize(SF::Archive& ar)
+	{
+		ar & groupID; ar & fromID; ar & msg; ar & time;
+	}
+};
+
 RCF_BEGIN(AccountInterface, "AccountInterface")
 RCF_METHOD_R3(bool, regist, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_R1(bool, isRegisted, const std::string &);
@@ -75,11 +87,14 @@ RCF_METHOD_V2(void, setGroupInfo, const std::string &, const std::string &);
 RCF_METHOD_V2(void, addGroupMember, const std::string &, const std::string &);
 RCF_METHOD_V2(void, removeGroupMember, const std::string &, const std::string &);
 
+RCF_METHOD_V3(void, addGroupMessage, const std::string &, const std::string &, const std::string &);
+RCF_METHOD_V2(void, getGroupMessage, const std::string &, std::vector<GroupMessage> &);
 
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")
 RCF_METHOD_V2(void, onAccountChanged, const std::string &, const AccountInfo &);
 RCF_METHOD_V2(void, onP2PMessageArrived, const std::string &, const P2PMessage &);
+RCF_METHOD_V2(void, onGroupMessageArrived, const std::string &, const GroupMessage &);
 RCF_END(AccountNotify)
 

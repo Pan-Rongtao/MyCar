@@ -383,6 +383,36 @@ void AccountStub::removeGroupMember(const std::string & groupID, const std::stri
 	Log::info(LOG_TAG, "group[%s] removeGroup[%s]", _groupID.data(), _userID.data());
 }
 
+void AccountStub::addGroupMessage(const std::string & groupID, const std::string & fromID, const std::string & msg)
+{
+	auto _groupID = groupID;
+	auto _fromID = fromID;
+	auto _msg = msg;
+	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
+	DB::instance()->session() << "insert into group_messages values(?, ?, ?, ?)", use(_groupID), use(_fromID), use(_msg), use(_dt), now;
+	GroupMessageArrived.dispatch({ _groupID, _fromID, _msg, _dt });
+	Log::info(LOG_TAG, "[%s] send msg on [%s]", fromID.data(), groupID.data());
+}
+
+void AccountStub::getGroupMessage(const std::string & groupID, std::vector<GroupMessage>& msgs)
+{
+	auto _groupID = groupID;
+	Statement select(DB::instance()->session());
+	select << "select * from group_messages where GroupID=?", use(_groupID), now;
+	RecordSet rs(select);
+	bool more = rs.moveFirst();
+	while (more)
+	{
+		GroupMessage record;
+		record.groupID = rs[0].convert<std::string>();
+		record.fromID = rs[1].convert<std::string>();
+		record.msg = rs[2].convert<std::string>();
+		record.time = rs[3].convert<std::string>();
+		msgs.push_back(record);
+		more = rs.moveNext();
+	}
+}
+
 std::string AccountStub::loadImage(const std::string &path) const
 {
 	FILE *pFile = fopen(path.data(), "rb");

@@ -78,6 +78,10 @@ void ClientApp::onP2PMessageArrived(const std::string & fromID, const P2PMessage
 {
 }
 
+void ClientApp::onGroupMessageArrived(const std::string & groupID, const GroupMessage & msg)
+{
+}
+
 std::string ClientApp::getLocalIp() const
 {
 #ifdef WIN32

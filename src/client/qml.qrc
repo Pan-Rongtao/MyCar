@@ -34,10 +34,11 @@
         <file>images/add_p.png</file>
         <file>AddFiendPage.qml</file>
         <file>images/trash.png</file>
-        <file>ChatPage.qml</file>
+        <file>P2PChatPage.qml</file>
         <file>images/add_group.png</file>
         <file>images/add_friend.png</file>
         <file>CreateGroupPage.qml</file>
         <file>images/list_bg.png</file>
+        <file>GroupChatPage.qml</file>
     </qresource>
 </RCC>

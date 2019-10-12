@@ -65,10 +65,11 @@ void Groups::create(const QList<int> &indexs)
     auto friends = Contacts::instance()->items();
     for(auto i = 0; i != indexs.size(); ++i)
     {
-        if(i <= 3)
+        if(i <= 2)
+        {
             name += friends[indexs[i]].nickname;
-        if(i != indexs.size() - 1)
             name += ",";
+        }
         QPixmap img;
         bool b = img.load(Account::instance()->getUserPhoto(friends[indexs[i]].userID.toStdString()));
         int x = (i + 1) % 3 * w;

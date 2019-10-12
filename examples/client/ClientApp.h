@@ -16,6 +16,7 @@ public:
 
 	void onAccountChanged(const std::string &userID, const AccountInfo &info);
 	void onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg);
+	void onGroupMessageArrived(const std::string &groupID, const GroupMessage &msg);
 
 private:
 	std::string getLocalIp() const;
