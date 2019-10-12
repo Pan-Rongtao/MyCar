@@ -17,13 +17,15 @@ Rectangle {
     property bool toggle: false
     property string leftString
     property string rightString
+    property string leftColor:"#4040FF"
+    property string rightColor:"#CCCCCC"
     signal toggled(bool on)
 
     Rectangle {
         id: rect
         width: parent.width * 0.6
         radius: parent.radius
-        color: rect.state == "left"? "#4040FF" : "#CCCCCC"
+        color: rect.state == "left"? leftColor : rightColor
         state: toggle ? "left" : "right"
         anchors {
             top: parent.top
@@ -64,9 +66,11 @@ Rectangle {
             if(rect.state == "left"){
                 rect.state = "right";
                 root.toggled(false)
+                toggle = false
             }else {
                 rect.state = "left";
                 root.toggled(true)
+                toggle = true
             }
         }
     }

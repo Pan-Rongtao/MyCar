@@ -1,8 +1,4 @@
 #include "Contacts.h"
-#include <QDir>
-#include <QFile>
-#include <QPixmap>
-#include <QPainter>
 #include "Users.h"
 #include "Account.h"
 
@@ -22,7 +18,7 @@ QList<CantactItem> &Contacts::items()
     return m_list;
 }
 
-void Contacts::addFriend(const QList<int> &indexs)
+void Contacts::add(const QList<int> &indexs)
 {
     auto userID = Account::instance()->userID();
     for(auto i : indexs)
@@ -31,18 +27,18 @@ void Contacts::addFriend(const QList<int> &indexs)
         if(friendID != userID)
             Proxy::instance()->accountProxy()->addContacts(userID.toStdString(), friendID.toStdString());
     }
-    updateFriend();
+    update();
 }
 
-void Contacts::removeFriend(int index)
+void Contacts::remove(int index)
 {
     auto userID = Account::instance()->userID();
     auto friendID = m_list[index].userID;
     Proxy::instance()->accountProxy()->removeContacts(userID.toStdString(), friendID.toStdString());
-    updateFriend();
+    update();
 }
 
-void Contacts::updateFriend()
+void Contacts::update()
 {
     beginResetModel();
     m_list.clear();
@@ -57,40 +53,6 @@ void Contacts::updateFriend()
         m_list.append(item);
     }
     endResetModel();
-}
-
-void Contacts::createGroup(const QList<int> &indexs)
-{
-    auto proxy = Proxy::instance()->accountProxy();
-    QString name;
-    QPixmap photo(300, 300);
-    int w = photo.width() / 3;
-    int h = photo.height() / 3;
-    QPainter painter(&photo);
-    for(auto i = 0; i != indexs.size(); ++i)
-    {
-        name += m_list[i].nickname;
-        if(i != indexs.size() - 1)
-            name += ",";
-        QPixmap img;
-        bool b = img.load(Account::instance()->getUserPhoto(m_list[i].userID.toStdString()));
-        int x = i % 3 * w;
-        int y = i / 3 * h;
-        painter.drawPixmap(x, y, w, h, img);
-    }
-    auto p = photo.toImage().bits();
-    std::string s((char *)p, 10);
-    proxy->addGroup(name.toStdString(), s);
-}
-
-void Contacts::removeGroup(int index)
-{
-
-}
-
-void Contacts::updateGroup()
-{
-
 }
 
 int Contacts::rowCount(const QModelIndex &parent) const

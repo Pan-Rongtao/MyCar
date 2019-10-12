@@ -33,13 +33,9 @@ public:
 signals:
 
 public slots:
-    void addFriend(const QList<int> &indexs);
-    void removeFriend(int index);
-    void updateFriend();
-
-    void createGroup(const QList<int> &indexs);
-    void removeGroup(int index);
-    void updateGroup();
+    void add(const QList<int> &indexs);
+    void remove(int index);
+    void update();
 
 private:
     Contacts();

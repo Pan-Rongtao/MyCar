@@ -66,9 +66,10 @@ RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &
 RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<P2PMessage> &);
 
-RCF_METHOD_V2(void, addGroup, const std::string &, const std::string &);
+RCF_METHOD_R2(std::string, addGroup, const std::string &, const std::string &);
 RCF_METHOD_V1(void, removeGroup, const std::string &);
-RCF_METHOD_V2(void, getGroup, const std::string &, GroupInfo &);
+RCF_METHOD_V2(void, getGroupInfo, const std::string &, GroupInfo &);
+RCF_METHOD_V2(void, getBelongGroups, const std::string &, std::vector<std::string> &);
 RCF_METHOD_V2(void, setGroupName, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setGroupInfo, const std::string &, const std::string &);
 RCF_METHOD_V2(void, addGroupMember, const std::string &, const std::string &);

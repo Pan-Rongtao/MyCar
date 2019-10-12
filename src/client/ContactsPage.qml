@@ -21,14 +21,18 @@ Rectangle{
         Row{
             width: parent.width;height: 80
             Item{ width: item0Width;height: parent.height;  }
-            Text {
-                id: head
-                text: qsTr("联系人")
+            Rectangle{
+                id:head
                 width: parent.width - add.width - item0Width;height: parent.height
-                font.pixelSize: 32
-                horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+                ToggleButton{
+                    id:tb
+                    width: 100;height: 30
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    leftString: "联系人" ;rightString: "群组"; rightColor: "deeppink"
+                    toggle: true
+                }
             }
-
 
             Button{ id:add; width: 50;height:width;
                 Image{width: parent.width;height: parent.height; source: "images/add_p.png"}
@@ -91,114 +95,116 @@ Rectangle{
             height: parent.height - head.height - tail.height - cotactsLayout.spacing * 2
             Item{ width: item0Width;height: parent.height;  }
             ListView{
-                id:list
-                width: parent.width - item0Width * 2
-                height: parent.height
+                id:listFriend
+                visible: tb.toggle
+                onVisibleChanged: if(visible)   Contacts.update()
+                width: parent.width - item0Width * 2; height: parent.height
                 model: Contacts
-                delegate: dlg
+                delegate: Component{
+                    Rectangle{
+                        id:bkg;radius: 5
+                        width: listFriend.width;height: 45
+                        Column{
+                            width: listFriend.width;height: parent.height
+                            Row{
+                                width: listFriend.width; height: parent.height - line.height; spacing: 30
+                                Image{ id:img;width: height;height: parent.height; source: "file:" + photo }
+                                Text{id:nick; width: parent.width - img.width; height: img.height;font.pixelSize: 20; font.bold: true;verticalAlignment: Text.AlignVCenter; text:nickname }
+                            }
+                            Image{ id:line; width: parent.width;height: 1; source: "/images/line.png" }
+                        }
+
+                        Menu{
+                            id: menu
+                            width: parent.width
+                            MenuItem {
+                                id: menuItem1
+                                height: bkg.height
+                                contentItem: Text {
+                                    text: "删除"
+                                    anchors.fill: parent ;font.bold: true;font.pixelSize: 18; color: menuItem1.down ? "#AA0000" : "#148014"
+                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                }
+                                onTriggered: Contacts.remove(removeIndex)
+                            }
+                        }
+                        MouseArea{
+                            anchors.fill: bkg
+                            onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
+                            onPressAndHold: {removeIndex = index; menu.open()}
+                            onClicked: {P2PChat.enter(index); enterChat(nick.text)}
+                        }
+                    }
+                }
             }
+            ListView{
+                id:listGroup
+                visible: !listFriend.visible
+                onVisibleChanged: if(visible)   Groups.update()
+                model: Groups
+                width: listFriend.width; height: listFriend.height
+                delegate: Component{
+                    Rectangle{
+                        id:bkg;radius: 5
+                        width: listFriend.width;height: 45
+                        Column{
+                            width: listFriend.width;height: parent.height
+                            Row{
+                                width: listFriend.width; height: parent.height - line.height; spacing: 30
+                                Image{ id:img;width: height;height: parent.height; source: "file:" + photo }
+                                Text{id:nick; width: parent.width - img.width; height: img.height;font.pixelSize: 20; font.bold: true;verticalAlignment: Text.AlignVCenter; text:name }
+                            }
+                            Image{ id:line; width: parent.width;height: 1; source: "/images/line.png" }
+                        }
+                        Menu{
+                            id: menu
+                            width: parent.width
+                            MenuItem {
+                                id: menuItem1
+                                height: bkg.height
+                                contentItem: Text {
+                                    text: "删除"
+                                    anchors.fill: parent ;font.bold: true;font.pixelSize: 18; color: menuItem1.down ? "#AA0000" : "#148014"
+                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                                }
+                                onTriggered: Groups.remove(removeIndex)
+                            }
+                        }
+                        MouseArea{
+                            anchors.fill: bkg
+                            onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
+                            onPressAndHold: {removeIndex = index; menu.open()}
+                            onClicked: {P2PChat.enter(index); enterChat(nick.text)}
+                        }
+                    }
+                }
+            }
+
             Item{ width: item0Width;height: parent.height; }
         }
 
         Text {
             id: tail
-            text: "共有 " + list.count + " 位联系人"
+            text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 位联系人" : "个群组")
             width: parent.width;height: 30
             font.pixelSize: 18;font.bold: true
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
         }
 
-        Component{
-            id:dlg
-            Rectangle{
-                id:bkg;radius: 5
-                width: list.width;height: 45
-                Column{
-                    width: list.width;height: parent.height
-                    Row{
-                        width: list.width;height: parent.height - line.height
-                        spacing: 30
-                        Image{
-                            id:img;width: height;height: parent.height
-                            source: "file:" + photo
-                        }
-                        Text{
-                            id:nick
-                            width: parent.width - img.width; height: img.height
-                            font.pixelSize: 20; font.bold: true
-                            verticalAlignment: Text.AlignVCenter
-                            text:nickname
-                        }
-                    }
-                    Image{
-                        id:line
-                        width: parent.width;height: 1
-                        source: "/images/line.png"
-                    }
-                }
-
-                Menu{
-                    id: menu
-                    width: parent.width
-                    MenuItem {
-                        id: menuItem1
-                        height: bkg.height
-                        contentItem: Text {
-                            id: text1
-                            text: "删除"
-                            font.bold: true;font.pixelSize: 18
-                            anchors.fill: parent
-                            opacity: enabled ? 1.0 : 0.3
-                            color: menuItem1.down ? "#AA0000" : "#148014"
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        onTriggered: Contacts.removeFriend(removeIndex)
-                    }
-                }
-                MouseArea{
-                    anchors.fill: bkg
-                    onPressed: bkg.color = "#33003300"
-                    onReleased:  bkg.color = "transparent"
-                    onCanceled:  bkg.color = "transparent"
-                    onPressAndHold: {removeIndex = index; menu.open()}
-                    onClicked: {P2PChat.enter(index); enterChat(nick.text)}
-                }
-
-            }
-        }
     }
 
     AddFiendPage{
         id:addfriend
-        anchors.fill: parent
-        anchors.margins: 25
-        visible: false
-        onFinished: visible = false
-        onVisibleChanged:
-        {
-            if(visible)
-                Users.update()
-            else
-                Contacts.updateFriend()
-        }
+        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
+        onVisibleChanged: if(visible) Users.update()
     }
 
     CreateGroupPage{
         id:createGroup
-        anchors.fill: parent
-        anchors.margins: 25
-        visible: false
-        onFinished: visible = false
-        onVisibleChanged:
-        {
-            if(visible)
-                Users.update()
-            else
-                Contacts.updateFriend()
-        }
+        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
+        onVisibleChanged: if(visible) Users.update()
     }
 
-    Component.onCompleted:    Contacts.updateFriend()
+    Component.onCompleted:    Contacts.update()
 
 }

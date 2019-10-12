@@ -38,9 +38,10 @@ public:
 	void getP2PMessage(const std::string &user0, const std::string &user1, std::vector<P2PMessage> &msgs);
 
 	//Èº×é
-	void addGroup(const std::string &name, const std::string &photo);
+	std::string addGroup(const std::string &name, const std::string &photo);
 	void removeGroup(const std::string &groupID);
-	void getGroup(const std::string &grouID, GroupInfo &info);
+	void getGroupInfo(const std::string &grouID, GroupInfo &info);
+	void getBelongGroups(const std::string &userID, std::vector<std::string>& groups);
 	void setGroupName(const std::string &groupID, const std::string &name);
 	void setGroupInfo(const std::string &groupID, const std::string &info);
 	void addGroupMember(const std::string &groupID, const std::string &userID);

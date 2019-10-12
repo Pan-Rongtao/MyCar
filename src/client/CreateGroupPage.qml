@@ -41,7 +41,7 @@ Rectangle {
         anchors.bottom: parent.bottom; anchors.bottomMargin: 20; anchors.horizontalCenterOffset: 80
         onClicked: {
             checkItems.sort()
-            Contacts.createGroup(checkItems)
+            Groups.create(checkItems)
             finished()
             }
     }

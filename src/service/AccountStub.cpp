@@ -283,14 +283,24 @@ void AccountStub::getP2PMessage(const std::string & user0, const std::string & u
 	}
 }
 
-void AccountStub::addGroup(const std::string & name, const std::string & photo)
+std::string AccountStub::addGroup(const std::string & name, const std::string & photo)
 {
 	std::vector<std::string> records;
 	DB::instance()->session() << "select GroupID from groups", into(records), now;
-	std::string _groupID = records.empty() ? "0" : std::to_string(std::stod(records.back()) + 1);
+	std::string _groupID = "group_";
+	if (records.empty())
+	{
+		_groupID += "0";
+	}
+	else
+	{
+		auto last = records.back();
+		auto num = std::to_string(std::stoi(last.substr(last.find('_') + 1)) + 1);
+		_groupID += num;
+	}
 	std::string _name = name;
 	std::string _info = "欢迎大家";
-	auto _path = "group_" + _groupID + ".jpg";
+	auto _path = _groupID + ".jpg";
 	FILE *pf = fopen(_path.data(), "wb");
 	if (pf)
 		fwrite(photo.data(), 1, photo.size(), pf);
@@ -298,10 +308,12 @@ void AccountStub::addGroup(const std::string & name, const std::string & photo)
 	try {
 		DB::instance()->session() << "insert into groups values(?, ?, ?, ?)", use(_groupID), use(_name), use(_path), use(_info), now;
 		Log::info(LOG_TAG, "addGroup[%s]", _groupID.data());
+		return _groupID;
 	}
 	catch (Poco::Exception &e) {
 		(void)e;
 		Log::error(LOG_TAG, "group[%s] already exists, ignore.", _groupID.data());
+		return "";
 	}
 }
 
@@ -312,7 +324,7 @@ void AccountStub::removeGroup(const std::string & groupID)
 	Log::info(LOG_TAG, "removeGroup[%s]", _groupID.data());
 }
 
-void AccountStub::getGroup(const std::string & grouID, GroupInfo & info)
+void AccountStub::getGroupInfo(const std::string & grouID, GroupInfo & info)
 {
 	auto _id = grouID;
 	Statement select(DB::instance()->session());
@@ -322,9 +334,15 @@ void AccountStub::getGroup(const std::string & grouID, GroupInfo & info)
 	{
 		info.ID = rs[0].convert<std::string>();
 		info.name = rs[1].convert<std::string>();
-		info.photo = rs[2].convert<std::string>();
-		info.info = loadImage(rs[3].convert<std::string>());
+		info.photo = loadImage(rs[2].convert<std::string>());
+		info.info = rs[3].convert<std::string>();
 	}
+}
+
+void AccountStub::getBelongGroups(const std::string &userID, std::vector<std::string>& groups)
+{
+	auto _userID = userID;
+	DB::instance()->session() << "select GroupID from groupmembers where UserID=?", into(groups), use(_userID), now;
 }
 
 void AccountStub::setGroupName(const std::string & groupID, const std::string & name)
