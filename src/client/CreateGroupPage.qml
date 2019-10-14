@@ -30,7 +30,13 @@ Rectangle {
             width: parent.width
             height: 40
             canCheck: true
-
+            onCheck:
+            {
+                if(check)
+                    checkItems.push(index)
+                else
+                    checkItems.splice(checkItems.indexOf(index), 1)
+            }
         }
     }
 

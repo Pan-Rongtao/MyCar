@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
+import UIT.Type 1.0
 
 Rectangle{
     id:root
@@ -30,7 +31,7 @@ Rectangle{
 
             Button{ id:add; width: 30;height:width;
                 Image{width: parent.width;height: parent.height; source: "images/option.png"}
-                onClicked: editPage.visible = !editPage.visible
+                onClicked: LayerManager.switchPop(LayerManager.currentPop == Type.Pop_GroupInfo ? Type.Pop_None : Type.Pop_GroupInfo)
             }
         }
 
@@ -42,7 +43,9 @@ Rectangle{
             anchors.leftMargin: 10;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin
             model: GroupChat
-            delegate: dlg
+            delegate: ChatItemComponent{
+                width: parent.width
+            }
             onCountChanged: list.positionViewAtEnd()
         }
         Row{
@@ -70,60 +73,6 @@ Rectangle{
         GroupChat.sendMessage(txtMsg.text)
         txtMsg.clear()
         txtMsg.focus = true
-    }
-
-    Component{
-        id:dlg
-        Rectangle{
-            id:bkg;radius: 5
-            width: list.width;height: x.height
-            Row{
-                width: list.width;height: x.height
-                layoutDirection: iSend ? Qt.RightToLeft : Qt.LeftToRight
-                spacing: 10
-                Image{
-                    id:img;width: height;height: 40
-                    source: "file:" + photo
-                }
-                Column{
-                    id:x
-                    width: parent.width - img.width
-                    height: sender.height + content.height
-                    Text{
-                        id:sender
-                        width: parent.width;height: 30
-                        font.pixelSize: 16;font.bold: true
-                        verticalAlignment: Text.AlignVCenter
-                        color: "gray"
-                        text: iSend ? "" : nickname
-                    }
-                    Rectangle
-                    {
-                        id:content
-                        width: Math.min(tt.contentWidth + 20, parent.width * 0.8); height: tt.font.pixelSize*(tt.lineCount - 1)+35
-                        radius: 5
-                        x:iSend ? bkg.width - width - img.width : 0
-                        color: iSend ? "limegreen" : "lavender"
-                        Text {
-                            id:tt
-                            anchors.margins: 5
-                            anchors.fill: parent
-                            font.bold: true; font.pixelSize: 18
-                            //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                            horizontalAlignment: Text.AlignLeft
-                            verticalAlignment: Text.AlignTop
-                            text: msg
-                            onWidthChanged: if(width>parent.width*0.8) wrapMode=Text.WrapAnywhere
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    EditGroupPage{
-        id:editPage
-        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
     }
 
     Component.onCompleted:{

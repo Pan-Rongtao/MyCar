@@ -66,17 +66,14 @@ void Groups::create(const QList<int> &indexs)
     for(auto i = 0; i != indexs.size(); ++i)
     {
         if(i <= 2)
-        {
-            name += friends[indexs[i]].name;
-            name += ",";
-        }
+            name += (friends[indexs[i]].name + ",");
         QPixmap img;
         bool b = img.load(Account::instance()->getUserPhoto(friends[indexs[i]].id.toStdString()));
         int x = (i + 1) % 3 * w;
         int y = (i + 1) / 3 * h;
         painter.drawPixmap(x, y, w, h, img);
     }
-    name += "...";
+    name = name.left(name.length() - 1) + "...";
     b = photo.toImage().save("grouptemp.jpg");
     QFile f("grouptemp.jpg");
     b = f.open(QFile::ReadOnly);
