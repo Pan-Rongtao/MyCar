@@ -1,5 +1,4 @@
-#ifndef IMAGEPROVIDER_H
-#define IMAGEPROVIDER_H
+#pragma once
 #include <QQuickImageProvider>
 #include <QImage>
 
@@ -25,5 +24,3 @@ private:
     ImageProvider();
 
 };
-
-#endif // IMAGEPROVIDER_H

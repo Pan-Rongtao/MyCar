@@ -9,10 +9,10 @@
         <file>LoginPage.qml</file>
         <file>CarPage.qml</file>
         <file>PCPage.qml</file>
-        <file>HandledPage.qml</file>
+        <file>CellphonePage.qml</file>
         <file>ContactsPage.qml</file>
         <file>MessagePage.qml</file>
-        <file>MePage.qml</file>
+        <file>MyAccountPage.qml</file>
         <file>Pop.qml</file>
         <file>ToggleButton.qml</file>
         <file>images/bg.jpg</file>
@@ -32,7 +32,7 @@
         <file>images/line.png</file>
         <file>images/add.png</file>
         <file>images/add_p.png</file>
-        <file>AddFiendPage.qml</file>
+        <file>AddFriendPage.qml</file>
         <file>images/trash.png</file>
         <file>P2PChatPage.qml</file>
         <file>images/add_group.png</file>
@@ -41,6 +41,8 @@
         <file>images/list_bg.png</file>
         <file>GroupChatPage.qml</file>
         <file>images/option.png</file>
-        <file>EditGroupPage.qml</file>
+        <file>GroupInfoPage.qml</file>
+        <file>UserItemComponent.qml</file>
+        <file>ChatItemComponent.qml</file>
     </qresource>
 </RCC>

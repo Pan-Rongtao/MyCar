@@ -1,8 +1,9 @@
 #include "P2PChat.h"
 #include <QFile>
+#include <QDebug>
 #include "Proxy.h"
 #include "Account.h"
-#include "Contacts.h"
+#include "Friends.h"
 
 P2PChat::P2PChat()
 {
@@ -30,7 +31,7 @@ QString P2PChat::friendNickname()
     return m_friendNickname;
 }
 
-QList<P2PChatItem> &P2PChat::items()
+QList<ChatItem> &P2PChat::items()
 {
     return m_list;
 }
@@ -66,10 +67,11 @@ QHash<int, QByteArray> P2PChat::roleNames() const
     return roles;
 }
 
-void P2PChat::enter(int friendRowIndex)
+void P2PChat::enter(int index)
 {
-    m_friendID = Contacts::instance()->items()[friendRowIndex].userID;
-    m_friendNickname = Contacts::instance()->items()[friendRowIndex].nickname;
+    m_friendID = Friends::instance()->items()[index].id;
+    m_friendNickname = Friends::instance()->items()[index].name;
+    qDebug() << m_friendID << "," << m_friendNickname;
 }
 
 void P2PChat::sendMessage(const QString &msg)
@@ -90,8 +92,8 @@ void P2PChat::update()
     {
         bool bIamSender = msg.fromID == Account::instance()->userID().toStdString();
         auto nick = bIamSender ? Account::instance()->nickname() : m_friendNickname;
-        auto photo = Account::instance()->getUserPhoto(msg.fromID);//bIamSender ? "me.jpg" : m_friendPhoto;
-        P2PChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
+        auto photo = Account::instance()->getUserPhoto(msg.fromID);
+        ChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
         m_list.append(item);
     }
     endResetModel();

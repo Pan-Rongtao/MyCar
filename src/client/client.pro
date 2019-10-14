@@ -7,25 +7,29 @@ HEADERS += \
     Account.h \
     ImageProvider.h \
     Car.h \
-    Contacts.h \
     Users.h \
     MessageList.h \
     P2PChat.h \
     Proxy.h \
     Groups.h \
-    GroupChat.h
+    GroupChat.h \
+    Item.h \
+    Friends.h \
+    LayerManager.h \
+    Type.h
 
 SOURCES += main.cpp \
 	Account.cpp \
     ImageProvider.cpp \
     Car.cpp \
-    Contacts.cpp \
     Users.cpp \
     MessageList.cpp \
     P2PChat.cpp \
     Proxy.cpp \
     Groups.cpp \
-    GroupChat.cpp
+    GroupChat.cpp \
+    Friends.cpp \
+    LayerManager.cpp
 
 RESOURCES += qml.qrc
 

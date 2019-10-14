@@ -2,7 +2,7 @@
 #include <QFile>
 #include "Proxy.h"
 #include "Account.h"
-#include "Contacts.h"
+#include "Friends.h"
 #include "Groups.h"
 
 GroupChat::GroupChat()
@@ -45,7 +45,7 @@ QString GroupChat::groupID()
     return m_groupID;
 }
 
-QList<GroupChatItem> &GroupChat::items()
+QList<ChatItem> &GroupChat::items()
 {
     return m_list;
 }
@@ -83,7 +83,7 @@ QHash<int, QByteArray> GroupChat::roleNames() const
 
 void GroupChat::enter(int index)
 {
-    m_groupID = Groups::instance()->items()[index].groupID;
+    m_groupID = Groups::instance()->items()[index].id;
     m_groupName = Groups::instance()->items()[index].name;
 }
 
@@ -108,7 +108,7 @@ void GroupChat::update()
         proxy->getAccountInfo(msg.fromID, info);
         auto nick = QString::fromStdString(info.nickname);
         auto photo = Account::instance()->getUserPhoto(msg.fromID);
-        GroupChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
+        ChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
         m_list.append(item);
     }
     endResetModel();
@@ -145,8 +145,8 @@ QVariant GroupMembers::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].userID;
-    case 1: return m_list[index.row()].nickname;
+    case 0: return m_list[index.row()].id;
+    case 1: return m_list[index.row()].name;
     case 2: return m_list[index.row()].photo;
     default:return QVariant();
     }
@@ -155,8 +155,8 @@ QVariant GroupMembers::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> GroupMembers::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "userID";
-    roles[1] = "nickname";
+    roles[0] = "id";
+    roles[1] = "name";
     roles[2] = "photo";
     return roles;
 }

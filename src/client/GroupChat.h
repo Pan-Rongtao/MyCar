@@ -1,27 +1,7 @@
 #pragma once
-
 #include <QObject>
 #include <QAbstractListModel>
-#include "Proxy.h"
-#include "Users.h"
-
-class GroupChatItem
-{
-public:
-    GroupChatItem(const QString &_nickname, const QString &_photo, const QString &_msg, const QString &_time, bool _iSend)
-        : nickname(_nickname)
-        , photo(_photo)
-        , msg(_msg)
-        , time(_time)
-        , iSend(_iSend)
-    {}
-
-    QString nickname;
-    QString photo;
-    QString msg;
-    QString time;
-    bool    iSend;
-};
+#include "Item.h"
 
 class GroupChat : public QAbstractListModel
 {
@@ -37,7 +17,7 @@ public:
     void setgroupID(QString groupID);
     QString groupID();
 
-    QList<GroupChatItem> &items();
+    QList<ChatItem> &items();
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
@@ -57,9 +37,9 @@ public slots:
 private:
     GroupChat();
 
-    QList<GroupChatItem>m_list;
-    QString             m_groupID;
-    QString             m_groupName;
+    QList<ChatItem> m_list;
+    QString         m_groupID;
+    QString         m_groupName;
 };
 
 class GroupMembers : public QAbstractListModel

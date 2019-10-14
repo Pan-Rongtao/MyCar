@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.1
+import UIT.Type 1.0
 
 Rectangle{
     id:root
@@ -18,24 +19,29 @@ Rectangle{
         width: parent.width
         height: parent.height
         spacing: 30
-
         Row{
-            width: parent.width;height: 80
+            id:head
+            width: parent.width
+            height: 80
             Item{ width: item0Width;height: parent.height;  }
             Rectangle{
-                id:head
-                width: parent.width - add.width - item0Width;height: parent.height
+                width: parent.width - add.width - item0Width
+                height: parent.height
                 ToggleButton{
                     id:tb
-                    width: 100;height: 30
+                    width: 100
+                    height: 30
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    leftString: "联系人" ;rightString: "群组"; rightColor: "deeppink"
+                    leftString: "朋友" ;rightString: "群组"; rightColor: "deeppink"
                     toggle: true
                 }
             }
 
-            Button{ id:add; width: 50;height:width;
+            Button{
+                id:add
+                width: 50
+                height:width
                 Image{width: parent.width;height: parent.height; source: "images/add_p.png"}
                 onClicked: menu.open()
                 Menu{
@@ -61,7 +67,7 @@ Rectangle{
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
-                        onTriggered: { addfriend.visible = false; createGroup.visible = true}
+                        onTriggered: LayerManager.switchPop(Type.Pop_CreateGroup)
                     }
                     MenuItem {
                         id: menuItem1
@@ -83,7 +89,7 @@ Rectangle{
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
-                        onTriggered: { addfriend.visible = true; createGroup.visible = false}
+                        onTriggered: LayerManager.switchPop(Type.Pop_AddFriend)
                     }
 
                 }
@@ -91,121 +97,60 @@ Rectangle{
 
         }
 
-        Row{
+        Rectangle{
             width: parent.width
-            height: parent.height - head.height - tail.height - cotactsLayout.spacing * 2
-            Item{ width: item0Width;height: parent.height;  }
+            height: parent.height - head.height - tail.height - parent.spacing * 2
             ListView{
                 id:listFriend
                 visible: tb.toggle
-                onVisibleChanged: if(visible)   Contacts.update()
-                width: parent.width - item0Width * 2; height: parent.height
-                model: Contacts
-                delegate: Component{
-                    Rectangle{
-                        id:bkg;radius: 5
-                        width: listFriend.width;height: 45
-                        Column{
-                            width: listFriend.width;height: parent.height
-                            Row{
-                                width: listFriend.width; height: parent.height - line.height; spacing: 30
-                                Image{ id:img;width: height;height: parent.height; source: "file:" + photo }
-                                Text{id:nick; width: parent.width - img.width; height: img.height;font.pixelSize: 20; font.bold: true;verticalAlignment: Text.AlignVCenter; text:nickname }
-                            }
-                            Image{ id:line; width: parent.width;height: 1; source: "/images/line.png" }
-                        }
-
-                        Menu{
-                            id: menu
-                            width: parent.width
-                            MenuItem {
-                                id: menuItem1
-                                height: bkg.height
-                                contentItem: Text {
-                                    text: "删除"
-                                    anchors.fill: parent ;font.bold: true;font.pixelSize: 18; color: menuItem1.down ? "#AA0000" : "#148014"
-                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-                                }
-                                onTriggered: Contacts.remove(removeIndex)
-                            }
-                        }
-                        MouseArea{
-                            anchors.fill: bkg
-                            onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
-                            onPressAndHold: {removeIndex = index; menu.open()}
-                            onClicked: {P2PChat.enter(index); enterP2PChat(nick.text)}
-                        }
+                anchors.fill: parent
+                anchors.margins: 20
+                model: Friends
+                Component.onCompleted: Friends.update()
+                delegate: UserItemComponent
+                {
+                    width: parent.width
+                    height: 45
+                    canEdit: true
+                    onMenuTriggered: Friends.remove(itemIndex)
+                    onClick: {
+                        P2PChat.enter(index)
+                        LayerManager.switchPage(Type.Page_P2PChat)
                     }
                 }
             }
             ListView{
                 id:listGroup
                 visible: !listFriend.visible
-                onVisibleChanged: if(visible)   Groups.update()
                 model: Groups
-                width: listFriend.width; height: listFriend.height
-                delegate: Component{
-                    Rectangle{
-                        id:bkg;radius: 5
-                        width: listFriend.width;height: 45
-                        Column{
-                            width: listFriend.width;height: parent.height
-                            Row{
-                                width: listFriend.width; height: parent.height - line.height; spacing: 30
-                                Image{ id:img;width: height;height: parent.height; source: "file:" + photo }
-                                Text{id:nick; width: parent.width - img.width; height: img.height;font.pixelSize: 20; font.bold: true;verticalAlignment: Text.AlignVCenter; text:name }
-                            }
-                            Image{ id:line; width: parent.width;height: 1; source: "/images/line.png" }
-                        }
-                        Menu{
-                            id: menu
-                            width: parent.width
-                            MenuItem {
-                                id: menuItem1
-                                height: bkg.height
-                                contentItem: Text {
-                                    text: "删除"
-                                    anchors.fill: parent ;font.bold: true;font.pixelSize: 18; color: menuItem1.down ? "#AA0000" : "#148014"
-                                    horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-                                }
-                                onTriggered: Groups.remove(removeIndex)
-                            }
-                        }
-                        MouseArea{
-                            anchors.fill: bkg
-                            onPressed: bkg.color = "#33003300"; onReleased:  bkg.color = "transparent"; onCanceled:  bkg.color = "transparent"
-                            onPressAndHold: {removeIndex = index; menu.open()}
-                            onClicked: {GroupChat.enter(index); enterGroupChat()}
-                        }
+                anchors.fill: parent
+                anchors.margins: 20
+                Component.onCompleted: Groups.update()
+                delegate: UserItemComponent
+                {
+                    width: parent.width
+                    height: 45
+                    canEdit: true
+                    onMenuTriggered: Groups.remove(itemIndex)
+                    onClick: {
+                        GroupChat.enter(index)
+                        LayerManager.switchPage(Type.Page_GroupChat)
                     }
                 }
             }
-
-            Item{ width: item0Width;height: parent.height; }
         }
 
         Text {
             id: tail
-            text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 位联系人" : " 个群组")
-            width: parent.width;height: 30
-            font.pixelSize: 18;font.bold: true
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+            text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 个朋友" : " 个群组")
+            width: parent.width
+            height: 30
+            font.pixelSize: 18
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
     }
-
-    AddFiendPage{
-        id:addfriend
-        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
-        onVisibleChanged: if(visible) Users.update()
-    }
-
-    CreateGroupPage{
-        id:createGroup
-        anchors.fill: parent; anchors.margins: 25; visible: false; onFinished: visible = false
-        onVisibleChanged: if(visible) Users.update()
-    }
-
-    Component.onCompleted:    Contacts.update()
 
 }

@@ -31,8 +31,8 @@ QVariant Users::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].userID;
-    case 1: return m_list[index.row()].nickname;
+    case 0: return m_list[index.row()].id;
+    case 1: return m_list[index.row()].name;
     case 2: return m_list[index.row()].photo;
     default:return QVariant();
     }
@@ -41,8 +41,8 @@ QVariant Users::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> Users::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "userID";
-    roles[1] = "nickname";
+    roles[0] = "id";
+    roles[1] = "name";
     roles[2] = "photo";
     return roles;
 }

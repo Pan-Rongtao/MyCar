@@ -4,7 +4,7 @@
 #include <QFile>
 #include "Account.h"
 #include "Proxy.h"
-#include "Contacts.h"
+#include "Friends.h"
 
 Groups::Groups()
 {
@@ -18,7 +18,7 @@ Groups *Groups::instance()
     return p;
 }
 
-QList<GroupItem> &Groups::items()
+QList<UserItem> &Groups::items()
 {
     return m_list;
 }
@@ -35,7 +35,7 @@ QVariant Groups::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].groupID;
+    case 0: return m_list[index.row()].id;
     case 1: return m_list[index.row()].name;
     case 2: return m_list[index.row()].photo;
     default:return QVariant();
@@ -45,7 +45,7 @@ QVariant Groups::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> Groups::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "groupID";
+    roles[0] = "id";
     roles[1] = "name";
     roles[2] = "photo";
     return roles;
@@ -62,16 +62,16 @@ void Groups::create(const QList<int> &indexs)
     QPixmap img;
     bool b = img.load(Account::instance()->getUserPhoto(Account::instance()->userID().toStdString()));
     painter.drawPixmap(0, 0, w, h, img);
-    auto friends = Contacts::instance()->items();
+    auto friends = Friends::instance()->items();
     for(auto i = 0; i != indexs.size(); ++i)
     {
         if(i <= 2)
         {
-            name += friends[indexs[i]].nickname;
+            name += friends[indexs[i]].name;
             name += ",";
         }
         QPixmap img;
-        bool b = img.load(Account::instance()->getUserPhoto(friends[indexs[i]].userID.toStdString()));
+        bool b = img.load(Account::instance()->getUserPhoto(friends[indexs[i]].id.toStdString()));
         int x = (i + 1) % 3 * w;
         int y = (i + 1) / 3 * h;
         painter.drawPixmap(x, y, w, h, img);
@@ -86,7 +86,7 @@ void Groups::create(const QList<int> &indexs)
     for(auto index : indexs)
     {
         auto addMember = friends[index];
-        proxy->addGroupMember(groupID, addMember.userID.toStdString());
+        proxy->addGroupMember(groupID, addMember.id.toStdString());
     }
     update();
 }
@@ -94,7 +94,7 @@ void Groups::create(const QList<int> &indexs)
 void Groups::remove(int index)
 {
     auto proxy = Proxy::instance()->accountProxy();
-    proxy->removeGroupMember(m_list[index].groupID.toStdString(), Account::instance()->userID().toStdString());
+    proxy->removeGroupMember(m_list[index].id.toStdString(), Account::instance()->userID().toStdString());
     update();
 }
 
@@ -110,7 +110,7 @@ void Groups::update()
         GroupInfo info;
         proxy->getGroupInfo(groupID, info);
         Account::instance()->saveUserPhoto(info.ID, info.photo);
-        GroupItem item(QString::fromStdString(info.ID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.ID));
+        UserItem item(QString::fromStdString(info.ID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.ID));
         m_list.append(item);
     }
     endResetModel();

@@ -15,11 +15,12 @@ Rectangle{
         Text {
             id:title
             text: P2PChat.friendNickname
-            width: parent.width;height: 60
+            width: parent.width
+            height: 60
             font.pixelSize: 26
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
-
 
         ListView{
             id:list
@@ -27,7 +28,10 @@ Rectangle{
             anchors.leftMargin: 10;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin
             model: P2PChat
-            delegate: dlg
+            delegate: ChatItemComponent{
+                width: parent.width
+            }
+
             onCountChanged: list.positionViewAtEnd()
         }
         Row{

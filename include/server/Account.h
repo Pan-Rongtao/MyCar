@@ -71,9 +71,9 @@ RCF_METHOD_R3(bool, setPadOnline, const std::string &, const std::string &, bool
 RCF_METHOD_R2(bool, getAccountInfo, const std::string &, AccountInfo &);
 RCF_METHOD_R1(bool, queryAllAccountInfo, std::vector<AccountInfo> &);
 
-RCF_METHOD_R2(bool, addContacts, const std::string &, const std::string &);
-RCF_METHOD_R2(bool, removeContacts, const std::string &, const std::string &);
-RCF_METHOD_R2(bool, getContacts, const std::string &, std::vector<std::string> &);
+RCF_METHOD_R2(bool, addFriend, const std::string &, const std::string &);
+RCF_METHOD_R2(bool, removeFriend, const std::string &, const std::string &);
+RCF_METHOD_R2(bool, getFriends, const std::string &, std::vector<std::string> &);
 
 RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<P2PMessage> &);

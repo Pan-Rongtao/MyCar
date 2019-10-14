@@ -2,6 +2,7 @@ import QtQuick 2.8
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
+import UIT.Type 1.0
 
 Window {
     id:window
@@ -20,36 +21,55 @@ Window {
             height: horizontal ? window.height * 0.2 : window.height
             horizontal: window.width < window.height
             anchors.bottom: parent.bottom
-            onNaviTo: {
-                if(!Account.islogin())            {pop.open(); return;}
-                if(page === "me")               pageContainer.source = Account.islogin ? "MePage.qml" : "LoginPage.qml"
-                else if(page === "car")         pageContainer.source = "CarPage.qml"
-                else if(page === "pc")          pageContainer.source = "PCPage.qml"
-                else if(page === "cellphone")   pageContainer.source = "HandledPage.qml"
-                else if(page === "message")     pageContainer.source = "MessagePage.qml"
-                else if(page === "contacts")    pageContainer.source = "ContactsPage.qml"
-            }
         }
 
         Item{
             width: bar.horizontal ? window.width : window.width - bar.width
             height: bar.horizontal ? window.height - bar.height : window.height
             anchors.left: bar.horizontal ? parent.left : bar.right
-
             Loader{
                 id:pageContainer
                 width: parent.width
                 height: parent.height
-            //    source: "LoginPage.qml"
             }
+            Loader{
+                id:popContainer
+                width: parent.width
+                height: parent.height
+            }
+
             Connections{
-                target: pageContainer.item
-                onNaviToLogin: pageContainer.source = "LoginPage.qml"
-                onNaviToRegist: pageContainer.source = "RegistPage.qml"
-                onLoginResult: if(success) pageContainer.source = "MePage.qml"
-                onLogout: pageContainer.source = "LoginPage.qml"
-                onEnterP2PChat: {pageContainer.source = "P2PChatPage.qml"; P2PChat.who = who}
-                onEnterGroupChat : {pageContainer.source = "GroupChatPage.qml"}
+                target: LayerManager
+                onCurrentPageChanged :
+                {
+                    switch(LayerManager.currentPage)
+                    {
+                    case Type.Page_Regist:      pageContainer.source = "RegistPage.qml";    break;
+                    case Type.Page_Login:       pageContainer.source = "LoginPage.qml";     break;
+                    case Type.Page_Account:     pageContainer.source = "MyAccountPage.qml"; break;
+                    case Type.Page_Car:         pageContainer.source = "CarPage.qml";       break;
+                    case Type.Page_PC:          pageContainer.source = "PCPage.qml";        break;
+                    case Type.Page_Cellphone:   pageContainer.source = "CellphonePage.qml"; break;
+                    case Type.Page_Message:     pageContainer.source = "MessagePage.qml";   break;
+                    case Type.Page_Contacts:    pageContainer.source = "ContactsPage.qml";  break;
+                    case Type.Page_P2PChat:     pageContainer.source = "P2PChatPage.qml";   break;
+                    case Type.Page_GroupChat:   pageContainer.source = "GroupChatPage.qml"; break;
+                    default: break
+                    }
+                }
+                onCurrentPopChanged:
+                {
+                    switch(LayerManager.currentPop)
+                    {
+                    case Type.Pop_None:         popContainer.source = "";  break;
+                    case Type.Pop_AddFriend:    popContainer.source = "AddFriendPage.qml";  break;
+                    case Type.Pop_AddGroupMember:popContainer.source = "AddGroupMember.qml";break;
+                    case Type.Pop_CreateGroup:  popContainer.source = "CreateGroupPage.qml";break;
+                    case Type.Pop_GroupInfo:    popContainer.source = "GroupInfoPage.qml";  break;
+                    default: break;
+                    }
+
+                }
             }
 
             Image{
@@ -57,18 +77,17 @@ Window {
                 height: parent.height
                 source: "images/bg.jpg"
                 opacity: 0.3
-                //visible: false
             }
 
             Pop{
-                id:pop
                 content: "请先登录"
                 autohide: 1500
+                visible: LayerManager.notLoginWarn
             }
 
         }
     }
-    Component.onCompleted: pageContainer.source = "LoginPage.qml"
+    Component.onCompleted: LayerManager.switchPage(Type.Page_Login)
     Component.onDestruction: Account.logout(Account.userID, Account.password)
 
 }

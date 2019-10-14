@@ -12,7 +12,7 @@ MessageList *MessageList::instance()
     return p;
 }
 
-QList<MessageItem> &MessageList::items()
+QList<ChatItem> &MessageList::items()
 {
     return m_list;
 }
@@ -28,11 +28,11 @@ QVariant MessageList::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].userID;
+    case 0: return m_list[index.row()].nickname;
     case 1: return m_list[index.row()].photo;
-    case 2: return m_list[index.row()].from;
-    case 3: return m_list[index.row()].msg;
-    case 4: return m_list[index.row()].time;
+    case 2: return m_list[index.row()].msg;
+    case 3: return m_list[index.row()].time;
+    case 4: return m_list[index.row()].iSend;
     default:return QVariant();
     }
 }
@@ -40,10 +40,10 @@ QVariant MessageList::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> MessageList::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "userID";
+    roles[0] = "name";
     roles[1] = "photo";
-    roles[2] = "from";
-    roles[3] = "msg";
-    roles[4] = "time";
+    roles[2] = "msg";
+    roles[3] = "time";
+    roles[4] = "iSend";
     return roles;
 }

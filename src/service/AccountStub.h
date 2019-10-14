@@ -29,9 +29,9 @@ public:
 	bool queryAllAccountInfo(std::vector<AccountInfo> &infos);
 
 	//联系人
-	bool addContacts(const std::string &userID, const std::string &friendID);
-	bool removeContacts(const std::string &userID, const std::string &friendID);
-	bool getContacts(const std::string &userID, std::vector<std::string> &friends);
+	bool addFriend(const std::string &userID, const std::string &friendID);
+	bool removeFriend(const std::string &userID, const std::string &friendID);
+	bool getFriends(const std::string &userID, std::vector<std::string> &friends);
 
 	//消息
 	void addP2PMessage(const std::string &fromID, const std::string &toID, const std::string &msg);

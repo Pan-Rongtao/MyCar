@@ -6,12 +6,13 @@
 #include "Account.h"
 #include "Car.h"
 #include "ImageProvider.h"
-#include "Contacts.h"
+#include "Friends.h"
 #include "Users.h"
 #include "MessageList.h"
 #include "P2PChat.h"
 #include "Groups.h"
 #include "GroupChat.h"
+#include "LayerManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,10 +21,13 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("somecompany.com");
     app.setApplicationName("Amazing Application");
 
+    qmlRegisterType<Type>("UIT.Type", 1, 0, "Type");
+
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("LayerManager", LayerManager::instance());
     engine.rootContext()->setContextProperty("Account", Account::instance());
     engine.rootContext()->setContextProperty("Car", Car::instance());
-    engine.rootContext()->setContextProperty("Contacts", Contacts::instance());
+    engine.rootContext()->setContextProperty("Friends", Friends::instance());
     engine.rootContext()->setContextProperty("Users", Users::instance());
     engine.rootContext()->setContextProperty("MessageList", MessageList::instance());
     engine.rootContext()->setContextProperty("P2PChat", P2PChat::instance());
@@ -33,18 +37,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("ImageProvider", ImageProvider::instance());
     engine.addImageProvider("ImgProvider", ImageProvider::instance());
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
-/*
-    MessageList::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
-    MessageList::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
-    MessageList::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
-    MessageList::instance()->items().append(MessageItem("uidp3575", "e:/5.jpg", "Pan", "hello!", QTime::currentTime().toString()));
-
-    P2PChat::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "000000", QTime::currentTime().toString(), false));
-    P2PChat::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "111", QTime::currentTime().toString(), false));
-    P2PChat::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "222", QTime::currentTime().toString(), false));
-    P2PChat::instance()->items().append(P2PChatItem("Pan", "e:/5.jpg", "hello1472347329eua4urq983ruq89y3tq98eur9q83y9rq8y39rqy9weyrq9wyr9qy39y34q9yr9", QTime::currentTime().toString(), true));
-*/
 
     std::string ip = Proxy::instance()->getLocalIp();
     auto interfacePort = 8888;

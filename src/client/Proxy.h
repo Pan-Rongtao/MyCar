@@ -1,6 +1,4 @@
-#ifndef PROXY_H
-#define PROXY_H
-
+#pragma once
 #define WIN32_WINNT 0x60
 #define WIN32_LEAN_AND_MEAN
 
@@ -54,5 +52,3 @@ private:
     RCF::SubscriptionPtr                        m_carSubscription;
     bool                                        m_connected;
 };
-
-#endif // PROXY_H

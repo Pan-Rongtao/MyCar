@@ -1,21 +1,7 @@
 #pragma once
-
 #include <QObject>
 #include <QAbstractListModel>
-
-class UserItem
-{
-public:
-    UserItem(const QString &_userID, const QString &_nickname, const QString &_photo)
-        : userID(_userID)
-        , nickname(_nickname)
-        , photo(_photo)
-    {}
-
-    QString userID;
-    QString nickname;
-    QString photo;
-};
+#include "Item.h"
 
 class Users : public QAbstractListModel
 {

@@ -14,23 +14,30 @@ Rectangle {
         width: parent.width
         height: 50
         font.bold: true
-        font.pixelSize: 22
+        font.pixelSize: 22;
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "blue"
-        text: "创建群聊"
+        text: "添加朋友"
     }
     ListView{
         id:list
         anchors.fill: parent
         anchors.leftMargin: 30;anchors.rightMargin: anchors.leftMargin
         anchors.topMargin: 100;anchors.bottomMargin: anchors.topMargin
-        model: Friends
+        model: Users
         delegate: UserItemComponent{
-            width: parent.width
+            width: list.width
             height: 40
             canCheck: true
-
+            canEdit: false
+            onCheck:
+            {
+                if(check)
+                    checkItems.push(index)
+                else
+                    checkItems.splice(checkItems.indexOf(index), 1)
+            }
         }
     }
 
@@ -51,10 +58,9 @@ Rectangle {
         onClicked:
         {
             checkItems.sort()
-            Groups.create(checkItems)
+            Friends.add(checkItems)
             LayerManager.switchPop(Type.Pop_None)
         }
     }
-
-    Component.onCompleted: Friends.update()
+    Component.onCompleted: Users.update()
 }

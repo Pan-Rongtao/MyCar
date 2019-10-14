@@ -219,33 +219,33 @@ bool AccountStub::queryAllAccountInfo(std::vector<AccountInfo>& infos)
 	return true;
 }
 
-bool AccountStub::addContacts(const std::string & userID, const std::string & friendID)
+bool AccountStub::addFriend(const std::string & userID, const std::string & friendID)
 {
 	std::string _userID = userID;
 	std::string _friendID = friendID;
 	std::string _remark = friendID;
 	try {
 		DB::instance()->session() << "insert into friends values(?, ?, ?)", use(_userID), use(_friendID), use(_remark), now;
-		Log::info(LOG_TAG, "user[%s] addContacts[%s]", userID.data(), friendID.data());
+		Log::info(LOG_TAG, "user[%s] addFriend[%s]", userID.data(), friendID.data());
 		return true;
 	}
 	catch (Poco::Exception &e) {
 		(void)e;
-		Log::error(LOG_TAG, "user[%s] already has contacts[%s], ignore.", userID.data(), friendID.data());
+		Log::error(LOG_TAG, "user[%s] already has friend[%s], ignore.", userID.data(), friendID.data());
 		return false;
 	}
 }
 
-bool AccountStub::removeContacts(const std::string & userID, const std::string & friendID)
+bool AccountStub::removeFriend(const std::string & userID, const std::string & friendID)
 {
 	std::string _userID = userID;
 	std::string _friendID = friendID;
 	DB::instance()->session() << "delete from friends where UserID=? and FriendID=?", use(_userID), use(_friendID), now;
-	Log::info(LOG_TAG, "user[%s] removeContacts[%s]", userID.data(), friendID.data());
+	Log::info(LOG_TAG, "user[%s] removeFriend[%s]", userID.data(), friendID.data());
 	return true;
 }
 
-bool AccountStub::getContacts(const std::string & userID, std::vector<std::string>& friends)
+bool AccountStub::getFriends(const std::string & userID, std::vector<std::string>& friends)
 {
 	auto _id = userID;
 	DB::instance()->session() << "select FriendID from friends where UserID=?", into(friends), use(_id), now;

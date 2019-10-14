@@ -62,7 +62,7 @@ Rectangle {
                         width: parent.width - img.width - 60; height: img.height
                         font.pixelSize: 20; font.bold: true
                         verticalAlignment: Text.AlignVCenter
-                        text:nickname
+                        text:name
                     }
                 }
                 Image{

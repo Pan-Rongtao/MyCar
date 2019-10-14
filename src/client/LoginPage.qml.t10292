@@ -1,13 +1,15 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.1
 import Qt.labs.settings 1.0
-import UIT.Type 1.0
+import LayerManager 1.0
 
 Rectangle{
     id:root
     anchors.fill: parent
     color: "transparent"
 
+    signal naviToRegist()
+    signal loginResult(bool success)
     property int item0Width: 100
     property int item2Width: 80
     property int item0Height: 30
@@ -19,7 +21,7 @@ Rectangle{
 
         Text {
             id:head
-            text: "登录"
+            text: qsTr("登录")
             width: parent.width
             height: 80
             font.pixelSize: 32
@@ -73,7 +75,7 @@ Rectangle{
                    anchors.fill: parent;
                    hoverEnabled: true;
                    cursorShape:(containsMouse? Qt.PointingHandCursor: Qt.ArrowCursor);
-                   onClicked: LayerManager.currentPage = Type.Page_Regist
+                   onClicked: naviToRegist()
                }
             }
             Rectangle{width: item2Width;height: item0Height}
@@ -82,12 +84,7 @@ Rectangle{
 
     Pop{
         id:pop
-        onClosed:
-        {
-            userID.focus = true
-            if(loginSuccess)
-                LayerManager.switchPage(Type.Page_Account)
-        }
+        onClosed: {userID.focus = true; loginResult(loginSuccess); LayerManager.currentPage=LayerManager.account  }
     }
 
     Component.onCompleted: userID.focus = true

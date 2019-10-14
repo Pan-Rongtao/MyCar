@@ -1,18 +1,16 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.1
 import QtQuick.Dialogs 1.2
+import UIT.Type 1.0
 
 Rectangle{
     id:root
     anchors.fill: parent
     color: "transparent"
 
-    signal logout()
-    property bool bRegist: false
     property int item0Width: 100
     property int item2Width: 80
     property int item0Height: 30
-
     Column{
         width: parent.width
         height: parent.height
@@ -24,7 +22,7 @@ Rectangle{
             spacing: 10
             CircleIcon{
                 id:photo
-                width: 90; height: 90; //source: "images/icon.jpg"
+                width: 90; height: 90
                 onImgClick: { picChoose.open() }
                 Connections{
                     target:ImageProvider
@@ -89,7 +87,7 @@ Rectangle{
 
             Item{ width: item0Width; height: item0Height  }
             Button{ width: parent.width - item0Width - item2Width; height: 50; text: "退出账号"; font.bold: true;font.pixelSize: 20
-                onClicked: { Account.logout(); logout() }
+                onClicked: { Account.logout(); LayerManager.switchPage(Type.Page_Login) }
             }
         }
     }
