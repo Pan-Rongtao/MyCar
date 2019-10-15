@@ -44,5 +44,6 @@
         <file>GroupInfoPage.qml</file>
         <file>UserItemComponent.qml</file>
         <file>ChatItemComponent.qml</file>
+        <file>images/addmember.png</file>
     </qresource>
 </RCC>

@@ -54,6 +54,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
 public slots:
+    void addMember(const QList<int> &indexs);
     void update();
 
 private:

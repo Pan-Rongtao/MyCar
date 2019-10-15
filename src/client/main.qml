@@ -63,7 +63,7 @@ Window {
                     {
                     case Type.Pop_None:         popContainer.source = "";  break;
                     case Type.Pop_AddFriend:    popContainer.source = "AddFriendPage.qml";  break;
-                    case Type.Pop_AddGroupMember:popContainer.source = "AddGroupMember.qml";break;
+                    case Type.Pop_AddGroupMember:popContainer.source = "CreateGroupPage.qml";break;
                     case Type.Pop_CreateGroup:  popContainer.source = "CreateGroupPage.qml";break;
                     case Type.Pop_GroupInfo:    popContainer.source = "GroupInfoPage.qml";  break;
                     default: break;

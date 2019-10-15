@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.1
 import QtQuick.Dialogs 1.2
+import UIT.Type 1.0
 
 Rectangle {
     anchors.fill: parent
@@ -33,52 +34,36 @@ Rectangle {
 
 
         }
-        ListView{
-            id:list
+        GridView{
+            id:grid
             anchors.fill: parent
             anchors.leftMargin: 30;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 100;anchors.bottomMargin: anchors.topMargin
+            cellWidth: 60
+            cellHeight: cellWidth
             model: GroupMembers
-            delegate: dlg
+            delegate: Rectangle
+            {
+                width:grid.cellWidth
+                height:grid.cellHeight
+                color: mouse.pressed ? "#CC965300" : "transparent"
+                Column{
+                    width: parent.width
+                    height: parent.height
+                    Image{width: grid.cellWidth *4/5;height: width; source: id===""?photo:("file:"+photo); anchors.horizontalCenter: parent.horizontalCenter }
+                    Text{ text: name; anchors.horizontalCenter: parent.horizontalCenter }
+                }
+                MouseArea{ id:mouse; anchors.fill: parent; onClicked: LayerManager.switchPop(Type.Pop_AddGroupMember) }
+            }
         }
     }
 
-    Component{
-        id:dlg
-        Rectangle{
-            id:bkg;radius: 5
-            width: list.width;height: 40
-            color: "transparent"
-            Column{
-                width: list.width;height: parent.height
-                Row{
-                    width: list.width;height: parent.height - line.height
-                    spacing: 30
-                    Image{
-                        id:img;width: height;height: parent.height
-                        source: "file:" + photo
-                    }
-                    Text{
-                        width: parent.width - img.width - 60; height: img.height
-                        font.pixelSize: 20; font.bold: true
-                        verticalAlignment: Text.AlignVCenter
-                        text:name
-                    }
-                }
-                Image{
-                    id:line
-                    width: parent.width;height: 1
-                    source: "/images/line.png"
-                }
-            }
-
-            MouseArea{
-                anchors.fill: bkg
-                onPressed: bkg.color = "#33003300"
-                onReleased:  bkg.color = "transparent"
-                onCanceled:  bkg.color = "transparent"
-            }
-        }
+    Button{
+        text: "确定"
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 20
+        onClicked: LayerManager.switchPop(Type.Pop_None)
     }
 
     Component.onCompleted: GroupMembers.update()

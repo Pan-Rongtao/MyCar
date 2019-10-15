@@ -144,7 +144,7 @@ Popup {
         repeat: false
         interval: autohide
         onTriggered: {
-            pop.close()
+            root.close()
         }
     }
 

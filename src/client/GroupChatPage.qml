@@ -38,7 +38,6 @@ Rectangle{
 
         ListView{
             id:list
-            enabled: !editPage.visible
             width: parent.width; height: parent.height - title.height - tool.height - parent.spacing * 2
             anchors.leftMargin: 10;anchors.rightMargin: anchors.leftMargin
             anchors.topMargin: 180;anchors.bottomMargin: anchors.topMargin

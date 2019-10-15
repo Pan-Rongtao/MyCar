@@ -161,6 +161,18 @@ QHash<int, QByteArray> GroupMembers::roleNames() const
     return roles;
 }
 
+void GroupMembers::addMember(const QList<int> &indexs)
+{
+    auto proxy = Proxy::instance()->accountProxy();
+    auto friends = Friends::instance()->items();
+    for(auto index : indexs)
+    {
+        auto addMember = friends[index];
+        proxy->addGroupMember(GroupChat::instance()->groupID().toStdString(), addMember.id.toStdString());
+    }
+    update();
+}
+
 void GroupMembers::update()
 {
     auto proxy = Proxy::instance()->accountProxy();
@@ -176,6 +188,7 @@ void GroupMembers::update()
         UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
         m_list.append(item);
     }
+    m_list.append(UserItem("", "", "qrc:/images/addmember.png"));
     endResetModel();
 }
 

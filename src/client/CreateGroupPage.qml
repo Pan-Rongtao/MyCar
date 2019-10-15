@@ -18,7 +18,7 @@ Rectangle {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "blue"
-        text: "创建群聊"
+        text: LayerManager.currentPop === Type.Pop_CreateGroup ? "创建群聊" : "添加群成员"
     }
     ListView{
         id:list
@@ -57,7 +57,10 @@ Rectangle {
         onClicked:
         {
             checkItems.sort()
-            Groups.create(checkItems)
+            if(LayerManager.currentPop === Type.Pop_CreateGroup)
+                Groups.create(checkItems)
+            else
+                GroupMembers.addMember(checkItems)
             LayerManager.switchPop(Type.Pop_None)
         }
     }
