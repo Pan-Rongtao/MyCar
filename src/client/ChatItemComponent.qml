@@ -28,7 +28,7 @@ Rectangle{
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
                 color: "gray"
-                text: iSend ? "" : nickname
+                text: iSend ? "" : name
             }
             Rectangle
             {

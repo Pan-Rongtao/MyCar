@@ -61,11 +61,12 @@ QVariant GroupChat::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].nickname;
-    case 1: return m_list[index.row()].photo;
-    case 2: return m_list[index.row()].msg;
-    case 3: return m_list[index.row()].time;
-    case 4: return m_list[index.row()].iSend;
+    case 0: return m_list[index.row()].id;
+    case 1: return m_list[index.row()].name;
+    case 2: return m_list[index.row()].photo;
+    case 3: return m_list[index.row()].msg;
+    case 4: return m_list[index.row()].time;
+    case 5: return m_list[index.row()].iSend;
     default:return QVariant();
     }
 }
@@ -73,11 +74,12 @@ QVariant GroupChat::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> GroupChat::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "nickname";
-    roles[1] = "photo";
-    roles[2] = "msg";
-    roles[3] = "time";
-    roles[4] = "iSend";
+    roles[0] = "id";
+    roles[1] = "name";
+    roles[2] = "photo";
+    roles[3] = "msg";
+    roles[4] = "time";
+    roles[5] = "iSend";
     return roles;
 }
 
@@ -108,7 +110,7 @@ void GroupChat::update()
         proxy->getAccountInfo(msg.fromID, info);
         auto nick = QString::fromStdString(info.nickname);
         auto photo = Account::instance()->getUserPhoto(msg.fromID);
-        ChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
+        ChatItem item(QString::fromStdString(info.userID), nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender, false);
         m_list.append(item);
     }
     endResetModel();

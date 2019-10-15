@@ -4,6 +4,7 @@
 #include "Proxy.h"
 #include "Account.h"
 #include "Friends.h"
+#include "MessageList.h"
 
 P2PChat::P2PChat()
 {
@@ -15,6 +16,20 @@ P2PChat *P2PChat::instance()
     static P2PChat *p = nullptr;
     if(!p)  p = new P2PChat();
     return p;
+}
+
+void P2PChat::setfriendID(QString friendID)
+{
+    if(m_friendID != friendID)
+    {
+        m_friendID = friendID;
+        emit friendIDChanged();
+    }
+}
+
+QString P2PChat::friendID()
+{
+    return m_friendID;
 }
 
 void P2PChat::setfriendNickname(QString friendNickname)
@@ -47,11 +62,12 @@ QVariant P2PChat::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case 0: return m_list[index.row()].nickname;
-    case 1: return m_list[index.row()].photo;
-    case 2: return m_list[index.row()].msg;
-    case 3: return m_list[index.row()].time;
-    case 4: return m_list[index.row()].iSend;
+    case 0: return m_list[index.row()].id;
+    case 1: return m_list[index.row()].name;
+    case 2: return m_list[index.row()].photo;
+    case 3: return m_list[index.row()].msg;
+    case 4: return m_list[index.row()].time;
+    case 5: return m_list[index.row()].iSend;
     default:return QVariant();
     }
 }
@@ -59,19 +75,19 @@ QVariant P2PChat::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> P2PChat::roleNames() const
 {
     QHash<int, QByteArray> roles;
-    roles[0] = "nickname";
-    roles[1] = "photo";
-    roles[2] = "msg";
-    roles[3] = "time";
-    roles[4] = "iSend";
+    roles[0] = "id";
+    roles[1] = "name";
+    roles[2] = "photo";
+    roles[3] = "msg";
+    roles[4] = "time";
+    roles[5] = "iSend";
     return roles;
 }
 
-void P2PChat::enter(int index)
+void P2PChat::enterFromFriendList(int index)
 {
     m_friendID = Friends::instance()->items()[index].id;
     m_friendNickname = Friends::instance()->items()[index].name;
-    qDebug() << m_friendID << "," << m_friendNickname;
 }
 
 void P2PChat::sendMessage(const QString &msg)
@@ -91,9 +107,10 @@ void P2PChat::update()
     for(auto msg : msgs)
     {
         bool bIamSender = msg.fromID == Account::instance()->userID().toStdString();
+        auto id = QString::fromStdString(msg.fromID);
         auto nick = bIamSender ? Account::instance()->nickname() : m_friendNickname;
         auto photo = Account::instance()->getUserPhoto(msg.fromID);
-        ChatItem item(nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender);
+        ChatItem item(id, nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender, true);
         m_list.append(item);
     }
     endResetModel();

@@ -9,7 +9,11 @@ class P2PChat : public QAbstractListModel
 public:
     static P2PChat *instance();
 
+    Q_PROPERTY(QString friendID READ friendID WRITE setfriendID NOTIFY friendIDChanged)
     Q_PROPERTY(QString friendNickname READ friendNickname WRITE setfriendNickname NOTIFY friendNicknameChanged)
+
+    void setfriendID(QString friendID);
+    QString friendID();
 
     void setfriendNickname(QString friendNickname);
     QString friendNickname();
@@ -21,10 +25,11 @@ public:
 
 signals:
     void signalUpdate();
+    void friendIDChanged();
     void friendNicknameChanged();
 
 public slots:
-    void enter(int index);
+    void enterFromFriendList(int index);
     void sendMessage(const QString &msg);
     void update();
 

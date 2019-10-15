@@ -7,6 +7,7 @@
 #include "Car.h"
 #include "P2PChat.h"
 #include "GroupChat.h"
+#include "MessageList.h"
 
 Account *Account::instance()
 {
@@ -193,11 +194,13 @@ void Account::onAccountChanged(const std::string &userID, const AccountInfo &inf
 void Account::onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg)
 {
     emit P2PChat::instance()->signalUpdate();
+    emit MessageList::instance()->signalUpdate();
 }
 
 void Account::onGroupMessageArrived(const std::string &groupID, const GroupMessage &msg)
 {
     emit GroupChat::instance()->signalUpdate();
+    emit MessageList::instance()->signalUpdate();
 }
 
 void Account::saveUserPhoto(const std::string &userID, const std::string &photoBuffer)

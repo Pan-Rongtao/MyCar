@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.0
+import UIT.Type 1.0
 
 Rectangle{
     id:root
@@ -34,16 +35,20 @@ Rectangle{
     Component{
         id:dlg
         Rectangle{
-            id:bkg;radius: 5
-            width: list.width;height: 50
+            id:bkg
+            radius: 5
+            width: list.width
+            height: 50
             Column{
-                width: list.width;height: parent.height
+                width: list.width
+                height: parent.height
                 Row{
-                    width: list.width;height: parent.height - line.height
-                    spacing: 30
+                    width: list.width
+                    height: parent.height - line.height
+                    spacing: 10
                     Image{
                         id:img;width: height;height: parent.height-5
-                        source: "file:///" + photo
+                        source: "file:" + photo
                     }
                     Column{
                         width: parent.width - img.width - t.width
@@ -51,15 +56,14 @@ Rectangle{
                         Text{
                             id:sender
                             width: parent.width;height: 30
-                            font.pixelSize: 22;font.bold: true
+                            font.pixelSize: 20;font.bold: true
                             verticalAlignment: Text.AlignVCenter
-                            text: from
+                            text: name
                         }
                         Text {
                             width: parent.width; height: parent.height - sender.height
-                            font.bold: true; font.pixelSize: 18
+                            font.bold: true; font.pixelSize: 14
                             color: "gray"
-                            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                             verticalAlignment: Text.AlignVCenter
                             text: msg
                         }
@@ -69,7 +73,6 @@ Rectangle{
                         width: 120; height: sender.height
                         font.bold: true; font.pixelSize: 12
                         color: "gray"
-                        //wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                         verticalAlignment: Text.AlignVCenter
                         text: time
                     }
@@ -81,36 +84,19 @@ Rectangle{
                 }
             }
 
-            Menu{
-                id: menu
-                width: parent.width
-                MenuItem {
-                    id: menuItem1
-                    height: bkg.height
-                    contentItem: Text {
-                        id: text1
-                        text: "删除"
-                        font.bold: true;font.pixelSize: 18
-                        anchors.fill: parent
-                        opacity: enabled ? 1.0 : 0.3
-                        color: menuItem1.down ? "#AA0000" : "#148014"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onTriggered: ;
-                }
-            }
             MouseArea{
                 anchors.fill: bkg
                 onPressed: bkg.color = "#33003300"
                 onReleased:  bkg.color = "transparent"
                 onCanceled:  bkg.color = "transparent"
-                onClicked: enterChat()
-                onPressAndHold: { menu.open()}
+                onClicked: {
+                    MessageList.enterChat(index)
+                }
             }
 
         }
     }
 
+    Component.onCompleted: MessageList.update()
 
 }

@@ -114,7 +114,7 @@ Rectangle{
                     canEdit: true
                     onMenuTriggered: Friends.remove(itemIndex)
                     onClick: {
-                        P2PChat.enter(index)
+                        P2PChat.enterFromFriendList(index)
                         LayerManager.switchPage(Type.Page_P2PChat)
                     }
                 }
