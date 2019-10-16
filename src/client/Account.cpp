@@ -212,6 +212,7 @@ void Account::onAccountChanged(const UserInfo &info)
 void Account::onMessageArrived(const ChatMessage &msg)
 {
     emit P2PChat::instance()->signalUpdate();
+    emit GroupChat::instance()->signalUpdate();
     emit MessageList::instance()->signalUpdate();
 }
 

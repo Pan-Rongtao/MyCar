@@ -15,7 +15,7 @@ using namespace Poco::Data::Keywords;
 
 #define LOG_TAG				"server"
 #define USER_DEFAULT_PHOTO	uit::Runtime::getUitEtcDirectory() + "default.jpg"
-#define USER_PHOTO_DIR		std::string("./photos/")
+#define USER_PHOTO_DIR		std::string("../../etc/photos/")
 
 AccountStub * AccountStub::get()
 {
@@ -151,6 +151,7 @@ bool AccountStub::addFriend(const std::string & userID, const std::string & frie
 	std::string _remark = friendID;
 	try {
 		DB::get()->session() << "insert into friends values(?, ?, ?)", use(_userID), use(_friendID), use(_remark), now;
+		DB::get()->session() << "insert into friends values(?, ?, ?)", use(_friendID), use(_userID), use(_remark), now;
 		Log::info(LOG_TAG, "user[%s] addFriend[%s]", userID.data(), friendID.data());
 		return true;
 	}

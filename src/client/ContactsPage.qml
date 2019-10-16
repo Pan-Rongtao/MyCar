@@ -107,6 +107,7 @@ Rectangle{
                 anchors.margins: 20
                 model: Friends
                 Component.onCompleted: Friends.update()
+                onVisibleChanged: if(visible) Friends.update()
                 delegate: UserItemComponent
                 {
                     width: parent.width
@@ -126,6 +127,7 @@ Rectangle{
                 anchors.fill: parent
                 anchors.margins: 20
                 Component.onCompleted: Groups.update()
+                onVisibleChanged: if(visible) Groups.update()
                 delegate: UserItemComponent
                 {
                     width: parent.width
