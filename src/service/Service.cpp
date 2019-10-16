@@ -35,9 +35,9 @@ void Service::initialize(Application & app)
 	ServerApplication::initialize(app);
 
 	auto k = uit::getTickCount();
-	if (!DB::instance()->load(DEFAULT_DB_DIR))
+	if (!DB::get()->load(DEFAULT_DB_DIR))
 	{
-		Log::error(LOG_TAG, "load [%s] fail, exit.", DB::instance()->getDBPath().data());
+		Log::error(LOG_TAG, "load [%s] fail, exit.", DB::get()->getDBPath().data());
 		terminate();
 	}
 
@@ -55,8 +55,8 @@ void Service::initialize(Application & app)
 
 	RCF::init();
 	m_interfaceServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, interfacePort));
-	m_interfaceServer->bind<AccountInterface>(*AccountStub::instance());
-	m_interfaceServer->bind<CarInterface>(*CarStub::instance());
+	m_interfaceServer->bind<AccountInterface>(*AccountStub::get());
+	m_interfaceServer->bind<CarInterface>(*CarStub::get());
 	m_interfaceServer->start();
 
 	m_publisherServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(ip, publisherPort));
@@ -64,18 +64,9 @@ void Service::initialize(Application & app)
 	m_publisherCar = m_publisherServer->createPublisher<CarNotify>();
 	m_publisherServer->start();
 
-	AccountStub::instance()->AccountChanged.addHandler([&](const AccountStub::AccountChangedArgs &args) {
-		m_publisherAccount->publish().onAccountChanged(args.userID, args.info);
-	});
-	AccountStub::instance()->P2PMessageArrived.addHandler([&](const AccountStub::P2PMessageArrivedArgs &args) {
-		m_publisherAccount->publish().onP2PMessageArrived(args.fromID, args.msg);
-	});
-	AccountStub::instance()->GroupMessageArrived.addHandler([&](const AccountStub::GroupMessageArrivedArgs &args) {
-		m_publisherAccount->publish().onGroupMessageArrived(args.groupID, args.msg);
-	});
-	CarStub::instance()->CarChanged += ([&](const CarStub::CarChangedArgs &args) {
-		m_publisherCar->publish().onCarChanged(args.userID, args.info);
-	});
+	AccountStub::get()->AccountChanged.addHandler([&](const AccountStub::AccountChangedArgs &args) { m_publisherAccount->publish().onAccountChanged(args.info); });
+	AccountStub::get()->MessageArrived.addHandler([&](const AccountStub::MessageArrivedArgs &args) { m_publisherAccount->publish().onMessageArrived(args.msg); });
+	CarStub::get()->CarChanged += ([&](const CarStub::CarChangedArgs &args) { m_publisherCar->publish().onCarChanged(args.info); });
 
 	Log::info(LOG_TAG, "server startup, interface[%s:%d], publisher[%s:%d], cost %d ms", ip.data(), interfacePort, ip.data(), publisherPort, (int)(uit::getTickCount() - k));
 }
@@ -88,16 +79,6 @@ void Service::uninitialize()
 	m_interfaceServer->stop();
 	m_publisherServer->stop();
 	uit::Log::info(LOG_TAG, "service shutdown.");
-}
-
-void Service::onAccountChanged(const AccountStub::AccountChangedArgs & args)
-{
-	m_publisherAccount->publish().onAccountChanged(args.userID, args.info);
-}
-
-void Service::onCarChanged(const CarStub::CarChangedArgs & args)
-{
-	m_publisherCar->publish().onCarChanged(args.userID, args.info);
 }
 
 std::string Service::getLocalIp() const

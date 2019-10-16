@@ -10,7 +10,7 @@ class DB
 {
 public:
 	//单例
-	static DB *instance();
+	static DB *get();
 
 	//加载数据库
 	bool load(const std::string &path);

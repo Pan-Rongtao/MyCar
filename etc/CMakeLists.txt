@@ -10,6 +10,6 @@ project(etc)
 
 
 # 5. Project Install
-file(GLOB RES *.db *.conf)
+file(GLOB RES *.db *.conf *.jpg)
 install(FILES ${RES} DESTINATION ${CMAKE_INSTALL_ETCDIR})
 

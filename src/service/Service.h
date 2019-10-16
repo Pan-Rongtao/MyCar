@@ -17,9 +17,6 @@ public:
 	virtual void initialize(Application& app) override;
 	virtual void uninitialize() override;
 
-	void onAccountChanged(const AccountStub::AccountChangedArgs &args);
-	void onCarChanged(const CarStub::CarChangedArgs &args);
-
 private:
 	std::string getLocalIp() const;
 

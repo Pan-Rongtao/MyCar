@@ -1,61 +1,22 @@
 #pragma once
 #include <RCF/Idl.hpp>
 #include <SF/vector.hpp>
+#include "Types.h"
 
-struct AccountInfo
+static void serialize(SF::Archive& ar, UserInfo &info)
 {
-	std::string userID;
-	std::string password;
-	std::string	nickname;
-	std::string	signaTure;
-	std::string	photo;
-	std::string	registTime;
-	bool		vehicleOnline;
-	bool		pcOnline;
-	bool		handeldOnline;
-	bool		padOnline;
+	ar & info.userID & info.password & info.nickname & info.signaTure & info.photo & info.registTime & info.vehicleOnline & info.pcOnline & info.handeldOnline & info.padOnline;
+}
 
-	void serialize(SF::Archive& ar)
-	{
-		ar & userID; ar & password; ar & nickname; ar & signaTure; ar & photo; ar & registTime; ar & vehicleOnline; ar & pcOnline; ar & handeldOnline; ar & padOnline;
-	}
-};
-
-struct P2PMessage
+static void serialize(SF::Archive& ar, GroupInfo &info)
 {
-	std::string fromID;
-	std::string toID;
-	std::string	msg;
-	std::string	time;
-	void serialize(SF::Archive& ar)
-	{
-		ar & fromID; ar & toID; ar & msg; ar & time;
-	}
-};
+	ar & info.groupID & info.name & info.photo & info.brief;
+}
 
-struct GroupInfo 
+static void serialize(SF::Archive& ar, ChatMessage &msg)
 {
-	std::string ID;
-	std::string	name;
-	std::string photo;
-	std::string info;
-	void serialize(SF::Archive& ar)
-	{
-		ar & ID; ar & name; ar & photo; ar & info;
-	}
-};
-
-struct GroupMessage
-{
-	std::string groupID;
-	std::string fromID;
-	std::string	msg;
-	std::string	time;
-	void serialize(SF::Archive& ar)
-	{
-		ar & groupID; ar & fromID; ar & msg; ar & time;
-	}
-};
+	ar & msg.senderID & msg.receiverID & msg.content & msg.time;
+}
 
 RCF_BEGIN(AccountInterface, "AccountInterface")
 RCF_METHOD_R3(bool, regist, const std::string &, const std::string &, const std::string &);
@@ -64,38 +25,36 @@ RCF_METHOD_V2(void, setPassword, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setNickname, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setSignaTure, const std::string &, const std::string &);
 RCF_METHOD_R2(bool, setPhoto, const std::string &, const std::string &);
-RCF_METHOD_R3(bool, setVehicleOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_R3(bool, setPCOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_R3(bool, setHandeldOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_R3(bool, setPadOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_R2(bool, getAccountInfo, const std::string &, AccountInfo &);
-RCF_METHOD_R1(bool, queryAllAccountInfo, std::vector<AccountInfo> &);
+RCF_METHOD_V3(void, setVehicleOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_V3(void, setPCOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_V3(void, setHandeldOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_V3(void, setPadOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_R1(UserInfo, getUserInfo, const std::string &);
+RCF_METHOD_R0(std::vector<UserInfo>, queryUsers);
 
 RCF_METHOD_R2(bool, addFriend, const std::string &, const std::string &);
-RCF_METHOD_R2(bool, removeFriend, const std::string &, const std::string &);
-RCF_METHOD_R2(bool, getFriends, const std::string &, std::vector<std::string> &);
-
-RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
-RCF_METHOD_V3(void, getP2PMessage, const std::string &, const std::string &, std::vector<P2PMessage> &);
+RCF_METHOD_V2(void, removeFriend, const std::string &, const std::string &);
+RCF_METHOD_R1(std::vector<std::string>, getFriends, const std::string &);
 
 RCF_METHOD_R2(std::string, addGroup, const std::string &, const std::string &);
 RCF_METHOD_V1(void, removeGroup, const std::string &);
-RCF_METHOD_V2(void, getGroupInfo, const std::string &, GroupInfo &);
-RCF_METHOD_V2(void, getBelongGroups, const std::string &, std::vector<std::string> &);
+RCF_METHOD_R1(GroupInfo, getGroupInfo, const std::string &);
+RCF_METHOD_R1(std::vector<std::string>, getBelongGroups, const std::string &);
 RCF_METHOD_V2(void, setGroupName, const std::string &, const std::string &);
-RCF_METHOD_V2(void, setGroupInfo, const std::string &, const std::string &);
+RCF_METHOD_V2(void, setGroupBrief, const std::string &, const std::string &);
 RCF_METHOD_V2(void, addGroupMember, const std::string &, const std::string &);
 RCF_METHOD_V2(void, removeGroupMember, const std::string &, const std::string &);
-RCF_METHOD_V2(void, getGroupMembers, const std::string &, std::vector<std::string> &);
+RCF_METHOD_R1(std::vector<std::string>, getGroupMembers, const std::string &);
 
+RCF_METHOD_V3(void, addP2PMessage, const std::string &, const std::string &, const std::string &);
+RCF_METHOD_R2(std::vector<ChatMessage>, getP2PMessages, const std::string &, const std::string &);
 RCF_METHOD_V3(void, addGroupMessage, const std::string &, const std::string &, const std::string &);
-RCF_METHOD_V2(void, getGroupMessage, const std::string &, std::vector<GroupMessage> &);
+RCF_METHOD_R1(std::vector<ChatMessage>, getGroupMessages, const std::string &);
 
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")
-RCF_METHOD_V2(void, onAccountChanged, const std::string &, const AccountInfo &);
-RCF_METHOD_V2(void, onP2PMessageArrived, const std::string &, const P2PMessage &);
-RCF_METHOD_V2(void, onGroupMessageArrived, const std::string &, const GroupMessage &);
+RCF_METHOD_V1(void, onAccountChanged, const UserInfo &);
+RCF_METHOD_V1(void, onMessageArrived, const ChatMessage &);
 RCF_END(AccountNotify)
 

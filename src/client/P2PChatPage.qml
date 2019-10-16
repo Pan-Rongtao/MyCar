@@ -113,6 +113,7 @@ Rectangle{
     Component.onCompleted:{
         P2PChat.update()
         list.positionViewAtEnd()
+        txtMsg.focus = true
     }
 
 }

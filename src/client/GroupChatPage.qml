@@ -77,6 +77,7 @@ Rectangle{
     Component.onCompleted:{
         GroupChat.update()
         list.positionViewAtEnd()
+        txtMsg.focus = true
     }
 
 }

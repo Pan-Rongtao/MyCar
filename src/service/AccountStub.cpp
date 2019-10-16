@@ -1,7 +1,10 @@
 #include "AccountStub.h"
 #include <Poco/Data/RecordSet.h>
+#include <Poco/File.h>
+#include <Poco/Path.h>
 #include "server/Account.h"
 #include "core/Log.h"
+#include "core/Runtime.h"
 #include "DB.h"
 #include "CarStub.h"
 
@@ -10,9 +13,11 @@ using namespace Poco;
 using namespace Poco::Data;
 using namespace Poco::Data::Keywords;
 
-#define LOG_TAG	"server"
+#define LOG_TAG				"server"
+#define USER_DEFAULT_PHOTO	uit::Runtime::getUitEtcDirectory() + "default.jpg"
+#define USER_PHOTO_DIR		uit::Runtime::getUitEtcDirectory() + "photos/"
 
-AccountStub * AccountStub::instance()
+AccountStub * AccountStub::get()
 {
 	static AccountStub *p = nullptr;
 	if (!p)	p = new AccountStub();
@@ -21,15 +26,14 @@ AccountStub * AccountStub::instance()
 
 bool AccountStub::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
-	AccountInfo info{ userID, password, nickname, "该用户很懒，懒得签名.", "", DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT) , 0, 0, 0, 0 };
+	UserInfo info{ userID, password, nickname, "该用户很懒，懒得签名.", USER_DEFAULT_PHOTO, DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT) , 0, 0, 0, 0 };
 	try {
-		DB::instance()->session() << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(info.userID), use(info.password), use(info.nickname), use(info.signaTure),
+		DB::get()->session() << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(info.userID), use(info.password), use(info.nickname), use(info.signaTure),
 			use(info.photo), use(info.registTime), use(info.vehicleOnline), use(info.pcOnline), use(info.handeldOnline), use(info.padOnline), now;
-		CarStub::instance()->addRecord(userID);
+		CarStub::get()->addRecord(userID);
 	}
 	catch (Poco::Exception &e) {
-		(void)e;
-		Log::error(LOG_TAG, "regist userID[%s] is existed , password[%s], nickname[%s], ignore.", userID.data(), password.data(), nickname.data());
+		Log::error(LOG_TAG, "regist userID[%s] has been registed, error=[%s].", userID.data(), e.what());
 		return false;
 	}
 	Log::info(LOG_TAG, "user[%s] regist, password[%s], nickname[%s]", userID.data(), password.data(), nickname.data());
@@ -40,19 +44,16 @@ bool AccountStub::isRegisted(const std::string & userID)
 {
 	std::vector<std::string> records;
 	auto _id = userID;
-	DB::instance()->session() << "select UserID from users where UserID=?", into(records), use(_id), now;
-	bool bExists = !records.empty();
-	return bExists;
+	DB::get()->session() << "select UserID from users where UserID=?", into(records), use(_id), now;
+	return !records.empty();
 }
 
 void AccountStub::setPassword(const std::string &userID, const std::string & password)
 {
 	auto _id = userID;
 	auto _pw = password;
-	DB::instance()->session() << "update users set Password=? where UserID=?", use(_pw), use(_id), now;
-	AccountInfo info;
-	bool b = getAccountInfo(userID, info);
-	AccountChanged.dispatch({userID, info });
+	DB::get()->session() << "update users set Password=? where UserID=?", use(_pw), use(_id), now;
+	AccountChanged.dispatch({ getUserInfo(userID) });
 	Log::info(LOG_TAG, "user[%s] setPassword[%s]", userID.data(), password.data());
 }
 
@@ -60,10 +61,8 @@ void AccountStub::setNickname(const std::string &userID, const std::string & nic
 {
 	auto _id = userID;
 	auto _nn = nickname;
-	DB::instance()->session() << "update users set NickName=? where UserID=?", use(_nn), use(_id), now;
-	AccountInfo info;
-	bool b = getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
+	DB::get()->session() << "update users set NickName=? where UserID=?", use(_nn), use(_id), now;
+	AccountChanged.dispatch({ getUserInfo(userID) });
 	Log::info(LOG_TAG, "user[%s] setNickname[%s]", userID.data(), nickname.data());
 }
 
@@ -71,10 +70,8 @@ void AccountStub::setSignaTure(const std::string & userID, const std::string & s
 {
 	auto _id = userID;
 	auto _st = signaTure;
-	DB::instance()->session() << "update users set SignaTure=? where UserID=?", use(_st), use(_id), now;
-	AccountInfo info;
-	bool b = getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
+	DB::get()->session() << "update users set SignaTure=? where UserID=?", use(_st), use(_id), now;
+	AccountChanged.dispatch({ getUserInfo(userID) });
 	Log::info(LOG_TAG, "user[%s] setSignaTure[%s]", userID.data(), signaTure.data());
 }
 
@@ -87,136 +84,63 @@ bool AccountStub::setPhoto(const std::string &userID, const std::string &photoBu
 	}
 	else
 	{
-		auto path = userID + ".jpg";
-		FILE *pf = fopen(path.data(), "wb");
-		if (pf)
-		{
-			fwrite(photoBuffer.data(), 1, photoBuffer.size(), pf);
-		}
-		fclose(pf);
+		auto path = USER_PHOTO_DIR + userID + ".jpg";
+		saveImage(path, photoBuffer);
 		auto _id = userID;
-		DB::instance()->session() << "update users set Photo=? where UserID=?", use(path), use(_id), now;
-		AccountInfo info;
-		bool b = getAccountInfo(userID, info);
-		AccountChanged.dispatch({ userID, info });
+		DB::get()->session() << "update users set Photo=? where UserID=?", use(path), use(_id), now;
+		AccountChanged.dispatch({ getUserInfo(userID) });
 		Log::info(LOG_TAG, "user[%s] setPhoto[%d]", userID.data(), photoBuffer.size());
 		return true;
 	}
 }
 
-bool AccountStub::setVehicleOnline(const std::string & userID, const std::string &password, bool online)
+void AccountStub::setVehicleOnline(const std::string & userID, const std::string &password, bool online)
 {
-	std::vector<std::string> records;
-	auto _id = userID;
-	auto _pw = password;
-	int _online = online;
-	DB::instance()->session() << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = !records.empty();
-	DB::instance()->session() << "update users set VehicleOnline=? where UserID = ? ", use(_online), use(_id), now;
-	AccountInfo info;
-	getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
-	Log::info(LOG_TAG, "user[%s] %s for vehicle %s", userID.data(), _online ? "login" : "logout", bExists ? "success" : "fail with unmatched id|password");
-	return bExists;
+	setOnline(userID, online, "VehicleOnline");
 }
 
-bool AccountStub::setPCOnline(const std::string & userID, const std::string &password, bool online)
+void AccountStub::setPCOnline(const std::string & userID, const std::string &password, bool online)
 {
-	std::vector<std::string> records;
-	auto _id = userID;
-	auto _pw = password;
-	int _online = online;
-	DB::instance()->session() << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = !records.empty();
-	DB::instance()->session() << "update users set PCOnline=? where UserID = ? ", use(_online), use(_id), now;
-	AccountInfo info;
-	getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
-	Log::info(LOG_TAG, "user[%s] %s for pc %s", userID.data(), _online ? "login" : "logout", bExists ? "success" : "fail with unmatched id|password");
-	return bExists;
+	setOnline(userID, online, "PCOnline");
 }
 
-bool AccountStub::setHandeldOnline(const std::string & userID, const std::string &password, bool online)
+void AccountStub::setHandeldOnline(const std::string & userID, const std::string &password, bool online)
 {
-	std::vector<std::string> records;
-	auto _id = userID;
-	auto _pw = password;
-	int _online = online;
-	DB::instance()->session() << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = !records.empty();
-	DB::instance()->session() << "update users set HandeldOnline=? where UserID = ? ", use(_online), use(_id), now;
-	AccountInfo info;
-	getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
-	Log::info(LOG_TAG, "user[%s] %s for handeld %s", userID.data(), _online ? "login" : "logout", bExists ? "success" : "fail with unmatched id|password");
-	return bExists;
+	setOnline(userID, online, "HandeldOnline");
 }
 
-bool AccountStub::setPadOnline(const std::string & userID, const std::string &password, bool online)
+void AccountStub::setPadOnline(const std::string & userID, const std::string &password, bool online)
 {
-	std::vector<std::string> records;
-	auto _id = userID;
-	auto _pw = password;
-	int _online = online;
-	DB::instance()->session() << "select UserID from users where UserID=? and Password=?", into(records), use(_id), use(_pw), now;
-	bool bExists = !records.empty();
-	DB::instance()->session() << "update users set PadOnline=? where UserID = ? ", use(_online), use(_id), now;
-	AccountInfo info;
-	getAccountInfo(userID, info);
-	AccountChanged.dispatch({ userID, info });
-	Log::info(LOG_TAG, "user[%s] %s for pad %s", userID.data(), _online ? "login" : "logout", bExists ? "success" : "fail with unmatched id|password");
-	return bExists;
+	setOnline(userID, online, "PadOnline");
 }
 
-bool AccountStub::getAccountInfo(const std::string & userID, AccountInfo &info)
+UserInfo AccountStub::getUserInfo(const std::string & userID)
 {
-	Statement select(DB::instance()->session());
+	Statement select(DB::get()->session());
 	auto _id = userID;
 	select << "select * from users where UserID=?", use(_id), now;
 	RecordSet rs(select);
-	if (rs.rowCount() == 0)
-	{
-		return false;
-	}
-	else
-	{
-		info.userID = rs[0].convert<std::string>();
-		info.password = rs[1].convert<std::string>();
-		info.nickname = rs[2].convert<std::string>();
-		info.signaTure = rs[3].convert<std::string>();
-		info.photo = loadImage(rs[4].convert<std::string>());
-		info.registTime = rs[5].convert<std::string>();
-		info.vehicleOnline = rs[6].convert<bool>();
-		info.pcOnline = rs[7].convert<bool>();
-		info.handeldOnline = rs[8].convert<bool>();
-		info.padOnline = rs[9].convert<bool>();
-		return true;
-	}
+	UserInfo ret = rs.rowCount() == 0 ? UserInfo() : UserInfo{ 
+		rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>(),loadImage(rs[4].convert<std::string>()),
+		rs[5].convert<std::string>(), rs[6].convert<bool>(), rs[7].convert<bool>(), rs[8].convert<bool>(), rs[9].convert<bool>() };
+	return ret;
 }
 
-bool AccountStub::queryAllAccountInfo(std::vector<AccountInfo>& infos)
+std::vector<UserInfo> AccountStub::queryUsers()
 {
-	Statement select(DB::instance()->session());
+	std::vector<UserInfo> ret;
+	Statement select(DB::get()->session());
 	select << "select * from users", now;
 	RecordSet rs(select);
 	bool more = rs.moveFirst();
 	while (more)
 	{
-		AccountInfo info;
-		info.userID = rs[0].convert<std::string>();
-		info.password = rs[1].convert<std::string>();
-		info.nickname = rs[2].convert<std::string>();
-		info.signaTure = rs[3].convert<std::string>();
-		info.photo = loadImage(rs[4].convert<std::string>());
-		info.registTime = rs[5].convert<std::string>();
-		info.vehicleOnline = rs[6].convert<bool>();
-		info.pcOnline = rs[7].convert<bool>();
-		info.handeldOnline = rs[8].convert<bool>();
-		info.padOnline = rs[9].convert<bool>();
-		infos.push_back(info);
+		UserInfo info{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>(),
+			loadImage(rs[4].convert<std::string>()), rs[5].convert<std::string>(), rs[6].convert<bool>(), rs[7].convert<bool>(), rs[8].convert<bool>(), rs[9].convert<bool>() };
+		ret.push_back(info);
 		more = rs.moveNext();
 	}
-	return true;
+	return ret;
 }
 
 bool AccountStub::addFriend(const std::string & userID, const std::string & friendID)
@@ -225,68 +149,46 @@ bool AccountStub::addFriend(const std::string & userID, const std::string & frie
 	std::string _friendID = friendID;
 	std::string _remark = friendID;
 	try {
-		DB::instance()->session() << "insert into friends values(?, ?, ?)", use(_userID), use(_friendID), use(_remark), now;
+		DB::get()->session() << "insert into friends values(?, ?, ?)", use(_userID), use(_friendID), use(_remark), now;
 		Log::info(LOG_TAG, "user[%s] addFriend[%s]", userID.data(), friendID.data());
 		return true;
 	}
 	catch (Poco::Exception &e) {
-		(void)e;
-		Log::error(LOG_TAG, "user[%s] already has friend[%s], ignore.", userID.data(), friendID.data());
+		Log::error(LOG_TAG, "user[%s] already has friend[%s], error[%s].", userID.data(), friendID.data(), e.what());
 		return false;
 	}
 }
 
-bool AccountStub::removeFriend(const std::string & userID, const std::string & friendID)
+void AccountStub::removeFriend(const std::string & userID, const std::string & friendID)
 {
 	std::string _userID = userID;
 	std::string _friendID = friendID;
-	DB::instance()->session() << "delete from friends where UserID=? and FriendID=?", use(_userID), use(_friendID), now;
+	DB::get()->session() << "delete from friends where UserID=? and FriendID=?", use(_userID), use(_friendID), now;
 	Log::info(LOG_TAG, "user[%s] removeFriend[%s]", userID.data(), friendID.data());
-	return true;
 }
 
-bool AccountStub::getFriends(const std::string & userID, std::vector<std::string>& friends)
+std::vector<ChatMessage> AccountStub::getP2PMessages(const std::string & user0, const std::string & user1)
 {
-	auto _id = userID;
-	DB::instance()->session() << "select FriendID from friends where UserID=?", into(friends), use(_id), now;
-	return true;
-}
-
-void AccountStub::addP2PMessage(const std::string & fromID, const std::string & toID, const std::string & msg)
-{
-	auto _fromID = fromID;
-	auto _toID = toID;
-	auto _msg = msg;
-	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
-	DB::instance()->session() << "insert into p2p_messages values(?, ?, ?, ?)", use(_fromID), use(_toID), use(_msg), use(_dt), now;
-	P2PMessageArrived.dispatch({ _fromID, _toID, _msg, _dt });
-	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
-}
-
-void AccountStub::getP2PMessage(const std::string & user0, const std::string & user1, std::vector<P2PMessage>& msgs)
-{
+	std::vector<ChatMessage> ret;
 	auto _id0 = user0;
 	auto _id1 = user1;
-	Statement select(DB::instance()->session());
+	Statement select(DB::get()->session());
 	select << "select * from p2p_messages where (FromID=? and ToID=?) or (FromID=? and ToID=?)", use(_id0), use(_id1), use(_id1), use(_id0), now;
 	RecordSet rs(select);
 	bool more = rs.moveFirst();
 	while (more)
 	{
-		P2PMessage record;
-		record.fromID = rs[0].convert<std::string>();
-		record.toID = rs[1].convert<std::string>();
-		record.msg = rs[2].convert<std::string>();
-		record.time = rs[3].convert<std::string>();
-		msgs.push_back(record);
+		ChatMessage record{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>() };
+		ret.push_back(record);
 		more = rs.moveNext();
 	}
+	return ret;
 }
 
-std::string AccountStub::addGroup(const std::string & name, const std::string & photo)
+std::string AccountStub::addGroup(const std::string & name, const std::string & photoBuffer)
 {
 	std::vector<std::string> records;
-	DB::instance()->session() << "select GroupID from groups", into(records), now;
+	DB::get()->session() << "select GroupID from groups", into(records), now;
 	std::string _groupID = "group_";
 	if (records.empty())
 	{
@@ -298,21 +200,17 @@ std::string AccountStub::addGroup(const std::string & name, const std::string & 
 		auto num = std::to_string(std::stoi(last.substr(last.find('_') + 1)) + 1);
 		_groupID += num;
 	}
-	std::string _name = name;
-	std::string _info = "欢迎大家";
-	auto _path = _groupID + ".jpg";
-	FILE *pf = fopen(_path.data(), "wb");
-	if (pf)
-		fwrite(photo.data(), 1, photo.size(), pf);
-	fclose(pf);
+	auto _name = name;
+	auto _brief = "welcome!";
+	auto _path = USER_PHOTO_DIR + _groupID + ".jpg";
 	try {
-		DB::instance()->session() << "insert into groups values(?, ?, ?, ?)", use(_groupID), use(_name), use(_path), use(_info), now;
+		DB::get()->session() << "insert into groups values(?, ?, ?, ?)", use(_groupID), use(_name), use(_path), use(_brief), now;
 		Log::info(LOG_TAG, "addGroup[%s]", _groupID.data());
+		saveImage(_path, photoBuffer);
 		return _groupID;
 	}
 	catch (Poco::Exception &e) {
-		(void)e;
-		Log::error(LOG_TAG, "group[%s] already exists, ignore.", _groupID.data());
+		Log::error(LOG_TAG, "group[%s] already exists, ignore. error[%s]", _groupID.data(), e.what());
 		return "";
 	}
 }
@@ -320,45 +218,41 @@ std::string AccountStub::addGroup(const std::string & name, const std::string & 
 void AccountStub::removeGroup(const std::string & groupID)
 {
 	std::string _groupID = groupID;
-	DB::instance()->session() << "delete from groups where GroupID=?", use(_groupID), now;
+	DB::get()->session() << "delete from groups where GroupID=?", use(_groupID), now;
 	Log::info(LOG_TAG, "removeGroup[%s]", _groupID.data());
 }
 
-void AccountStub::getGroupInfo(const std::string & grouID, GroupInfo & info)
+GroupInfo AccountStub::getGroupInfo(const std::string & grouID)
 {
 	auto _id = grouID;
-	Statement select(DB::instance()->session());
+	Statement select(DB::get()->session());
 	select << "select * from groups where GroupID=?", use(_id), now;
 	RecordSet rs(select);
-	if (rs.rowCount() != 0)
-	{
-		info.ID = rs[0].convert<std::string>();
-		info.name = rs[1].convert<std::string>();
-		info.photo = loadImage(rs[2].convert<std::string>());
-		info.info = rs[3].convert<std::string>();
-	}
+	return rs.rowCount() == 0 ? GroupInfo() : GroupInfo{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), loadImage(rs[2].convert<std::string>()), rs[3].convert<std::string>() };
 }
 
-void AccountStub::getBelongGroups(const std::string &userID, std::vector<std::string>& groups)
+std::vector<std::string> AccountStub::getBelongGroups(const std::string &userID)
 {
+	std::vector<std::string> ret;
 	auto _userID = userID;
-	DB::instance()->session() << "select GroupID from groupmembers where UserID=?", into(groups), use(_userID), now;
+	DB::get()->session() << "select GroupID from groupmembers where UserID=?", into(ret), use(_userID), now;
+	return ret;
 }
 
 void AccountStub::setGroupName(const std::string & groupID, const std::string & name)
 {
 	auto _id = groupID;
 	auto _nn = name;
-	DB::instance()->session() << "update groups set Name=? where GroupID=?", use(_nn), use(_id), now;
+	DB::get()->session() << "update groups set Name=? where GroupID=?", use(_nn), use(_id), now;
 	Log::info(LOG_TAG, "user[%s] setNickname[%s]", _id.data(), _nn.data());
 }
 
-void AccountStub::setGroupInfo(const std::string & groupID, const std::string & info)
+void AccountStub::setGroupBrief(const std::string & groupID, const std::string & brief)
 {
 	auto _id = groupID;
-	auto _nn = info;
-	DB::instance()->session() << "update groups set Info=? where GroupID=?", use(_nn), use(_id), now;
-	Log::info(LOG_TAG, "user[%s] setNickname[%s]", _id.data(), _nn.data());
+	auto _brief = brief;
+	DB::get()->session() << "update groups set Brief=? where GroupID=?", use(_brief), use(_id), now;
+	Log::info(LOG_TAG, "user[%s] setNickname[%s]", _id.data(), _brief.data());
 }
 
 void AccountStub::addGroupMember(const std::string & groupID, const std::string & userID)
@@ -366,7 +260,7 @@ void AccountStub::addGroupMember(const std::string & groupID, const std::string 
 	std::string _groupID = groupID;
 	std::string _userID = userID;
 	try {
-		DB::instance()->session() << "insert into groupmembers values(?, ?)", use(_groupID), use(_userID), now;
+		DB::get()->session() << "insert into groupmembers values(?, ?)", use(_groupID), use(_userID), now;
 		Log::info(LOG_TAG, "group[%s] addGroupMember[%s]", _groupID.data(), _userID.data());
 	}
 	catch (Poco::Exception &e) {
@@ -379,14 +273,35 @@ void AccountStub::removeGroupMember(const std::string & groupID, const std::stri
 {
 	std::string _groupID = groupID;
 	std::string _userID = userID;
-	DB::instance()->session() << "delete from groupmembers where GroupID=? and userID=?", use(_groupID), use(_userID), now;
+	DB::get()->session() << "delete from groupmembers where GroupID=? and userID=?", use(_groupID), use(_userID), now;
 	Log::info(LOG_TAG, "group[%s] removeGroup[%s]", _groupID.data(), _userID.data());
 }
 
-void AccountStub::getGroupMembers(const std::string & groupID, std::vector<std::string>& members)
+std::vector<std::string> AccountStub::getGroupMembers(const std::string & groupID)
 {
+	std::vector<std::string> ret;
 	auto _groupID = groupID;
-	DB::instance()->session() << "select UserID from groupmembers where GroupID=?", into(members), use(_groupID), now;
+	DB::get()->session() << "select UserID from groupmembers where GroupID=?", into(ret), use(_groupID), now;
+	return ret;
+}
+
+std::vector<std::string> AccountStub::getFriends(const std::string & userID)
+{
+	std::vector<std::string> ret;
+	auto _id = userID;
+	DB::get()->session() << "select FriendID from friends where UserID=?", into(ret), use(_id), now;
+	return ret;
+}
+
+void AccountStub::addP2PMessage(const std::string & fromID, const std::string & toID, const std::string & msg)
+{
+	auto _fromID = fromID;
+	auto _toID = toID;
+	auto _msg = msg;
+	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
+	DB::get()->session() << "insert into p2p_messages values(?, ?, ?, ?)", use(_fromID), use(_toID), use(_msg), use(_dt), now;
+	MessageArrived.dispatch({ _fromID, _toID, _msg, _dt });
+	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
 }
 
 void AccountStub::addGroupMessage(const std::string & groupID, const std::string & fromID, const std::string & msg)
@@ -395,28 +310,50 @@ void AccountStub::addGroupMessage(const std::string & groupID, const std::string
 	auto _fromID = fromID;
 	auto _msg = msg;
 	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
-	DB::instance()->session() << "insert into group_messages values(?, ?, ?, ?)", use(_groupID), use(_fromID), use(_msg), use(_dt), now;
-	GroupMessageArrived.dispatch({ _groupID, _fromID, _msg, _dt });
+	DB::get()->session() << "insert into group_messages values(?, ?, ?, ?)", use(_groupID), use(_fromID), use(_msg), use(_dt), now;
+	MessageArrived.dispatch({ _fromID, _groupID, _msg, _dt });
 	Log::info(LOG_TAG, "[%s] send msg on [%s]", fromID.data(), groupID.data());
 }
 
-void AccountStub::getGroupMessage(const std::string & groupID, std::vector<GroupMessage>& msgs)
+std::vector<ChatMessage> AccountStub::getGroupMessages(const std::string & groupID)
 {
+	std::vector<ChatMessage> ret;
 	auto _groupID = groupID;
-	Statement select(DB::instance()->session());
+	Statement select(DB::get()->session());
 	select << "select * from group_messages where GroupID=?", use(_groupID), now;
 	RecordSet rs(select);
 	bool more = rs.moveFirst();
 	while (more)
 	{
-		GroupMessage record;
-		record.groupID = rs[0].convert<std::string>();
-		record.fromID = rs[1].convert<std::string>();
-		record.msg = rs[2].convert<std::string>();
-		record.time = rs[3].convert<std::string>();
-		msgs.push_back(record);
+		ChatMessage record{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>() };
+		ret.push_back(record);
 		more = rs.moveNext();
 	}
+	return ret;
+}
+
+void AccountStub::setOnline(const std::string & userID, bool online, const std::string & field)
+{
+	std::vector<std::string> records;
+	auto _id = userID;
+	int _online = online;
+	DB::get()->session() << "select UserID from users where UserID=?", into(records), use(_id), now;
+	std::string cmd = "update users set " + field + "=? where UserID = ?";
+	DB::get()->session() << cmd, use(_online), use(_id), now;
+	AccountChanged.dispatch({ getUserInfo(userID) });
+	Log::info(LOG_TAG, "user[%s] set %s[%d] %s", userID.data(), field.data(), _online, records.empty() ? "fail for unknown userID" : "success");
+}
+
+void AccountStub::saveImage(const std::string & path, const std::string & imageBuffer)
+{
+	Poco::Path p(path);
+	Poco::File f(p.parent());
+	//保证文件夹的存在
+	f.createDirectories();
+	FILE *pf = fopen(path.data(), "wb");
+	if (pf)
+		fwrite(imageBuffer.data(), 1, imageBuffer.size(), pf);
+	fclose(pf);
 }
 
 std::string AccountStub::loadImage(const std::string &path) const

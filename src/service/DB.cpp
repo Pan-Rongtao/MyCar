@@ -3,7 +3,7 @@
 
 using namespace uit;
 
-DB * DB::instance()
+DB * DB::get()
 {
 	static DB *p = nullptr;
 	if (!p)

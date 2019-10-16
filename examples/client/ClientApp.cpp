@@ -70,18 +70,6 @@ void ClientApp::uninitialize()
 	Application::uninitialize();
 }
 
-void ClientApp::onAccountChanged(const std::string & userID, const AccountInfo & info)
-{
-}
-
-void ClientApp::onP2PMessageArrived(const std::string & fromID, const P2PMessage & msg)
-{
-}
-
-void ClientApp::onGroupMessageArrived(const std::string & groupID, const GroupMessage & msg)
-{
-}
-
 std::string ClientApp::getLocalIp() const
 {
 #ifdef WIN32

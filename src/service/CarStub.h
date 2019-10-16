@@ -8,7 +8,7 @@ namespace uit {
 class CarStub
 {
 public:
-	static CarStub *instance();
+	static CarStub *get();
 
 	void addRecord(const std::string userID);
 	//
@@ -30,10 +30,9 @@ public:
 	bool setShutdownPhoto(const std::string &userID, const std::string &photoBuffer);
 	void setDriving(const std::string &userID, bool driving);
 
-	//获取行车信息
-	bool getCarInfo(const std::string &userID, CarInfo &info);
+	CarInfo getCarInfo(const std::string &userID);
 
-	struct CarChangedArgs { std::string userID; CarInfo info; };
+	struct CarChangedArgs { CarInfo info; };
 	uit::Event<CarChangedArgs>	CarChanged;
 
 };
