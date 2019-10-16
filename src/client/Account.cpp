@@ -247,11 +247,10 @@ bool Account::login(const QString &userID, const QString &password)
     auto proxy = Proxy::instance()->accountProxy();
     try{
         switch (m_t) {
-        case pc:        proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
-        case vehicle:   proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
-        case handheld:  proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case pc:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+        case vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case handheld:  b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
         }
-        b = true;
     }
     catch(RCF::Exception &e) { qDebug() << e.what(); }
 
@@ -261,13 +260,14 @@ bool Account::login(const QString &userID, const QString &password)
 bool Account::logout()
 {
     if(!islogin())  return true;
+    bool b = false;
     auto proxy = Proxy::instance()->accountProxy();
     switch (m_t) {
-    case pc:        proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
-    case vehicle:   proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
-    case handheld:  proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case pc:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
+    case vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case handheld:  b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
     }
-    return true;
+    return b;
 }
 
 bool Account::modifyPassword(const QString &password)

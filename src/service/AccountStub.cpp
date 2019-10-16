@@ -95,24 +95,24 @@ bool AccountStub::setPhoto(const std::string &userID, const std::string &photoBu
 	}
 }
 
-void AccountStub::setVehicleOnline(const std::string & userID, const std::string &password, bool online)
+bool AccountStub::setVehicleOnline(const std::string & userID, const std::string &password, bool online)
 {
-	setOnline(userID, online, "VehicleOnline");
+	return setOnline(userID, online, "VehicleOnline");
 }
 
-void AccountStub::setPCOnline(const std::string & userID, const std::string &password, bool online)
+bool AccountStub::setPCOnline(const std::string & userID, const std::string &password, bool online)
 {
-	setOnline(userID, online, "PCOnline");
+	return setOnline(userID, online, "PCOnline");
 }
 
-void AccountStub::setHandeldOnline(const std::string & userID, const std::string &password, bool online)
+bool AccountStub::setHandeldOnline(const std::string & userID, const std::string &password, bool online)
 {
-	setOnline(userID, online, "HandeldOnline");
+	return setOnline(userID, online, "HandeldOnline");
 }
 
-void AccountStub::setPadOnline(const std::string & userID, const std::string &password, bool online)
+bool AccountStub::setPadOnline(const std::string & userID, const std::string &password, bool online)
 {
-	setOnline(userID, online, "PadOnline");
+	return setOnline(userID, online, "PadOnline");
 }
 
 UserInfo AccountStub::getUserInfo(const std::string & userID)
@@ -333,7 +333,7 @@ std::vector<ChatMessage> AccountStub::getGroupMessages(const std::string & group
 	return ret;
 }
 
-void AccountStub::setOnline(const std::string & userID, bool online, const std::string & field)
+bool AccountStub::setOnline(const std::string & userID, bool online, const std::string & field)
 {
 	std::vector<std::string> records;
 	auto _id = userID;
@@ -343,6 +343,7 @@ void AccountStub::setOnline(const std::string & userID, bool online, const std::
 	DB::get()->session() << cmd, use(_online), use(_id), now;
 	AccountChanged.dispatch({ getUserInfo(userID) });
 	Log::info(LOG_TAG, "user[%s] set %s[%d] %s", userID.data(), field.data(), _online, records.empty() ? "fail for unknown userID" : "success");
+	return !records.empty();
 }
 
 void AccountStub::saveImage(const std::string & path, const std::string & imageBuffer)

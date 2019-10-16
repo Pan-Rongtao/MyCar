@@ -56,6 +56,7 @@ void Groups::create(const QList<int> &indexs)
     auto proxy = Proxy::instance()->accountProxy();
     QString name;
     QPixmap photo(100, 100);
+    photo.fill(QColor(205, 205, 205));
     QPainter painter(&photo);
     int w = photo.width() / 3;
     int h = photo.height() / 3;

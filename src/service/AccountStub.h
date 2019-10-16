@@ -21,10 +21,10 @@ public:
 	void setNickname(const std::string &userID, const std::string &nickname);
 	void setSignaTure(const std::string &userID, const std::string &signaTure);
 	bool setPhoto(const std::string &userID, const std::string &photoBuffer);
-	void setVehicleOnline(const std::string &userID, const std::string &password, bool online);
-	void setPCOnline(const std::string &userID, const std::string &password, bool online);
-	void setHandeldOnline(const std::string &userID, const std::string &password, bool online);
-	void setPadOnline(const std::string &userID, const std::string &password, bool online);
+	bool setVehicleOnline(const std::string &userID, const std::string &password, bool online);
+	bool setPCOnline(const std::string &userID, const std::string &password, bool online);
+	bool setHandeldOnline(const std::string &userID, const std::string &password, bool online);
+	bool setPadOnline(const std::string &userID, const std::string &password, bool online);
 	UserInfo getUserInfo(const std::string &userID);
 	std::vector<UserInfo> queryUsers();
 
@@ -55,7 +55,7 @@ public:
 	uit::Event<MessageArrivedArgs>	MessageArrived;
 
 private:
-	void setOnline(const std::string & userID, bool online, const std::string &field);
+	bool setOnline(const std::string & userID, bool online, const std::string &field);
 	void saveImage(const std::string &path, const std::string &imageBuffer);
 	std::string loadImage(const std::string &path) const;
 

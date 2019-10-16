@@ -25,10 +25,10 @@ RCF_METHOD_V2(void, setPassword, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setNickname, const std::string &, const std::string &);
 RCF_METHOD_V2(void, setSignaTure, const std::string &, const std::string &);
 RCF_METHOD_R2(bool, setPhoto, const std::string &, const std::string &);
-RCF_METHOD_V3(void, setVehicleOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_V3(void, setPCOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_V3(void, setHandeldOnline, const std::string &, const std::string &, bool);
-RCF_METHOD_V3(void, setPadOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_R3(bool, setVehicleOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_R3(bool, setPCOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_R3(bool, setHandeldOnline, const std::string &, const std::string &, bool);
+RCF_METHOD_R3(bool, setPadOnline, const std::string &, const std::string &, bool);
 RCF_METHOD_R1(UserInfo, getUserInfo, const std::string &);
 RCF_METHOD_R0(std::vector<UserInfo>, queryUsers);
 

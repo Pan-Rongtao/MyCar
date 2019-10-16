@@ -1,3 +1,5 @@
 build
+/dist/win32/bin/release/app/photos
+/dist/win32/bin/release/app/grouptemp.jpg
 /src/buil*
 *pro.user*
