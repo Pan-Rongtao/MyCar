@@ -29,6 +29,7 @@ struct ChatMessage
 	std::string receiverID;	//userID or groupID
 	std::string	content;
 	std::string	time;
+	bool		p2p;
 };
 
 struct CarInfo

@@ -15,7 +15,7 @@ static void serialize(SF::Archive& ar, GroupInfo &info)
 
 static void serialize(SF::Archive& ar, ChatMessage &msg)
 {
-	ar & msg.senderID & msg.receiverID & msg.content & msg.time;
+	ar & msg.senderID & msg.receiverID & msg.content & msg.time & msg.p2p;
 }
 
 RCF_BEGIN(AccountInterface, "AccountInterface")

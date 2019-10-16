@@ -149,8 +149,13 @@ Rectangle{
                     spacing: 10
                     Text { height: itemHeight; text: "空调温度："; verticalAlignment: Text.AlignVCenter;  }
                     Slider{ id:slider; width:itemWidth; height: itemHeight; minimumValue: 18; maximumValue: 30; stepSize: 1;updateValueWhileDragging: false
+                        property bool firstTime: true
                         value: Car.ACTemp
-                        onValueChanged: Car.switchACTemp(value)
+                        onValueChanged:{
+                            if(!firstTime)
+                                Car.switchACTemp(value)
+                            firstTime = false
+                        }
                     }
                     Text {height: itemHeight; text: slider.value;verticalAlignment: Text.AlignVCenter}
                 }
@@ -249,5 +254,5 @@ Rectangle{
 
     }
 
-    Component.onCompleted: Car.updateCar()
+    Component.onCompleted: Car.update()
 }

@@ -36,10 +36,10 @@ RESOURCES += qml.qrc
 uit_dist = ../../dist
 
 INCLUDEPATH += \
-    $$uit_dist/include
+    ../../3rdparty/include \
+    ../../include
 
 win32{
-DEFINES +=
     LIBS += -L../../3rdparty/lib/win32/debug \
     -lRcfLib
 }

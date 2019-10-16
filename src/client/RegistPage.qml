@@ -1,12 +1,12 @@
 import QtQuick 2.5
 import QtQuick.Controls 2.1
+import UIT.Type 1.0
 
 Rectangle{
     id:root
     anchors.fill: parent
     color: "transparent"
 
-    signal naviToLogin()
     property bool bRegist: false
     property int item0Width: 100
     property int item2Width: 80
@@ -100,7 +100,7 @@ Rectangle{
                    anchors.fill: parent;
                    hoverEnabled: true;
                    cursorShape:(containsMouse? Qt.PointingHandCursor: Qt.ArrowCursor);
-                   onClicked: naviToLogin()
+                   onClicked: LayerManager.switchPage(Type.Page_Login)
                }
             }
             Rectangle{width: item2Width;height: item0Height}
@@ -109,6 +109,6 @@ Rectangle{
     }
 
 
-    Pop{ id:pop; onClosed: { userID.focus = true; if(bRegist) naviToLogin() } }
+    Pop{ id:pop; onClosed: { userID.focus = true; if(bRegist) LayerManager.switchPage(Type.Page_Login) } }
     Component.onCompleted: userID.focus = true
 }

@@ -99,18 +99,16 @@ void GroupChat::sendMessage(const QString &msg)
 void GroupChat::update()
 {
     auto proxy = Proxy::instance()->accountProxy();
-    std::vector<GroupMessage> msgs;
-    proxy->getGroupMessage(m_groupID.toStdString(), msgs);
+    std::vector<ChatMessage> msgs = proxy->getGroupMessages(m_groupID.toStdString());
+
     beginResetModel();
     m_list.clear();
     for(auto msg : msgs)
     {
-        bool bIamSender = msg.fromID == Account::instance()->userID().toStdString();
-        AccountInfo info;
-        proxy->getAccountInfo(msg.fromID, info);
-        auto nick = QString::fromStdString(info.nickname);
-        auto photo = Account::instance()->getUserPhoto(msg.fromID);
-        ChatItem item(QString::fromStdString(info.userID), nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender, false);
+        bool bIamSender = msg.senderID == Account::instance()->userID().toStdString();
+        UserInfo info = proxy->getUserInfo(msg.senderID);
+        ChatItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(msg.senderID),
+                      QString::fromStdString(msg.content), QString::fromStdString(msg.time), bIamSender, false);
         m_list.append(item);
     }
     endResetModel();
@@ -178,14 +176,13 @@ void GroupMembers::addMember(const QList<int> &indexs)
 void GroupMembers::update()
 {
     auto proxy = Proxy::instance()->accountProxy();
-    std::vector<std::string> members;
-    proxy->getGroupMembers(GroupChat::instance()->groupID().toStdString(), members);
+    std::vector<std::string> members = proxy->getGroupMembers(GroupChat::instance()->groupID().toStdString());
+
     beginResetModel();
     m_list.clear();
     for(auto & userID : members)
     {
-        AccountInfo info;
-        Proxy::instance()->accountProxy()->getAccountInfo(userID, info);
+        UserInfo info = Proxy::instance()->accountProxy()->getUserInfo(userID);
         Account::instance()->saveUserPhoto(info.userID, info.photo);
         UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
         m_list.append(item);

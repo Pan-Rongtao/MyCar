@@ -4,7 +4,7 @@
 
 static void serialize(SF::Archive& ar, CarInfo &info)
 {
-	ar & info.availableFuel & info.averageFuel & info.totalKm & info.subKmA & info.subKmB & info.leftFrontDoor & info.rightFrontDoor & info.leftRearDoor & info.rightRearDoor
+	ar & info.userID & info.availableFuel & info.averageFuel & info.totalKm & info.subKmA & info.subKmB & info.leftFrontDoor & info.rightFrontDoor & info.leftRearDoor & info.rightRearDoor
 	& info.leftFrontWindow & info.rightFrontWindow & info.leftRearWindow & info.rightRearWindow & info.AC & info.ACTemp & info.shutdownPhoto & info.driving;
 }
 

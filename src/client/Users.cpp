@@ -51,9 +51,8 @@ void Users::update()
 {
     beginResetModel();
     m_list.clear();
-    std::vector<AccountInfo> infos;
-    Proxy::instance()->accountProxy()->queryAllAccountInfo(infos);
-    for(auto &info : infos)
+    std::vector<UserInfo> userInfos = Proxy::instance()->accountProxy()->queryUsers();
+    for(auto &info : userInfos)
     {
         Account::instance()->saveUserPhoto(info.userID, info.photo);
         UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));

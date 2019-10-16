@@ -100,17 +100,16 @@ void P2PChat::sendMessage(const QString &msg)
 void P2PChat::update()
 {
     auto proxy = Proxy::instance()->accountProxy();
-    std::vector<P2PMessage> msgs;
-    proxy->getP2PMessage(m_friendID.toStdString(), Account::instance()->userID().toStdString(), msgs);
+    std::vector<ChatMessage> msgs = proxy->getP2PMessages(m_friendID.toStdString(), Account::instance()->userID().toStdString());
+
     beginResetModel();
     m_list.clear();
     for(auto msg : msgs)
     {
-        bool bIamSender = msg.fromID == Account::instance()->userID().toStdString();
-        auto id = QString::fromStdString(msg.fromID);
+        bool bIamSender = msg.senderID == Account::instance()->userID().toStdString();
         auto nick = bIamSender ? Account::instance()->nickname() : m_friendNickname;
-        auto photo = Account::instance()->getUserPhoto(msg.fromID);
-        ChatItem item(id, nick, photo, QString::fromStdString(msg.msg), QString::fromStdString(msg.time), bIamSender, true);
+        ChatItem item(QString::fromStdString(msg.senderID), nick, Account::instance()->getUserPhoto(msg.senderID),
+                      QString::fromStdString(msg.content), QString::fromStdString(msg.time), bIamSender, true);
         m_list.append(item);
     }
     endResetModel();

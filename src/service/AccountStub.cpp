@@ -15,7 +15,7 @@ using namespace Poco::Data::Keywords;
 
 #define LOG_TAG				"server"
 #define USER_DEFAULT_PHOTO	uit::Runtime::getUitEtcDirectory() + "default.jpg"
-#define USER_PHOTO_DIR		uit::Runtime::getUitEtcDirectory() + "photos/"
+#define USER_PHOTO_DIR		std::string("./photos/")
 
 AccountStub * AccountStub::get()
 {
@@ -26,10 +26,11 @@ AccountStub * AccountStub::get()
 
 bool AccountStub::regist(const std::string & userID, const std::string & password, const std::string & nickname)
 {
-	UserInfo info{ userID, password, nickname, "该用户很懒，懒得签名.", USER_DEFAULT_PHOTO, DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT) , 0, 0, 0, 0 };
+	UserInfo info{ userID, password, nickname, "该用户很懒，懒得签名.", "", DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT) , 0, 0, 0, 0 };
 	try {
 		DB::get()->session() << "insert into users values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", use(info.userID), use(info.password), use(info.nickname), use(info.signaTure),
 			use(info.photo), use(info.registTime), use(info.vehicleOnline), use(info.pcOnline), use(info.handeldOnline), use(info.padOnline), now;
+		setPhoto(userID, loadImage(USER_DEFAULT_PHOTO));
 		CarStub::get()->addRecord(userID);
 	}
 	catch (Poco::Exception &e) {
@@ -178,7 +179,7 @@ std::vector<ChatMessage> AccountStub::getP2PMessages(const std::string & user0, 
 	bool more = rs.moveFirst();
 	while (more)
 	{
-		ChatMessage record{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>() };
+		ChatMessage record{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>(), true };
 		ret.push_back(record);
 		more = rs.moveNext();
 	}
@@ -325,7 +326,7 @@ std::vector<ChatMessage> AccountStub::getGroupMessages(const std::string & group
 	bool more = rs.moveFirst();
 	while (more)
 	{
-		ChatMessage record{ rs[0].convert<std::string>(), rs[1].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>() };
+		ChatMessage record{ rs[1].convert<std::string>(), rs[0].convert<std::string>(), rs[2].convert<std::string>(), rs[3].convert<std::string>(), false };
 		ret.push_back(record);
 		more = rs.moveNext();
 	}

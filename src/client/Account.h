@@ -50,9 +50,8 @@ public:
     void setpadOnline(bool padOnline);
     bool padOnline();
 
-    void onAccountChanged(const std::string &userID, const AccountInfo &info);
-    void onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg);
-    void onGroupMessageArrived(const std::string &groupID, const GroupMessage &msg);
+    void onAccountChanged(const UserInfo &info);
+    void onMessageArrived(const ChatMessage &msg);
     void saveUserPhoto(const std::string &userID, const std::string &photoBuffer);
     QString getUserPhoto(const std::string &userID);
 
@@ -89,8 +88,6 @@ private:
         handheld,
         pad,
     };
-
-    void updateAccountInfo(const AccountInfo &info);
 
     QString m_userID;
     QString m_password;

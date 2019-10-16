@@ -179,27 +179,39 @@ Account::Account()
 #endif
 }
 
-void Account::onAccountChanged(const std::string &userID, const AccountInfo &info)
+void Account::onAccountChanged(const UserInfo &info)
 {
-    if(userID == m_userID.toStdString())
+    if(info.userID == m_userID.toStdString())
     {
         setpcOnline(info.pcOnline);
         sethandeldOnline(info.handeldOnline);
         setvehicleOnline(info.vehicleOnline);
         setpadOnline(info.padOnline);
-        updateAccountInfo(info);
+        if(!islogin())
+        {
+            setuserID("");
+            setpassword("");
+            setnickname("");
+            setsignaTure("");
+            ImageProvider::instance()->setImage(nullptr, 0);
+            setregistTime("");
+        }
+        else
+        {
+            setuserID(QString::fromStdString(info.userID));
+            setpassword(QString::fromStdString(info.password));
+            setnickname(QString::fromStdString(info.nickname));
+            setsignaTure(QString::fromStdString(info.signaTure));
+            ImageProvider::instance()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
+            setregistTime(QString::fromStdString(info.registTime));
+
+        }
     }
 }
 
-void Account::onP2PMessageArrived(const std::string &fromID, const P2PMessage &msg)
+void Account::onMessageArrived(const ChatMessage &msg)
 {
     emit P2PChat::instance()->signalUpdate();
-    emit MessageList::instance()->signalUpdate();
-}
-
-void Account::onGroupMessageArrived(const std::string &groupID, const GroupMessage &msg)
-{
-    emit GroupChat::instance()->signalUpdate();
     emit MessageList::instance()->signalUpdate();
 }
 
@@ -235,31 +247,27 @@ bool Account::login(const QString &userID, const QString &password)
     auto proxy = Proxy::instance()->accountProxy();
     try{
         switch (m_t) {
-        case pc:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
-        case vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
-        case handheld:  b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case pc:        proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+        case vehicle:   proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case handheld:  proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
         }
+        b = true;
     }
-    catch(RCF::Exception &e)
-    {
-        qDebug() << e.what();
-    }
+    catch(RCF::Exception &e) { qDebug() << e.what(); }
 
     return b;
 }
 
 bool Account::logout()
 {
-    if(!islogin())  return false;
-
-    bool b = false;
+    if(!islogin())  return true;
     auto proxy = Proxy::instance()->accountProxy();
     switch (m_t) {
-    case pc:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
-    case vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
-    case handheld:  b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case pc:        proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
+    case vehicle:   proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case handheld:  proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
     }
-    return b;
+    return true;
 }
 
 bool Account::modifyPassword(const QString &password)
@@ -283,47 +291,15 @@ bool Account::modifySignaTure(const QString &signaTure)
 bool Account::modifyPhoto(const QUrl &file)
 {
     QFile f(file.toLocalFile());
-    bool b = f.open(QFile::ReadOnly);
+    f.open(QFile::ReadOnly);
     auto buffer = f.readAll();
     std::string photoBuffer(buffer.data(), buffer.size());
-    try{
-        b = Proxy::instance()->accountProxy()->setPhoto(m_userID.toStdString(), photoBuffer);
-    }catch(...)
-    {
-        f.close();
-        return false;
-    }
     f.close();
-    return b;
-}
-
-void Account::updateAccountInfo(const AccountInfo &info)
-{
-    if(!islogin())
-    {
-        setuserID("");
-        setpassword("");
-        setnickname("");
-        setsignaTure("");
-        ImageProvider::instance()->setImage(nullptr, 0);
-        setregistTime("");
-        setvehicleOnline(false);
-        setpcOnline(false);
-        sethandeldOnline(false);
-        setpadOnline(false);
+    try{
+        return Proxy::instance()->accountProxy()->setPhoto(m_userID.toStdString(), photoBuffer);
     }
-    else
+    catch(...)
     {
-        setuserID(QString::fromStdString(info.userID));
-        setpassword(QString::fromStdString(info.password));
-        setnickname(QString::fromStdString(info.nickname));
-        setsignaTure(QString::fromStdString(info.signaTure));
-        ImageProvider::instance()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
-        setregistTime(QString::fromStdString(info.registTime));
-        setvehicleOnline(info.vehicleOnline);
-        setpcOnline(info.pcOnline);
-        sethandeldOnline(info.handeldOnline);
-        setpadOnline(info.padOnline);
-
+        return false;
     }
 }

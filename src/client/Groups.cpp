@@ -98,16 +98,15 @@ void Groups::remove(int index)
 void Groups::update()
 {
     auto proxy = Proxy::instance()->accountProxy();
+    std::vector<std::string> groups = proxy->getBelongGroups(Account::instance()->userID().toStdString());
+
     beginResetModel();
     m_list.clear();
-    std::vector<std::string> groups;
-    proxy->getBelongGroups(Account::instance()->userID().toStdString(), groups);
     for(auto &groupID : groups)
     {
-        GroupInfo info;
-        proxy->getGroupInfo(groupID, info);
-        Account::instance()->saveUserPhoto(info.ID, info.photo);
-        UserItem item(QString::fromStdString(info.ID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.ID));
+        GroupInfo info = proxy->getGroupInfo(groupID);
+        Account::instance()->saveUserPhoto(info.groupID, info.photo);
+        UserItem item(QString::fromStdString(info.groupID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.groupID));
         m_list.append(item);
     }
     endResetModel();

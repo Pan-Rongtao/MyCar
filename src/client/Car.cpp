@@ -1,5 +1,6 @@
 #include "Car.h"
 #include <iostream>
+#include <QDebug>
 #include "Account.h"
 
 Car *Car::instance()
@@ -243,20 +244,19 @@ bool Car::driving() const
     return m_driving;
 }
 
-void Car::onCarChanged(const std::string &userID, CarInfo &info)
+void Car::onCarChanged(const CarInfo &info)
 {
-    if(userID == Account::instance()->userID().toStdString())
+    if(info.userID == Account::instance()->userID().toStdString())
     {
-        updateCar();
+        emit signalUpdate();
     }
 }
 
-void Car::updateCar()
+void Car::update()
 {
     if(Account::instance()->islogin())
     {
-        CarInfo info;
-        Proxy::instance()->carProxy()->getCarInfo(Account::instance()->userID().toStdString(), info);
+        CarInfo info = Proxy::instance()->carProxy()->getCarInfo(Account::instance()->userID().toStdString());
         setavailableFuel(info.availableFuel);
         setaverageFuel(info.averageFuel);
         settotalKm(info.totalKm);
@@ -304,7 +304,7 @@ void Car::switchLeftFrontDoor(bool b)
 
 void Car::switchRightFrontDoor(bool b)
 {
-    Proxy::instance()->carProxy()->switchLeftFrontDoor(Account::instance()->userID().toStdString(), b);
+    Proxy::instance()->carProxy()->switchRightFrontDoor(Account::instance()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearDoor(bool b)
@@ -350,4 +350,9 @@ void Car::switchACTemp(int v)
 void Car::switchDriving(bool b)
 {
     Proxy::instance()->carProxy()->setDriving(Account::instance()->userID().toStdString(), b);
+}
+
+Car::Car()
+{
+    QObject::connect(this, SIGNAL(signalUpdate()), this, SLOT(update()));
 }

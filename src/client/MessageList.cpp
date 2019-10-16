@@ -73,44 +73,38 @@ void MessageList::enterChat(int index)
 
 void MessageList::update()
 {
+    auto proxy = Proxy::instance()->accountProxy();
+    std::vector<std::string> groups = proxy->getBelongGroups(Account::instance()->userID().toStdString());
+
     beginResetModel();
     m_list.clear();
-    auto proxy = Proxy::instance()->accountProxy();
-    std::vector<std::string> groups;
-    proxy->getBelongGroups(Account::instance()->userID().toStdString(), groups);
     for(auto &groupID : groups)
     {
-        GroupInfo info;
-        proxy->getGroupInfo(groupID, info);
-        std::vector<GroupMessage> msgs;
-        proxy->getGroupMessage(groupID, msgs);
+        GroupInfo info = proxy->getGroupInfo(groupID);
+        std::vector<ChatMessage> msgs = proxy->getGroupMessages(groupID);
         if(!msgs.empty())
         {
             auto lastMsg = msgs.back();
-            bool bIamSender = lastMsg.fromID == Account::instance()->userID().toStdString();
-            AccountInfo fromInfo;
-            proxy->getAccountInfo(lastMsg.fromID, fromInfo);
-            ChatItem item(QString::fromStdString(info.ID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(groupID),
-                          QString::fromStdString(fromInfo.nickname + ":" + lastMsg.msg), QString::fromStdString(lastMsg.time), bIamSender, false);
+            bool bIamSender = lastMsg.senderID == Account::instance()->userID().toStdString();
+            UserInfo senderInfo = proxy->getUserInfo(lastMsg.senderID);
+            ChatItem item(QString::fromStdString(info.groupID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.groupID),
+                          QString::fromStdString(senderInfo.nickname + ":" + lastMsg.content), QString::fromStdString(lastMsg.time), bIamSender, false);
             m_list.append(item);
         }
     }
 
-    std::vector<std::string> friends;
-    proxy->getFriends(Account::instance()->userID().toStdString(), friends);
+    std::vector<std::string> friends = proxy->getFriends(Account::instance()->userID().toStdString());
     for(auto &frd : friends)
     {
-        std::vector<P2PMessage> msgs;
-        proxy->getP2PMessage(frd, Account::instance()->userID().toStdString(), msgs);
+        std::vector<ChatMessage> msgs = proxy->getP2PMessages(frd, Account::instance()->userID().toStdString());
         if(!msgs.empty())
         {
             auto lastMsg = msgs.back();
-            bool bIamSender = lastMsg.fromID == Account::instance()->userID().toStdString();
-            auto id = bIamSender ? lastMsg.toID : lastMsg.fromID;
-            AccountInfo fromInfo;
-            proxy->getAccountInfo(id, fromInfo);
+            bool bIamSender = lastMsg.senderID == Account::instance()->userID().toStdString();
+            auto id = bIamSender ? lastMsg.receiverID : lastMsg.senderID;
+            UserInfo fromInfo = proxy->getUserInfo(id);
             ChatItem item(QString::fromStdString(id), QString::fromStdString(fromInfo.nickname), Account::instance()->getUserPhoto(frd),
-                          QString::fromStdString(lastMsg.msg), QString::fromStdString(lastMsg.time), bIamSender, true);
+                          QString::fromStdString(lastMsg.content), QString::fromStdString(lastMsg.time), bIamSender, true);
             m_list.append(item);
         }
     }

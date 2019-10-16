@@ -68,14 +68,13 @@ void Friends::remove(int index)
 
 void Friends::update()
 {
+    auto proxy = Proxy::instance()->accountProxy();
+    std::vector<std::string> friends = proxy->getFriends(Account::instance()->userID().toStdString());
     beginResetModel();
     m_list.clear();
-    std::vector<std::string> friends;
-    Proxy::instance()->accountProxy()->getFriends(Account::instance()->userID().toStdString(), friends);
     for(auto & friendID : friends)
     {
-        AccountInfo info;
-        Proxy::instance()->accountProxy()->getAccountInfo(friendID, info);
+        UserInfo info = proxy->getUserInfo(friendID);
         Account::instance()->saveUserPhoto(info.userID, info.photo);
         UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
         m_list.append(item);

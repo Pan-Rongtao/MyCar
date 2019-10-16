@@ -79,7 +79,7 @@ public:
     void setdriving(bool b);
     bool driving() const;
 
-    void onCarChanged(const std::string &userID, CarInfo &info);
+    void onCarChanged(const CarInfo &info);
 
 signals:
     void availableFuelChanged();
@@ -100,8 +100,10 @@ signals:
     void shutdownPhotoChanged();
     void drivingChanged();
 
+    void signalUpdate();
+
 public slots:
-    void updateCar();
+    void update();
     void switchLeftFrontDoor(bool b);
     void switchRightFrontDoor(bool b);
     void switchLeftRearDoor(bool b);
@@ -115,6 +117,8 @@ public slots:
     void switchDriving(bool b);
 
 private:
+    Car();
+
     float m_availableFuel{0.0};
     float m_averageFuel{0.0};
     float m_totalKm{0.0};

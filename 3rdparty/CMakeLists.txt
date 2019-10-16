@@ -13,7 +13,7 @@ project(uit-3rdparty)
 
 
 # 4. Sub Projects
-add_subdirectory(include)
+#add_subdirectory(include)
 add_subdirectory(lib)
 
 
