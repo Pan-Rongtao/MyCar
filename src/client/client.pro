@@ -40,8 +40,15 @@ INCLUDEPATH += \
     ../../include
 
 win32{
+CONFIG(debug, debug|release){
     LIBS += -L../../3rdparty/lib/win32/debug \
     -lRcfLib
+    QMAKE_POST_LINK += copy /y debug\client.exe ..\..\dist\win32\bin\debug\app\
+}else{
+    LIBS += -L../../3rdparty/lib/win32/release \
+    -lRcfLib
+    QMAKE_POST_LINK += copy /y release\client.exe ..\..\dist\win32\bin\release\app\
+}
 }
 
 unix{
