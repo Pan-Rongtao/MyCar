@@ -74,15 +74,15 @@ Rectangle{
             Item{ width: item2Width; height: item0Height  }
 
             Text{ text: "密码："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:password; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} }
+            TextField{id:password; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} onPressed: kb.visible=true }
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyPassword(password.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "昵称："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; }
+            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; onPressed: kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyNickname(nickname.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "签名："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; }
+            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; onPressed: kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: Account.modifySignaTure(signaTure.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Item{ width: item0Width; height: item0Height  }
@@ -109,4 +109,32 @@ Rectangle{
         }
         Component.onCompleted: visible = false
     }
+
+
+    Keyboard{
+        id:kb
+        visible: false
+        width: parent.width
+        height: parent.height * 2 / 5
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onKey: {
+            if(password.focus)
+                password.text += content
+            else if(nickname.focus)
+                nickname.text += content
+            else if(signaTure.focus)
+                signaTure.text += content
+        }
+        onDel: {
+            if(password.focus)
+                password.text = password.text.substring(0, password.text.length - 1)
+            else if(nickname.focus)
+                nickname.text = nickname.text.substring(0, nickname.text.length - 1)
+            else if(signaTure.focus)
+                signaTure.text = signaTure.text.substring(0, signaTure.text.length - 1)
+        }
+    }
+
 }

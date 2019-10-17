@@ -45,5 +45,7 @@
         <file>UserItemComponent.qml</file>
         <file>ChatItemComponent.qml</file>
         <file>images/addmember.png</file>
+        <file>Keyboard.qml</file>
+        <file>Key.qml</file>
     </qresource>
 </RCC>

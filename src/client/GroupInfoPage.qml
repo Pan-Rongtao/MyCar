@@ -29,7 +29,7 @@ Rectangle {
             padding: 10
 
             Text{ text: "群组名"; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:name; width: parent.width - item0Width - item2Width; height: item0Height; text: GroupChat.groupName; }
+            TextField{id:name; width: parent.width - item0Width - item2Width; height: item0Height; text: GroupChat.groupName; onPressed: kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: GroupChat.modifyGroupName(name.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
 
@@ -67,5 +67,23 @@ Rectangle {
     }
 
     Component.onCompleted: GroupMembers.update()
+
+    Keyboard{
+        id:kb
+        visible: false
+        width: parent.width
+        height: parent.height * 2 / 5
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onKey: {
+            if(name.focus)
+                name.text += content
+        }
+        onDel: {
+            if(name.focus)
+                name.text = name.text.substring(0, name.text.length - 1)
+        }
+    }
 
 }

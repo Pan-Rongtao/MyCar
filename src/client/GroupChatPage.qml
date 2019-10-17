@@ -11,6 +11,7 @@ Rectangle{
     signal leaveChat()
 
     Column{
+        id:main
         width: parent.width
         height: parent.height
         spacing: 30
@@ -54,6 +55,7 @@ Rectangle{
                 id:txtMsg
                 width:parent.width-btnSend.width;height: parent.height
                 Keys.onReturnPressed: send()
+                onPressed: kb.visible=true
             }
             Button{
                 id:btnSend
@@ -80,4 +82,22 @@ Rectangle{
         txtMsg.focus = true
     }
 
+    Keyboard{
+        id:kb
+        visible: false
+        width: parent.width
+        height: parent.height * 2 / 5
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onVisibleChanged: if(visible) main.y -= height; else main.y += height
+        onKey: {
+            if(txtMsg.focus)
+                txtMsg.text += content
+        }
+        onDel: {
+            if(txtMsg.focus)
+                txtMsg.text = txtMsg.text.substring(0, txtMsg.text.length - 1)
+        }
+    }
 }

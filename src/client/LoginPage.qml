@@ -45,6 +45,8 @@ Rectangle{
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.saveUseID
                 Keys.onReturnPressed: login()
+                onPressed: kb.visible = true
+                onFocusChanged: if(!focus && !password.focus) kb.visible=false
             }
             Rectangle{ width: item2Width; height: item0Height  }
 
@@ -55,6 +57,8 @@ Rectangle{
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.savePassword
                 Keys.onReturnPressed: login()
+                onPressed: kb.visible = true
+                onFocusChanged: if(!focus && !userID.focus) kb.visible=false
             }
             Rectangle{ width: item2Width; height: item0Height }
 
@@ -104,5 +108,28 @@ Rectangle{
     }
 
     Settings{ id:setting; property string saveUseID: ""; property string savePassword: "" }
+
+    Keyboard{
+        id:kb
+        visible: false
+        width: parent.width
+        height: parent.height * 2 / 5
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onKey: {
+            if(userID.focus)
+                userID.text += content
+            else if(password.focus)
+                password.text += content
+        }
+        onDel: {
+            if(userID.focus)
+                userID.text = userID.text.substring(0, userID.text.length - 1)
+            else if(password.focus)
+                password.text = password.text.substring(0, password.text.length - 1)
+        }
+    }
+
 
 }

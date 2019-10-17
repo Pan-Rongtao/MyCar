@@ -43,6 +43,7 @@ Rectangle{
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {userIDCheck.state = text==="" ? -1 : (Account.isRegisted(text) ? 0 : 1)}
+                onPressed: kb.visible = true
             }
             Check{ id:userIDCheck; width: item2Width; height: item0Height; emptyTip: "账号不能为空"; refuseTip: "账号已存在" }
 
@@ -52,14 +53,17 @@ Rectangle{
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {passwordCheck.state = text==="" ? -1 : (text.length < 8 ? 0 : 1)}
+                onPressed: kb.visible = true
             }
             Check{ id:passwordCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "密码至少8位" }
 
             Text{ text: "重复密码："; width: item0Width; font.bold: true; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter}
             TextField{
+                id:passwordAgain
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {passwordAgainCheck.state = text==="" ? -1 : (text!==password.text ? 0 : 1)}
+                onPressed: kb.visible = true
             }
             Check{ id:passwordAgainCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "两次输入的密码不相同" }
 
@@ -68,6 +72,7 @@ Rectangle{
                 id:nickname
                 width: parent.width - item0Width - item2Width; height: item0Height
                 onTextChanged: {nicknameCheck.state = text==="" ? -1 : 1}
+                onPressed: kb.visible = true
             }
             Check{ id:nicknameCheck; width: item2Width; height: item0Height; emptyTip: "昵称不能为空"; refuseTip: "" }
 
@@ -108,7 +113,38 @@ Rectangle{
 
     }
 
-
     Pop{ id:pop; onClosed: { userID.focus = true; if(bRegist) LayerManager.switchPage(Type.Page_Login) } }
     Component.onCompleted: userID.focus = true
+
+
+    Keyboard{
+        id:kb
+        visible: false
+        width: parent.width
+        height: parent.height * 2 / 5
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        onKey: {
+            if(userID.focus)
+                userID.text += content
+            else if(password.focus)
+                password.text += content
+            else if(passwordAgain.focus)
+                passwordAgain.text += content
+            else if(nickname.focus)
+                nickname.text += content
+        }
+        onDel: {
+            if(userID.focus)
+                userID.text = userID.text.substring(0, userID.text.length - 1)
+            else if(password.focus)
+                password.text = password.text.substring(0, password.text.length - 1)
+            else if(passwordAgain.focus)
+                passwordAgain.text = passwordAgain.text.substring(0, passwordAgain.text.length - 1)
+            else if(nickname.focus)
+                nickname.text = nickname.text.substring(0, nickname.text.length - 1)
+        }
+    }
+
 }
