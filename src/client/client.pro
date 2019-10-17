@@ -52,7 +52,9 @@ CONFIG(debug, debug|release){
 }
 
 unix{
-    contains(QT_ARCH, arm) {
+    contains(QT_ARCH, arm64) {
+			OBJECTS_DIR=./obj
+			MOC_DIR=./obj
             LIBS += -L../../3rdparty/lib/linux-arm \
             -lRcfLib \
             -lpthread \
