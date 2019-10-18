@@ -45,7 +45,7 @@ Rectangle{
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.saveUseID
                 Keys.onReturnPressed: login()
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
                 onFocusChanged: if(!focus && !password.focus) kb.visible=false
             }
             Rectangle{ width: item2Width; height: item0Height  }
@@ -57,7 +57,7 @@ Rectangle{
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.savePassword
                 Keys.onReturnPressed: login()
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
                 onFocusChanged: if(!focus && !userID.focus) kb.visible=false
             }
             Rectangle{ width: item2Width; height: item0Height }

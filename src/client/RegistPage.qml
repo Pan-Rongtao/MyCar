@@ -43,7 +43,7 @@ Rectangle{
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {userIDCheck.state = text==="" ? -1 : (Account.isRegisted(text) ? 0 : 1)}
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
             }
             Check{ id:userIDCheck; width: item2Width; height: item0Height; emptyTip: "账号不能为空"; refuseTip: "账号已存在" }
 
@@ -53,7 +53,7 @@ Rectangle{
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {passwordCheck.state = text==="" ? -1 : (text.length < 8 ? 0 : 1)}
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
             }
             Check{ id:passwordCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "密码至少8位" }
 
@@ -63,7 +63,7 @@ Rectangle{
                 width: parent.width - item0Width - item2Width; height: item0Height
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 onTextChanged: {passwordAgainCheck.state = text==="" ? -1 : (text!==password.text ? 0 : 1)}
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
             }
             Check{ id:passwordAgainCheck; width: item2Width; height: item0Height; emptyTip: "密码不能为空"; refuseTip: "两次输入的密码不相同" }
 
@@ -72,7 +72,7 @@ Rectangle{
                 id:nickname
                 width: parent.width - item0Width - item2Width; height: item0Height
                 onTextChanged: {nicknameCheck.state = text==="" ? -1 : 1}
-                onPressed: kb.visible = true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
             }
             Check{ id:nicknameCheck; width: item2Width; height: item0Height; emptyTip: "昵称不能为空"; refuseTip: "" }
 

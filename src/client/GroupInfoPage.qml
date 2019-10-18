@@ -29,7 +29,7 @@ Rectangle {
             padding: 10
 
             Text{ text: "群组名"; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:name; width: parent.width - item0Width - item2Width; height: item0Height; text: GroupChat.groupName; onPressed: kb.visible=true}
+            TextField{id:name; width: parent.width - item0Width - item2Width; height: item0Height; text: GroupChat.groupName; onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: GroupChat.modifyGroupName(name.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
 

@@ -46,6 +46,10 @@ Rectangle{
             delegate: ChatItemComponent{
                 width: parent.width
             }
+            MouseArea{
+                anchors.fill: parent
+                onPressed: kb.visible = false
+            }
             onCountChanged: list.positionViewAtEnd()
         }
         Row{
@@ -55,7 +59,7 @@ Rectangle{
                 id:txtMsg
                 width:parent.width-btnSend.width;height: parent.height
                 Keys.onReturnPressed: send()
-                onPressed: kb.visible=true
+                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true
             }
             Button{
                 id:btnSend
@@ -90,7 +94,13 @@ Rectangle{
         anchors.right: parent.right
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        onVisibleChanged: if(visible) main.y -= height; else main.y += height
+        onVisibleChanged: {
+            if(visible)
+                main.height -= height
+            else
+                main.height += height
+            list.positionViewAtEnd()
+        }
         onKey: {
             if(txtMsg.focus)
                 txtMsg.text += content

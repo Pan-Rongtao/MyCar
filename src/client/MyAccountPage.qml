@@ -74,15 +74,15 @@ Rectangle{
             Item{ width: item2Width; height: item0Height  }
 
             Text{ text: "密码："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:password; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} onPressed: kb.visible=true }
+            TextField{id:password; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true }
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyPassword(password.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "昵称："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; onPressed: kb.visible=true}
+            TextField{id:nickname; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.nickname; onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: Account.modifyNickname(nickname.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "签名："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; onPressed: kb.visible=true}
+            TextField{id:signaTure; width: parent.width - item0Width - item2Width; height: item0Height; text: Account.signaTure; onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true}
             Button{ width: 30;height:item0Height ; onClicked: Account.modifySignaTure(signaTure.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Item{ width: item0Width; height: item0Height  }
