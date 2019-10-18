@@ -18,6 +18,7 @@
     #include <net/if.h>
     #include <stdlib.h>
 #endif
+#include "Type.h"
 
 class Proxy : public QObject
 {
@@ -25,7 +26,11 @@ class Proxy : public QObject
 public:
     static Proxy *instance();
 
+    Q_PROPERTY(Type::TerminalType terminalType READ terminalType WRITE setterminalType NOTIFY terminalTypeChanged)
     Q_PROPERTY(bool connected READ connected WRITE setconnected NOTIFY connectedChanged)
+
+    void setterminalType(const Type::TerminalType &terminalType);
+    Type::TerminalType terminalType();
 
     void setconnected(bool connected);
     bool connected();
@@ -37,6 +42,7 @@ public:
     static std::string getLocalIp();
 
 signals:
+    void terminalTypeChanged();
     void connectedChanged();
 
 public slots:
@@ -51,4 +57,5 @@ private:
     RCF::SubscriptionPtr                        m_accountSubscription;
     RCF::SubscriptionPtr                        m_carSubscription;
     bool                                        m_connected;
+    Type::TerminalType                          m_terminalType;
 };

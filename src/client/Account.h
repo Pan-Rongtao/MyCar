@@ -2,7 +2,6 @@
 
 #include <QObject>
 #include "Proxy.h"
-
 class Account : public QObject
 {
     Q_OBJECT
@@ -81,14 +80,6 @@ public slots:
 private:
     Account();
 
-    enum TerminalType
-    {
-        pc,
-        vehicle,
-        handheld,
-        pad,
-    };
-
     QString m_userID;
     QString m_password;
     QString m_nickname;
@@ -99,7 +90,5 @@ private:
     bool    m_pcOnline{false};
     bool    m_handeldOnline{false};
     bool    m_padOnline{false};
-
-    TerminalType    m_t{pc};
 };
 

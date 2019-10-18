@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Type>("UIT.Type", 1, 0, "Type");
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("Proxy", Proxy::instance());
     engine.rootContext()->setContextProperty("LayerManager", LayerManager::instance());
     engine.rootContext()->setContextProperty("Account", Account::instance());
     engine.rootContext()->setContextProperty("Car", Car::instance());

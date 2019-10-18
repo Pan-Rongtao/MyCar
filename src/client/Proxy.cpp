@@ -3,9 +3,17 @@
 #include "Car.h"
 
 Proxy::Proxy()
-    : m_connected(false)
+    : m_terminalType(Type::Terminal_PC)
+    , m_connected(false)
 {
-
+    RCF::init();
+#if defined(Q_OS_WIN)
+    m_terminalType = Type::Terminal_PC;
+#elif defined(Q_OS_ANDROID)
+    m_terminalType = Type::Terminal_CellPhone;
+#elif defined(Q_OS_LINUX)
+    m_terminalType = Type::Terminal_Vehicle;
+#endif
 }
 
 Proxy *Proxy::instance()
@@ -13,6 +21,20 @@ Proxy *Proxy::instance()
     static Proxy *p = nullptr;
     if(!p)  p = new Proxy();
     return p;
+}
+
+void Proxy::setterminalType(const Type::TerminalType &terminalType)
+{
+    if(m_terminalType != terminalType)
+    {
+        m_terminalType = terminalType;
+        emit terminalTypeChanged();
+    }
+}
+
+Type::TerminalType Proxy::terminalType()
+{
+    return m_terminalType;
 }
 
 void Proxy::setconnected(bool connected)

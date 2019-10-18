@@ -7,8 +7,8 @@ import UIT.Type 1.0
 Window {
     id:window
     visible: true
-    width: 400
-    height: 720
+    width: Proxy.terminalType === Type.Terminal_PC ? 400 : (Proxy.terminalType === Type.Terminal_Vehicle ? 1920 : 480)
+    height: Proxy.terminalType === Type.Terminal_PC ? 720 : (Proxy.terminalType === Type.Terminal_Vehicle ? 720 : 480)
     minimumWidth: 400
     minimumHeight: 720
     title: "svcar"

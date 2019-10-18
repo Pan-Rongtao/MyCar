@@ -4,10 +4,19 @@
 class Type : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(TerminalType)
     Q_ENUMS(PageE)
     Q_ENUMS(PopE)
 
 public:
+    enum TerminalType
+    {
+        Terminal_PC,
+        Terminal_Vehicle,
+        Terminal_CellPhone,
+        Terminal_Pad,
+    };
+
     enum PageE
     {
         Page_Account = 0,

@@ -169,14 +169,6 @@ bool Account::islogin()
 
 Account::Account()
 {
-    RCF::init();
-#if defined(Q_OS_WIN)
-    m_t = pc;
-#elif defined(Q_OS_ANDROID)
-    m_t = handheld;
-#elif defined(Q_OS_LINUX)
-    m_t = vehicle;
-#endif
 }
 
 void Account::onAccountChanged(const UserInfo &info)
@@ -247,10 +239,10 @@ bool Account::login(const QString &userID, const QString &password)
     setuserID(userID);
     auto proxy = Proxy::instance()->accountProxy();
     try{
-        switch (m_t) {
-        case pc:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
-        case vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
-        case handheld:  b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
+        switch (Proxy::instance()->terminalType()) {
+        case Type::Terminal_PC:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
+        case Type::Terminal_Vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
+        case Type::Terminal_CellPhone: b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
         }
     }
     catch(RCF::Exception &e) { qDebug() << e.what(); }
@@ -263,10 +255,10 @@ bool Account::logout()
     if(!islogin())  return true;
     bool b = false;
     auto proxy = Proxy::instance()->accountProxy();
-    switch (m_t) {
-    case pc:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
-    case vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
-    case handheld:  b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    switch (Proxy::instance()->terminalType()) {
+    case Type::Terminal_PC:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
+    case Type::Terminal_Vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
+    case Type::Terminal_CellPhone: b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
     }
     return b;
 }
