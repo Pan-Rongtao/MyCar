@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     std::string ip = Proxy::instance()->getLocalIp();
+	printf("getLocalIp=%s\n", ip.data());
     auto interfacePort = 8888;
     auto publisherPort = 9999;
     try{

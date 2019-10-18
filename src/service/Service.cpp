@@ -42,6 +42,7 @@ void Service::initialize(Application & app)
 	}
 
 	auto ip = getLocalIp();
+	Log::info(LOG_TAG, "getLocalIp=%s", ip.data());
 	auto interfacePort = 8888;
 	auto publisherPort = 9999;
 	try {
@@ -104,15 +105,14 @@ std::string Service::getLocalIp() const
 		close(sk);
 		return ip;
 	};
-#if POCO_ARCH == ARM
-	auto eth = getDeviceIp("eth1");
-	if(!eth.empty())
-		return eth;
-	else
-		return getDeviceIp("mlan0");
-#else
-	return getDeviceIp("ens160");
-#endif
 
+	auto eth = getDeviceIp("ens160");
+	if(eth.empty())
+	{
+		eth = getDeviceIp("eth1");
+		if(eth.empty())
+			eth = getDeviceIp("mlan0");
+	}
+	return eth;
 #endif
 }
