@@ -5,31 +5,23 @@ CONFIG += c++14 resources_big
 
 HEADERS += \
     Account.h \
-    ImageProvider.h \
     Car.h \
     Users.h \
-    MessageList.h \
-    P2PChat.h \
     Proxy.h \
     Groups.h \
-    GroupChat.h \
     Item.h \
-    Friends.h \
     LayerManager.h \
-    Type.h
+    Type.h \
+    Chat.h
 
 SOURCES += main.cpp \
 	Account.cpp \
-    ImageProvider.cpp \
     Car.cpp \
     Users.cpp \
-    MessageList.cpp \
-    P2PChat.cpp \
     Proxy.cpp \
     Groups.cpp \
-    GroupChat.cpp \
-    Friends.cpp \
-    LayerManager.cpp
+    LayerManager.cpp \
+    Chat.cpp
 
 RESOURCES += qml.qrc
 

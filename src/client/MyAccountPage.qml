@@ -21,19 +21,14 @@ Rectangle{
             width: parent.width; height: 80
             spacing: 10
             CircleIcon{
-                id:photo
-                width: 90; height: 90
-                onImgClick: { picChoose.open() }
-                Connections{
-                    target:ImageProvider
-                    onRefreshImage: {photo.source=""; photo.source="image://ImgProvider"}
-                }
-                Component.onCompleted: {
-                    photo.source=""; photo.source="image://ImgProvider"
-                }
+                id:img
+                width: 90
+                height: 90
+                onImgClick: picChoose.open()
+                source: "file:" + Account.photo
             }
             Column{
-                width: parent.width - photo.width
+                width: parent.width - img.width
                 height: parent.height
                 Text{
                     id:nk

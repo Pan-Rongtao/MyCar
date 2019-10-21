@@ -16,7 +16,7 @@ Proxy::Proxy()
 #endif
 }
 
-Proxy *Proxy::instance()
+Proxy *Proxy::get()
 {
     static Proxy *p = nullptr;
     if(!p)  p = new Proxy();
@@ -79,8 +79,8 @@ bool Proxy::connectToServer(const std::string &ip, int interfacePort, int publis
     m_subscribServer->start();
     RCF::SubscriptionParms subParms;
     subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip, publisherPort));
-    m_accountSubscription = m_subscribServer->createSubscription<AccountNotify>(*Account::instance(), subParms);
-    m_carSubscription = m_subscribServer->createSubscription<CarNotify>(*Car::instance(), subParms);
+    m_accountSubscription = m_subscribServer->createSubscription<AccountNotify>(*Account::get(), subParms);
+    m_carSubscription = m_subscribServer->createSubscription<CarNotify>(*Car::get(), subParms);
 
     bool b = ping();
     setconnected(b);

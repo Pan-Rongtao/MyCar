@@ -4,14 +4,13 @@
 #include <QFile>
 #include "Account.h"
 #include "Proxy.h"
-#include "Friends.h"
 
 Groups::Groups()
 {
 
 }
 
-Groups *Groups::instance()
+Groups *Groups::get()
 {
     static Groups *p = nullptr;
     if(!p)  p = new Groups();
@@ -53,7 +52,7 @@ QHash<int, QByteArray> Groups::roleNames() const
 
 void Groups::create(const QList<int> &indexs)
 {
-    auto proxy = Proxy::instance()->accountProxy();
+    auto proxy = Proxy::get()->accountProxy();
     QString name;
     QPixmap photo(100, 100);
     photo.fill(QColor(205, 205, 205));
@@ -61,15 +60,15 @@ void Groups::create(const QList<int> &indexs)
     int w = photo.width() / 3;
     int h = photo.height() / 3;
     QPixmap img;
-    bool b = img.load(Account::instance()->getUserPhoto(Account::instance()->userID().toStdString()));
+    bool b = img.load(Account::get()->getUserPhoto(Account::get()->userID().toStdString()));
     painter.drawPixmap(0, 0, w, h, img);
-    auto friends = Friends::instance()->items();
+    auto friends = Friends::get()->items();
     for(auto i = 0; i != indexs.size(); ++i)
     {
         if(i <= 2)
             name += (friends[indexs[i]].name + ",");
         QPixmap img;
-        bool b = img.load(Account::instance()->getUserPhoto(friends[indexs[i]].id.toStdString()));
+        bool b = img.load(Account::get()->getUserPhoto(friends[indexs[i]].id.toStdString()));
         int x = (i + 1) % 3 * w;
         int y = (i + 1) / 3 * h;
         painter.drawPixmap(x, y, w, h, img);
@@ -80,7 +79,7 @@ void Groups::create(const QList<int> &indexs)
     b = f.open(QFile::ReadOnly);
     auto buffer = f.readAll();
     std::string groupID = proxy->addGroup(name.toStdString(), std::string(buffer.data(), buffer.size()));
-    proxy->addGroupMember(groupID, Account::instance()->userID().toStdString());
+    proxy->addGroupMember(groupID, Account::get()->userID().toStdString());
     for(auto index : indexs)
     {
         auto addMember = friends[index];
@@ -91,23 +90,23 @@ void Groups::create(const QList<int> &indexs)
 
 void Groups::remove(int index)
 {
-    auto proxy = Proxy::instance()->accountProxy();
-    proxy->removeGroupMember(m_list[index].id.toStdString(), Account::instance()->userID().toStdString());
+    auto proxy = Proxy::get()->accountProxy();
+    proxy->removeGroupMember(m_list[index].id.toStdString(), Account::get()->userID().toStdString());
     update();
 }
 
 void Groups::update()
 {
-    auto proxy = Proxy::instance()->accountProxy();
-    std::vector<std::string> groups = proxy->getBelongGroups(Account::instance()->userID().toStdString());
+    auto proxy = Proxy::get()->accountProxy();
+    std::vector<std::string> groups = proxy->getBelongGroups(Account::get()->userID().toStdString());
 
     beginResetModel();
     m_list.clear();
     for(auto &groupID : groups)
     {
         GroupInfo info = proxy->getGroupInfo(groupID);
-        Account::instance()->saveUserPhoto(info.groupID, info.photo);
-        UserItem item(QString::fromStdString(info.groupID), QString::fromStdString(info.name), Account::instance()->getUserPhoto(info.groupID));
+        Account::get()->saveUserPhoto(info.groupID, info.photo);
+        UserItem item(QString::fromStdString(info.groupID), QString::fromStdString(info.name), Account::get()->getUserPhoto(info.groupID));
         m_list.append(item);
     }
     endResetModel();

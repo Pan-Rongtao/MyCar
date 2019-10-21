@@ -7,7 +7,7 @@ class Users : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    static Users *instance();
+    static Users *get();
 
     QList<UserItem> &items();
 

@@ -15,5 +15,17 @@ Rectangle{
             font.pixelSize: 32
             horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
         }
+
+        Row{
+            spacing: 10
+            width: parent.width; height: 30
+            Item{width: 30;height: parent.height}
+            Row{
+                width: 80
+                Text{ text: "在线状态："; width: 100; height: parent.height; font.pixelSize:20; verticalAlignment: Text.AlignVCenter }
+                Image{ width: 30;height: 30; source: Account.handeldOnline ? "images/yes.png" : "images/cancel.png" }
+            }
+
+        }
     }
 }

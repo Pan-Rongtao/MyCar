@@ -7,7 +7,7 @@ class Groups : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    static Groups *instance();
+    static Groups *get();
 
     QList<UserItem> &items();
 

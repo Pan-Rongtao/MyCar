@@ -67,6 +67,7 @@ void Service::initialize(Application & app)
 
 	AccountStub::get()->AccountChanged.addHandler([&](const AccountStub::AccountChangedArgs &args) { m_publisherAccount->publish().onAccountChanged(args.info); });
 	AccountStub::get()->MessageArrived.addHandler([&](const AccountStub::MessageArrivedArgs &args) { m_publisherAccount->publish().onMessageArrived(args.msg); });
+	AccountStub::get()->ShutdownPCEvent.addHandler([&](const AccountStub::ShutdownPCArgs &args) { m_publisherAccount->publish().onShutdownPC(args.userID); });
 	CarStub::get()->CarChanged += ([&](const CarStub::CarChangedArgs &args) { m_publisherCar->publish().onCarChanged(args.info); });
 
 	Log::info(LOG_TAG, "server startup, interface[%s:%d], publisher[%s:%d], cost %d ms", ip.data(), interfacePort, ip.data(), publisherPort, (int)(uit::getTickCount() - k));

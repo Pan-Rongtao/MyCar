@@ -29,12 +29,29 @@ Rectangle{
         }
 
         Text {
+            property int value: Car.driving ? 200 : 0
             anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
             width: 80
             height: 50
-            text: "30" + "km/h"
+            text: value + "km/h"
             font.pixelSize: 30
+            PropertyAnimation on value {
+                id:up
+                from: 0
+                to: 200
+                duration:1000 * 3
+                easing: Easing.InOutElastic
+                running: false
+            }
+            PropertyAnimation on value {
+                id:down
+                from: up.to
+                to: up.from
+                duration:up.duration
+                easing: up.easing
+                running: false
+            }
         }
 
         GroupBox{
@@ -42,18 +59,30 @@ Rectangle{
             title: "车辆信息"
             width: parent.width
             height: 120
-            Column{
-                x:20
+            Row{
                 width: parent.width
                 height: parent.height
-                spacing: 6
-                Text{ text: "剩余油量：" + Car.availableFuel + "%";  horizontalAlignment: Text.AlignLeft; }
-                Text{ text: "平均油耗：" + Car.averageFuel + "L/100km";  horizontalAlignment: Text.AlignLeft }
-                Text{ text: "总行驶里程：" + Car.totalKm + "km"; horizontalAlignment: Text.AlignLeft }
-                Text{ text: "小计里程A：" + Car.subKmA + "km"; horizontalAlignment: Text.AlignLeft }
-                Text{ text: "小计里程B：" + Car.subKmB + "km"; horizontalAlignment: Text.AlignLeft }
+                Column{
+                    x:20
+                    width: parent.width / 2
+                    height: parent.height
+                    spacing: 6
+                    Text{ text: "剩余油量：" + Car.availableFuel + "%";  horizontalAlignment: Text.AlignLeft; }
+                    Text{ text: "平均油耗：" + Car.averageFuel + "L/100km";  horizontalAlignment: Text.AlignLeft }
+                    Text{ text: "总行驶里程：" + Car.totalKm + "km"; horizontalAlignment: Text.AlignLeft }
+                    Text{ text: "小计里程A：" + Car.subKmA + "km"; horizontalAlignment: Text.AlignLeft }
+                    Text{ text: "小计里程B：" + Car.subKmB + "km"; horizontalAlignment: Text.AlignLeft }
+                    }
+                Column{
+                    width: parent.width / 2
+                    height: parent.height
+                    Text{ text: "熄火地点："; horizontalAlignment: Text.AlignLeft; }
+                    Image{
+                        source: "images/parking.jpg"
+                    }
                 }
             }
+        }
 
         GroupBox{
             title: "车辆控制"
@@ -165,7 +194,7 @@ Rectangle{
 
         Grid{
             width: parent.width
-            height: 80
+            height: 50
             Item{width: (parent.width - cProBtn.width) / 2;height: parent.height}
             Rectangle{
                 property int btnHeight: parent.height
@@ -191,6 +220,10 @@ Rectangle{
                         cText.visible = false;
                         rAniStart.start();
                         widthAniStart.start();
+                        if(Car.driving)
+                            down.start()
+                        else
+                            up.start()
                     }
                 }
                 PropertyAnimation{

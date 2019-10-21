@@ -1,12 +1,14 @@
 #pragma once
-
 #include <QObject>
+#include <QAbstractListModel>
 #include "Proxy.h"
+#include "Item.h"
+
 class Account : public QObject
 {
     Q_OBJECT
 public:
-    static Account *instance();
+    static Account *get();
 
     Q_PROPERTY(QString userID READ userID WRITE setuserID NOTIFY userIDChanged)
     Q_PROPERTY(QString password READ password WRITE setpassword NOTIFY passwordChanged)
@@ -51,6 +53,7 @@ public:
 
     void onAccountChanged(const UserInfo &info);
     void onMessageArrived(const ChatMessage &msg);
+    void onShutdownPC(const std::string &userID);
     void saveUserPhoto(const std::string &userID, const std::string &photoBuffer);
     QString getUserPhoto(const std::string &userID);
 
@@ -90,5 +93,27 @@ private:
     bool    m_pcOnline{false};
     bool    m_handeldOnline{false};
     bool    m_padOnline{false};
+};
+
+class Friends : public QAbstractListModel
+{
+    Q_OBJECT
+public:
+    static Friends *get();
+
+    QList<UserItem> &items();
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QHash<int, QByteArray> roleNames() const override;
+
+public slots:
+    void add(const QList<int> &indexs);
+    void remove(int index);
+    void update();
+
+private:
+    Friends();
+
+    QList<UserItem> m_list;
 };
 

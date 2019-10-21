@@ -302,7 +302,7 @@ void AccountStub::addP2PMessage(const std::string & fromID, const std::string & 
 	auto _msg = msg;
 	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
 	DB::get()->session() << "insert into p2p_messages values(?, ?, ?, ?)", use(_fromID), use(_toID), use(_msg), use(_dt), now;
-	MessageArrived.dispatch({ _fromID, _toID, _msg, _dt });
+	MessageArrived.dispatch({ _fromID, _toID, _msg, _dt, true });
 	Log::info(LOG_TAG, "[%s] send msg to [%s]", fromID.data(), toID.data());
 }
 
@@ -313,7 +313,7 @@ void AccountStub::addGroupMessage(const std::string & groupID, const std::string
 	auto _msg = msg;
 	auto _dt = DateTimeFormatter::format(DateTime(), Poco::DateTimeFormat::SORTABLE_FORMAT);
 	DB::get()->session() << "insert into group_messages values(?, ?, ?, ?)", use(_groupID), use(_fromID), use(_msg), use(_dt), now;
-	MessageArrived.dispatch({ _fromID, _groupID, _msg, _dt });
+	MessageArrived.dispatch({ _fromID, _groupID, _msg, _dt, false });
 	Log::info(LOG_TAG, "[%s] send msg on [%s]", fromID.data(), groupID.data());
 }
 
@@ -332,6 +332,11 @@ std::vector<ChatMessage> AccountStub::getGroupMessages(const std::string & group
 		more = rs.moveNext();
 	}
 	return ret;
+}
+
+void AccountStub::shutdownPC(const std::string & userID)
+{
+	ShutdownPCEvent.dispatch({userID});
 }
 
 bool AccountStub::setOnline(const std::string & userID, bool online, const std::string & field)

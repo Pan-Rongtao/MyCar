@@ -8,7 +8,7 @@ class LayerManager : public QObject
 public:
     LayerManager();
 
-    static LayerManager *instance();
+    static LayerManager *get();
 
     Q_PROPERTY(bool notLoginWarn READ notLoginWarn WRITE setnotLoginWarn NOTIFY notLoginWarnChanged)
     Q_PROPERTY(Type::PageE currentPage READ currentPage WRITE setcurrentPage NOTIFY currentPageChanged)

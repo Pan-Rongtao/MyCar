@@ -48,8 +48,13 @@ public:
 	void addGroupMessage(const std::string &groupID, const std::string &fromID, const std::string &msg);
 	std::vector<ChatMessage> getGroupMessages(const std::string &groupID);
 	
+	void shutdownPC(const std::string &userID);
+
 	struct AccountChangedArgs { UserInfo info; };
 	uit::Event<AccountChangedArgs>	AccountChanged;
+
+	struct ShutdownPCArgs { std::string userID; };
+	uit::Event<ShutdownPCArgs>		ShutdownPCEvent;
 
 	struct MessageArrivedArgs { ChatMessage msg; };
 	uit::Event<MessageArrivedArgs>	MessageArrived;

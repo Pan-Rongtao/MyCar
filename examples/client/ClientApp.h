@@ -16,6 +16,7 @@ public:
 
 	void onAccountChanged(const UserInfo &info) {}
 	void onMessageArrived(const ChatMessage &msg) {}
+	void onShutdownPC(const std::string &userID) {}
 
 private:
 	std::string getLocalIp() const;

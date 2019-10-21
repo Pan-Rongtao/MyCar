@@ -47,5 +47,8 @@
         <file>images/addmember.png</file>
         <file>Keyboard.qml</file>
         <file>Key.qml</file>
+        <file>PushBox.qml</file>
+        <file>images/tipbg3.jpg</file>
+        <file>images/parking.jpg</file>
     </qresource>
 </RCC>

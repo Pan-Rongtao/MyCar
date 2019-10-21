@@ -24,7 +24,7 @@ class Proxy : public QObject
 {
     Q_OBJECT
 public:
-    static Proxy *instance();
+    static Proxy *get();
 
     Q_PROPERTY(Type::TerminalType terminalType READ terminalType WRITE setterminalType NOTIFY terminalTypeChanged)
     Q_PROPERTY(bool connected READ connected WRITE setconnected NOTIFY connectedChanged)

@@ -2,14 +2,14 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QUrl>
+#include <QProcess>
 #include <iostream>
-#include "ImageProvider.h"
 #include "Car.h"
-#include "P2PChat.h"
-#include "GroupChat.h"
-#include "MessageList.h"
+#include "Chat.h"
+#include "Users.h"
 
-Account *Account::instance()
+Account *Account::get()
 {
     static Account *p = nullptr;
     if(!p)  p = new Account();
@@ -74,11 +74,8 @@ QString Account::signaTure()
 
 void Account::setphoto(const QString &photo)
 {
-    if(m_photo != photo)
-    {
-        m_photo = photo;
-        emit photoChanged();
-    }
+    m_photo = photo;
+    emit photoChanged();
 }
 
 QString Account::photo()
@@ -185,7 +182,7 @@ void Account::onAccountChanged(const UserInfo &info)
             setpassword("");
             setnickname("");
             setsignaTure("");
-            ImageProvider::instance()->setImage(nullptr, 0);
+            setphoto("");
             setregistTime("");
         }
         else
@@ -194,7 +191,8 @@ void Account::onAccountChanged(const UserInfo &info)
             setpassword(QString::fromStdString(info.password));
             setnickname(QString::fromStdString(info.nickname));
             setsignaTure(QString::fromStdString(info.signaTure));
-            ImageProvider::instance()->setImage((const unsigned char *)info.photo.data(), info.photo.size());
+            saveUserPhoto(userID().toStdString(), info.photo);
+            setphoto(getUserPhoto(userID().toStdString()));
             setregistTime(QString::fromStdString(info.registTime));
 
         }
@@ -203,9 +201,28 @@ void Account::onAccountChanged(const UserInfo &info)
 
 void Account::onMessageArrived(const ChatMessage &msg)
 {
-    emit P2PChat::instance()->signalUpdate();
-    emit GroupChat::instance()->signalUpdate();
-    emit MessageList::instance()->signalUpdate();
+    emit P2PChat::get()->signalUpdate();
+    emit GroupChat::get()->signalUpdate();
+    emit MessageList::get()->signalUpdate();
+    if(msg.receiverID == m_userID.toStdString())
+    {
+        emit MessageList::get()->signalUpdateNewMsg(QString::fromStdString(msg.senderID), QString::fromStdString(msg.content), msg.p2p);
+    }
+}
+
+void Account::onShutdownPC(const std::string &userID)
+{
+#ifdef WIN32
+    if(m_userID.toStdString() == userID)
+    {
+        qDebug() << QString::fromStdString(userID) << "shutdown by remote device";
+        QString program = "C:/WINDOWS/system32/shutdown.exe";
+        QStringList arguments;
+        arguments << "-s";
+        QProcess *myProcess = new QProcess();
+        myProcess->start(program, arguments);
+    }
+#endif
 }
 
 void Account::saveUserPhoto(const std::string &userID, const std::string &photoBuffer)
@@ -225,21 +242,21 @@ QString Account::getUserPhoto(const std::string &userID)
 
 bool Account::isRegisted(const QString &userID)
 {
-    return Proxy::instance()->accountProxy()->isRegisted(userID.toStdString());
+    return Proxy::get()->accountProxy()->isRegisted(userID.toStdString());
 }
 
 bool Account::regist(const QString &userID, const QString &password, const QString &nickname)
 {
-    return Proxy::instance()->accountProxy()->regist(userID.toStdString(), password.toStdString(), nickname.toStdString());
+    return Proxy::get()->accountProxy()->regist(userID.toStdString(), password.toStdString(), nickname.toStdString());
 }
 
 bool Account::login(const QString &userID, const QString &password)
 {
     bool b = false;
     setuserID(userID);
-    auto proxy = Proxy::instance()->accountProxy();
+    auto proxy = Proxy::get()->accountProxy();
     try{
-        switch (Proxy::instance()->terminalType()) {
+        switch (Proxy::get()->terminalType()) {
         case Type::Terminal_PC:        b = proxy->setPCOnline(userID.toStdString(), password.toStdString(), true);       break;
         case Type::Terminal_Vehicle:   b = proxy->setVehicleOnline(userID.toStdString(), password.toStdString(), true);  break;
         case Type::Terminal_CellPhone: b = proxy->setHandeldOnline(userID.toStdString(), password.toStdString(), true);  break;
@@ -254,8 +271,8 @@ bool Account::logout()
 {
     if(!islogin())  return true;
     bool b = false;
-    auto proxy = Proxy::instance()->accountProxy();
-    switch (Proxy::instance()->terminalType()) {
+    auto proxy = Proxy::get()->accountProxy();
+    switch (Proxy::get()->terminalType()) {
     case Type::Terminal_PC:        b = proxy->setPCOnline(m_userID.toStdString(), m_password.toStdString(), false);       break;
     case Type::Terminal_Vehicle:   b = proxy->setVehicleOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
     case Type::Terminal_CellPhone: b = proxy->setHandeldOnline(m_userID.toStdString(), m_password.toStdString(), false);  break;
@@ -265,19 +282,19 @@ bool Account::logout()
 
 bool Account::modifyPassword(const QString &password)
 {
-    Proxy::instance()->accountProxy()->setPassword(m_userID.toStdString(), password.toStdString());
+    Proxy::get()->accountProxy()->setPassword(m_userID.toStdString(), password.toStdString());
     return true;
 }
 
 bool Account::modifyNickname(const QString &nickname)
 {
-    Proxy::instance()->accountProxy()->setNickname(m_userID.toStdString(), nickname.toStdString());
+    Proxy::get()->accountProxy()->setNickname(m_userID.toStdString(), nickname.toStdString());
     return true;
 }
 
 bool Account::modifySignaTure(const QString &signaTure)
 {
-    Proxy::instance()->accountProxy()->setSignaTure(m_userID.toStdString(), signaTure.toStdString());
+    Proxy::get()->accountProxy()->setSignaTure(m_userID.toStdString(), signaTure.toStdString());
     return true;
 }
 
@@ -289,10 +306,91 @@ bool Account::modifyPhoto(const QUrl &file)
     std::string photoBuffer(buffer.data(), buffer.size());
     f.close();
     try{
-        return Proxy::instance()->accountProxy()->setPhoto(m_userID.toStdString(), photoBuffer);
+        return Proxy::get()->accountProxy()->setPhoto(m_userID.toStdString(), photoBuffer);
     }
     catch(...)
     {
         return false;
     }
+}
+
+////////friends
+Friends::Friends()
+{
+}
+
+Friends *Friends::get()
+{
+    static Friends *p = nullptr;
+    if(!p)  p = new Friends();
+    return p;
+}
+
+QList<UserItem> &Friends::items()
+{
+    return m_list;
+}
+
+int Friends::rowCount(const QModelIndex &parent) const
+{
+    (void)parent;
+    return m_list.size();
+}
+
+QVariant Friends::data(const QModelIndex &index, int role) const
+{
+    if(index.row() < 0 || index.row() >= m_list.size())
+        return QVariant();
+
+    switch (role) {
+    case 0: return m_list[index.row()].id;
+    case 1: return m_list[index.row()].name;
+    case 2: return m_list[index.row()].photo;
+    default:return QVariant();
+    }
+}
+
+QHash<int, QByteArray> Friends::roleNames() const
+{
+    QHash<int, QByteArray> roles;
+    roles[0] = "id";
+    roles[1] = "name";
+    roles[2] = "photo";
+    return roles;
+}
+
+void Friends::add(const QList<int> &indexs)
+{
+    auto userID = Account::get()->userID();
+    for(auto i : indexs)
+    {
+        auto friendID = Users::get()->items()[i].id;
+        if(friendID != userID)
+            Proxy::get()->accountProxy()->addFriend(userID.toStdString(), friendID.toStdString());
+    }
+    update();
+}
+
+void Friends::remove(int index)
+{
+    auto userID = Account::get()->userID();
+    auto friendID = m_list[index].id;
+    Proxy::get()->accountProxy()->removeFriend(userID.toStdString(), friendID.toStdString());
+    update();
+}
+
+void Friends::update()
+{
+    auto proxy = Proxy::get()->accountProxy();
+    std::vector<std::string> friends = proxy->getFriends(Account::get()->userID().toStdString());
+    beginResetModel();
+    m_list.clear();
+    for(auto & friendID : friends)
+    {
+        UserInfo info = proxy->getUserInfo(friendID);
+        Account::get()->saveUserPhoto(info.userID, info.photo);
+        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::get()->getUserPhoto(info.userID));
+        m_list.append(item);
+    }
+    endResetModel();
 }

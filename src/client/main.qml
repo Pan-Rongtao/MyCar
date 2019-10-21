@@ -15,14 +15,6 @@ Window {
 
     Rectangle{
         anchors.fill: parent
-        NaviBar{
-            id:bar
-            width: horizontal ? window.width : window.width * 0.2
-            height: horizontal ? window.height * 0.2 : window.height
-            horizontal: window.width < window.height
-            anchors.bottom: parent.bottom
-        }
-
         Item{
             width: bar.horizontal ? window.width : window.width - bar.width
             height: bar.horizontal ? window.height - bar.height : window.height
@@ -84,8 +76,23 @@ Window {
                 autohide: 1500
                 visible: LayerManager.notLoginWarn
             }
-
         }
+
+        PushBox{
+            id:pb
+            width: parent.width
+            height: 80
+            active: MessageList.newMessage
+        }
+
+        NaviBar{
+            id:bar
+            width: horizontal ? window.width : window.width * 0.2
+            height: horizontal ? window.height * 0.2 : window.height
+            horizontal: window.width < window.height
+            anchors.bottom: parent.bottom
+        }
+
     }
     Component.onCompleted: LayerManager.switchPage(Type.Page_Login)
     Component.onDestruction: Account.logout(Account.userID, Account.password)

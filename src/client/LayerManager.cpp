@@ -1,7 +1,7 @@
 #include "LayerManager.h"
 #include "Account.h"
 
-LayerManager *LayerManager::instance()
+LayerManager *LayerManager::get()
 {
     static LayerManager *p = nullptr;
     if(!p)  p = new LayerManager();
@@ -61,7 +61,7 @@ void LayerManager::switchPage(int page)
     case Type::Page_Message:
     case Type::Page_P2PChat:
     case Type::Page_PC:
-        if(Account::instance()->islogin())
+        if(Account::get()->islogin())
             setcurrentPage((Type::PageE)page);
         else
             setnotLoginWarn(true);

@@ -7,7 +7,7 @@ Users::Users()
 
 }
 
-Users *Users::instance()
+Users *Users::get()
 {
     static Users *p = nullptr;
     if(!p)  p = new Users();
@@ -51,11 +51,11 @@ void Users::update()
 {
     beginResetModel();
     m_list.clear();
-    std::vector<UserInfo> userInfos = Proxy::instance()->accountProxy()->queryUsers();
+    std::vector<UserInfo> userInfos = Proxy::get()->accountProxy()->queryUsers();
     for(auto &info : userInfos)
     {
-        Account::instance()->saveUserPhoto(info.userID, info.photo);
-        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::instance()->getUserPhoto(info.userID));
+        Account::get()->saveUserPhoto(info.userID, info.photo);
+        UserItem item(QString::fromStdString(info.userID), QString::fromStdString(info.nickname), Account::get()->getUserPhoto(info.userID));
         m_list.append(item);
     }
     endResetModel();

@@ -8,7 +8,7 @@ class Car : public QObject
 {
     Q_OBJECT
 public:
-    static Car *instance();
+    static Car *get();
 
     Q_PROPERTY(float availableFuel READ availableFuel WRITE setavailableFuel NOTIFY availableFuelChanged)
     Q_PROPERTY(float averageFuel READ averageFuel WRITE setaverageFuel NOTIFY averageFuelChanged)

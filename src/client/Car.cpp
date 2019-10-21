@@ -3,7 +3,7 @@
 #include <QDebug>
 #include "Account.h"
 
-Car *Car::instance()
+Car *Car::get()
 {
     static Car *p = nullptr;
     if(!p)  p = new Car();
@@ -246,7 +246,7 @@ bool Car::driving() const
 
 void Car::onCarChanged(const CarInfo &info)
 {
-    if(info.userID == Account::instance()->userID().toStdString())
+    if(info.userID == Account::get()->userID().toStdString())
     {
         emit signalUpdate();
     }
@@ -254,9 +254,9 @@ void Car::onCarChanged(const CarInfo &info)
 
 void Car::update()
 {
-    if(Account::instance()->islogin())
+    if(Account::get()->islogin())
     {
-        CarInfo info = Proxy::instance()->carProxy()->getCarInfo(Account::instance()->userID().toStdString());
+        CarInfo info = Proxy::get()->carProxy()->getCarInfo(Account::get()->userID().toStdString());
         setavailableFuel(info.availableFuel);
         setaverageFuel(info.averageFuel);
         settotalKm(info.totalKm);
@@ -299,57 +299,57 @@ void Car::update()
 
 void Car::switchLeftFrontDoor(bool b)
 {
-    Proxy::instance()->carProxy()->switchLeftFrontDoor(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchLeftFrontDoor(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontDoor(bool b)
 {
-    Proxy::instance()->carProxy()->switchRightFrontDoor(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchRightFrontDoor(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearDoor(bool b)
 {
-    Proxy::instance()->carProxy()->switchLeftRearDoor(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchLeftRearDoor(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearDoor(bool b)
 {
-    Proxy::instance()->carProxy()->switchRightRearDoor(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchRightRearDoor(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchLeftFrontWindow(bool b)
 {
-    Proxy::instance()->carProxy()->switchLeftFrontWindow(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchLeftFrontWindow(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchRightFrontWindow(bool b)
 {
-    Proxy::instance()->carProxy()->switchRightFrontWindow(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchRightFrontWindow(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchLeftRearWindow(bool b)
 {
-    Proxy::instance()->carProxy()->switchLeftRearWindow(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchLeftRearWindow(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchRightRearWindow(bool b)
 {
-    Proxy::instance()->carProxy()->switchRightRearWindow(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchRightRearWindow(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchAC(bool b)
 {
-    Proxy::instance()->carProxy()->switchAC(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->switchAC(Account::get()->userID().toStdString(), b);
 }
 
 void Car::switchACTemp(int v)
 {
-    Proxy::instance()->carProxy()->setACTemp(Account::instance()->userID().toStdString(), v);
+    Proxy::get()->carProxy()->setACTemp(Account::get()->userID().toStdString(), v);
 }
 
 void Car::switchDriving(bool b)
 {
-    Proxy::instance()->carProxy()->setDriving(Account::instance()->userID().toStdString(), b);
+    Proxy::get()->carProxy()->setDriving(Account::get()->userID().toStdString(), b);
 }
 
 Car::Car()
