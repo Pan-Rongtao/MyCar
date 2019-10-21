@@ -44,19 +44,28 @@ CONFIG(debug, debug|release){
 }
 
 unix{
-    contains(QT_ARCH, arm64) {
-			OBJECTS_DIR=./obj
-			MOC_DIR=./obj
+    message($$QT_ARCH)
+    contains(QT_ARCH, arm) {
             LIBS += -L../../3rdparty/lib/linux-arm \
-            -lRcfLib \
-            -lpthread \
-            -luuid \
-            -ldl
+            -lRCF-android \
     }else{
-            LIBS += -L../../3rdparty/lib/linux-x11 \
-            -lRcfLib \
-            -lpthread \
-            -luuid \
-            -ldl
+
+        contains(QT_ARCH, arm64) {
+                            OBJECTS_DIR=./obj
+                            MOC_DIR=./obj
+                LIBS += -L../../3rdparty/lib/linux-arm \
+                -lRcfLib \
+                -lpthread \
+                -luuid \
+                -ldl
+        }else{
+                LIBS += -L../../3rdparty/lib/linux-x11 \
+                -lRcfLib \
+                -lpthread \
+                -luuid \
+                -ldl
+        }
+
     }
+
 }
