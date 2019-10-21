@@ -41,7 +41,7 @@ Rectangle{
                 from: 0
                 to: 200
                 duration:1000 * 3
-                easing: Easing.InOutElastic
+                easing: Easing.OutQuad
                 running: false
             }
             PropertyAnimation on value {
@@ -49,7 +49,7 @@ Rectangle{
                 from: up.to
                 to: up.from
                 duration:up.duration
-                easing: up.easing
+                easing: Easing.InQuart
                 running: false
             }
         }

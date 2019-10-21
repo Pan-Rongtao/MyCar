@@ -79,6 +79,7 @@ public slots:
     bool modifyNickname(const QString &nickname);
     bool modifySignaTure(const QString &signaTure);
     bool modifyPhoto(const QUrl &file);
+    void shutdownPC();
 
 private:
     Account();

@@ -93,6 +93,7 @@ Popup {
             font.bold: true
             onClicked: {
                 root.close()
+                btnClick(0)
             }
         }
 
@@ -104,6 +105,7 @@ Popup {
             font.bold: true
             onClicked: {
                 root.close()
+                btnClick(1)
             }
         }
     }

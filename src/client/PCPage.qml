@@ -38,6 +38,9 @@ Rectangle{
     }
 
     Pop{id:pop; autohide : 100000; mode:1; content: "该操作将关闭您的远程计算机，确定要这么做么？"
-        onBtnClick:  if(btn === 1);
+        onBtnClick:{
+            if(btn === 1)
+                Account.shutdownPC()
+            }
     }
 }

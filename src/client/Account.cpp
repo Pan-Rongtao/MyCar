@@ -314,6 +314,12 @@ bool Account::modifyPhoto(const QUrl &file)
     }
 }
 
+void Account::shutdownPC()
+{
+    auto proxy = Proxy::get()->accountProxy();
+    proxy->shutdownPC(m_userID.toStdString());
+}
+
 ////////friends
 Friends::Friends()
 {
