@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     try{
-        //std::string ip = "24l0x21424.qicp.vip";
-        std::string ip = Proxy::get()->getLocalIp();
-        //auto interfacePort = 41617;
-        //auto publisherPort = 14592;
-        auto interfacePort = 8888;
-        auto publisherPort = 9999;
+        //std::string ip = Proxy::get()->getLocalIp();
+        //auto interfacePort = 8888;
+        //auto publisherPort = 9999;
+        std::string ip = "24l0x21424.qicp.vip";
+        auto interfacePort = 41617;
+        auto publisherPort = 14592;
         printf("getLocalIp=%s\n", ip.data());
         Proxy::get()->connectToServer(ip, interfacePort, publisherPort);
         qDebug() << "connected to [" << QString::fromStdString(ip) << ":" << interfacePort << "," << publisherPort << "]";
