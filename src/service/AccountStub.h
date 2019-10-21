@@ -60,7 +60,7 @@ public:
 	uit::Event<MessageArrivedArgs>	MessageArrived;
 
 private:
-	bool setOnline(const std::string & userID, bool online, const std::string &field);
+	bool setOnline(const std::string & userID, const std::string &password, bool online, const std::string &field);
 	void saveImage(const std::string &path, const std::string &imageBuffer);
 	std::string loadImage(const std::string &path) const;
 

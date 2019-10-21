@@ -97,22 +97,22 @@ bool AccountStub::setPhoto(const std::string &userID, const std::string &photoBu
 
 bool AccountStub::setVehicleOnline(const std::string & userID, const std::string &password, bool online)
 {
-	return setOnline(userID, online, "VehicleOnline");
+	return setOnline(userID, password, online, "VehicleOnline");
 }
 
 bool AccountStub::setPCOnline(const std::string & userID, const std::string &password, bool online)
 {
-	return setOnline(userID, online, "PCOnline");
+	return setOnline(userID, password, online, "PCOnline");
 }
 
 bool AccountStub::setHandeldOnline(const std::string & userID, const std::string &password, bool online)
 {
-	return setOnline(userID, online, "HandeldOnline");
+	return setOnline(userID, password, online, "HandeldOnline");
 }
 
 bool AccountStub::setPadOnline(const std::string & userID, const std::string &password, bool online)
 {
-	return setOnline(userID, online, "PadOnline");
+	return setOnline(userID, password, online, "PadOnline");
 }
 
 UserInfo AccountStub::getUserInfo(const std::string & userID)
@@ -339,12 +339,13 @@ void AccountStub::shutdownPC(const std::string & userID)
 	ShutdownPCEvent.dispatch({userID});
 }
 
-bool AccountStub::setOnline(const std::string & userID, bool online, const std::string & field)
+bool AccountStub::setOnline(const std::string & userID, const std::string &password, bool online, const std::string & field)
 {
 	std::vector<std::string> records;
 	auto _id = userID;
+	auto _pw = password;
 	int _online = online;
-	DB::get()->session() << "select UserID from users where UserID=?", into(records), use(_id), now;
+	DB::get()->session() << "select UserID from users where UserID=? and password=?", into(records), use(_id), use(_pw), now;
 	std::string cmd = "update users set " + field + "=? where UserID = ?";
 	DB::get()->session() << cmd, use(_online), use(_id), now;
 	AccountChanged.dispatch({ getUserInfo(userID) });
