@@ -4,12 +4,12 @@ import QtQuick.Dialogs 1.2
 import UIT.Type 1.0
 
 Rectangle {
+    id:root
     anchors.fill: parent
 
     signal finished()
-    property int item0Width: 100
-    property int item2Width: 80
-    property int item0Height: 30
+    property int itemWidth: root.width * 0.12
+    property int itemHeight: root.height * 0.1
 
     Image{
         anchors.fill: parent
@@ -17,49 +17,56 @@ Rectangle {
     }
 
     Column{
-        anchors.fill: parent
+        width: parent.width
+        height: parent.height
+        spacing: height * 0.05
         Grid{
             id:layout
             rows:7
             columns: 3
             width: parent.width
-            height: parent.height
-            rowSpacing: 30
-            columnSpacing: 0
+            height: itemHeight
+            spacing: height * 0.035
             padding: 10
 
-            Text{ text: "群组名"; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:name; width: parent.width - item0Width - item2Width; height: item0Height; text: GroupChat.groupName; onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true}
-            Button{ width: 30;height:item0Height ; onClicked: GroupChat.modifyGroupName(name.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
-
+            Text{ text: "群组名："; width: itemWidth; height: parent.height; font.bold: true; font.pixelSize:height * 0.333; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+            TextField{id:name; width: parent.width - itemWidth * 2; height: itemHeight; text: GroupChat.groupName; onPressed: if(Proxy.terminalType === Type.Terminal_Vehicle) kb.visible=true}
+            Button{ width: height;height:itemHeight ; onClicked: GroupChat.modifyGroupName(name.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
         }
-        GridView{
-            id:grid
-            anchors.fill: parent
-            anchors.leftMargin: 30;anchors.rightMargin: anchors.leftMargin
-            anchors.topMargin: 100;anchors.bottomMargin: anchors.topMargin
-            cellWidth: 60
-            cellHeight: cellWidth
-            model: GroupMembers
-            delegate: Rectangle
-            {
-                width:grid.cellWidth
-                height:grid.cellHeight
-                color: mouse.pressed ? "#CC965300" : "transparent"
-                Column{
-                    width: parent.width
-                    height: parent.height
-                    Image{width: grid.cellWidth *4/5;height: width; source: id===""?photo:("file:"+photo); anchors.horizontalCenter: parent.horizontalCenter }
-                    Text{ text: name; anchors.horizontalCenter: parent.horizontalCenter }
+        Rectangle{
+            width: parent.width
+            height: parent.height - layout.height
+            color: "transparent"
+            GridView{
+                id:grid
+                anchors.fill: parent
+                anchors.margins: itemHeight
+                cellWidth: itemHeight
+                cellHeight: cellWidth
+                model: GroupMembers
+                delegate: Rectangle
+                {
+                    width:grid.cellWidth
+                    height:grid.cellHeight
+                    color: mouse.pressed ? "#CC965300" : "transparent"
+                    Column{
+                        width: parent.width
+                        height: parent.height
+                        Image{id: img; width: grid.cellWidth *4/5;height: width; source: id===""?photo:("file:"+photo); anchors.horizontalCenter: parent.horizontalCenter }
+                        Text{ text: name; anchors.horizontalCenter: parent.horizontalCenter}
+                    }
+                    MouseArea{ id:mouse; anchors.fill: parent; onClicked: LayerManager.switchPop(Type.Pop_AddGroupMember) }
                 }
-                MouseArea{ id:mouse; anchors.fill: parent; onClicked: LayerManager.switchPop(Type.Pop_AddGroupMember) }
             }
         }
+
     }
 
     Button{
         text: "确定"
+        width: parent.width / 3
+        height: itemHeight
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 20

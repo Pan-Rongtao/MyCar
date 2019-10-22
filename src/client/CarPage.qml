@@ -7,23 +7,19 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    property int item0Width: 100
-    property int item2Width: 80
-    property int item0Height: 30
-
-    property int itemWidth: 80
-    property int itemHeight: 26
+    property int itemWidth: root.width * 0.2
+    property int itemHeight: root.height * 0.045
 
     Column{
         width: parent.width
         height: parent.height
-        spacing: 10
+        spacing: height * 0.015
         Text {
             id:head
-            text: qsTr("我的车")
+            text: "我的车"
             width: parent.width
-            height: 80
-            font.pixelSize: 32
+            height: root.height * 0.1
+            font.pointSize: height * 1 / 3
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -32,16 +28,16 @@ Rectangle{
             property int value: Car.driving ? 200 : 0
             anchors.horizontalCenter: parent.horizontalCenter
             horizontalAlignment: Text.AlignHCenter
-            width: 80
-            height: 50
+            width: parent.width / 4
+            height: itemHeight
             text: value + "km/h"
-            font.pixelSize: 30
+            font.pixelSize: height * 0.6
             PropertyAnimation on value {
                 id:up
                 from: 0
                 to: 200
-                duration:1000 * 3
-                easing: Easing.OutQuad
+                duration:1000 * 6
+                easing.type: Easing.OutQuad
                 running: false
             }
             PropertyAnimation on value {
@@ -49,7 +45,7 @@ Rectangle{
                 from: up.to
                 to: up.from
                 duration:up.duration
-                easing: Easing.InQuart
+                easing.type: Easing.InQuart
                 running: false
             }
         }
@@ -58,7 +54,7 @@ Rectangle{
             id:carInfoGroup
             title: "车辆信息"
             width: parent.width
-            height: 120
+            height: itemHeight * 7
             Row{
                 width: parent.width
                 height: parent.height
@@ -66,20 +62,18 @@ Rectangle{
                     x:20
                     width: parent.width / 2
                     height: parent.height
-                    spacing: 6
-                    Text{ text: "剩余油量：" + Car.availableFuel + "%";  horizontalAlignment: Text.AlignLeft; }
-                    Text{ text: "平均油耗：" + Car.averageFuel + "L/100km";  horizontalAlignment: Text.AlignLeft }
-                    Text{ text: "总行驶里程：" + Car.totalKm + "km"; horizontalAlignment: Text.AlignLeft }
-                    Text{ text: "小计里程A：" + Car.subKmA + "km"; horizontalAlignment: Text.AlignLeft }
-                    Text{ text: "小计里程B：" + Car.subKmB + "km"; horizontalAlignment: Text.AlignLeft }
+                    spacing: 0
+                    Text{ text: "剩余油量：" + Car.availableFuel + "%"; width: parent.width; height: itemHeight;  horizontalAlignment: Text.AlignLeft; verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6}
+                    Text{ text: "平均油耗：" + Car.averageFuel + "L/100km"; width: parent.width; height: itemHeight;  horizontalAlignment: Text.AlignLeft; verticalAlignment: Text.AlignVCenter;font.pixelSize: height * 0.6 }
+                    Text{ text: "总行驶里程：" + Car.totalKm + "km"; width: parent.width; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                    Text{ text: "小计里程A：" + Car.subKmA + "km"; width: parent.width; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                    Text{ text: "小计里程B：" + Car.subKmB + "km"; width: parent.width; height: itemHeight; horizontalAlignment: Text.AlignLeft; verticalAlignment: Text.AlignVCenter;font.pixelSize: height * 0.6 }
                     }
                 Column{
                     width: parent.width / 2
                     height: parent.height
-                    Text{ text: "熄火地点："; horizontalAlignment: Text.AlignLeft; }
-                    Image{
-                        source: "images/parking.jpg"
-                    }
+                    Text{ text: "熄火地点："; width: parent.width; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6}
+                    Image{ source: "images/parking.jpg" }
                 }
             }
         }
@@ -87,96 +81,44 @@ Rectangle{
         GroupBox{
             title: "车辆控制"
             width: carInfoGroup.width
-            height: 180
-            GridLayout{
-                columns:2
-                columnSpacing: 50
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "左前车门："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.leftFrontDoor
-                        onToggled: { Car.switchLeftFrontDoor(on) }
-                    }
-                }
+            height: itemHeight * 8
+            Grid{
+                width: parent.width
+                height: parent.height
+                rows: 7
+                columns:4
+                rowSpacing: 10
+                columnSpacing: 20
+                Text { text: "左前车门："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.leftFrontDoor; onToggled: Car.switchLeftFrontDoor(on) }
 
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "右前车门："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight
-                        toggle:Car.rightFrontDoor
-                        leftString: qsTr("打开") ;rightString: qsTr("关闭")
-                        onToggled: Car.switchRightFrontDoor(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "左后车门："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{  width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.leftRearDoor
-                        onToggled: Car.switchLeftRearDoor(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "右后车门："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth;height: itemHeight; leftString: qsTr("打开");rightString: qsTr("关闭")
-                        toggle:Car.rightRearDoor
-                        onToggled: Car.switchRightRearDoor(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "左前车窗："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.leftFrontWindow
-                        onToggled: Car.switchLeftFrontWindow(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "右前车窗："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.rightFrontWindow
-                        onToggled: Car.switchRightFrontWindow(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "左后车窗："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.leftRearWindow
-                        onToggled: Car.switchLeftRearWindow(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "右后车窗："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: 80; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.rightRearWindow
-                        onToggled: Car.switchRightRearWindow(on)
-                    }
-                }
+                Text { text: "右前车门："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; toggle:Car.rightFrontDoor; leftString: "打开" ;rightString: "关闭"; onToggled: Car.switchRightFrontDoor(on) }
 
+                Text { text: "左后车门："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{  width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.leftRearDoor; onToggled: Car.switchLeftRearDoor(on) }
+
+                Text { text: "右后车门："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4;height: itemHeight; leftString: "打开";rightString: "关闭"; toggle:Car.rightRearDoor; onToggled: Car.switchRightRearDoor(on) }
+
+                Text { text: "左前车窗：";  width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.leftFrontWindow; onToggled: Car.switchLeftFrontWindow(on) }
+
+                Text { text: "右前车窗：";  width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.rightFrontWindow; onToggled: Car.switchRightFrontWindow(on) }
+
+                Text { text: "左后车窗：";  width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.leftRearWindow; onToggled: Car.switchLeftRearWindow(on) }
+
+                Text { text: "右后车窗：";  width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.rightRearWindow; onToggled: Car.switchRightRearWindow(on) }
+
+                Text { text: "空调开关："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
+                ToggleButton{ width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; leftString: "打开"; rightString: "关闭"; toggle:Car.AC; onToggled: Car.switchAC(on) }
+
+                Text { text: "空调温度："; width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight; horizontalAlignment: Text.AlignLeft;verticalAlignment: Text.AlignVCenter; font.pixelSize: height * 0.6 }
                 Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "空调开关："; verticalAlignment: Text.AlignVCenter;  }
-                    ToggleButton{
-                        width: itemWidth; height: itemHeight; leftString: qsTr("打开"); rightString: qsTr("关闭")
-                        toggle:Car.AC
-                        onToggled: Car.switchAC(on)
-                    }
-                }
-                Row{
-                    spacing: 10
-                    Text { height: itemHeight; text: "空调温度："; verticalAlignment: Text.AlignVCenter;  }
+                    width: (parent.width - parent.columnSpacing * 4) / 4; height: itemHeight
                     Slider{ id:slider; width:itemWidth; height: itemHeight; minimumValue: 18; maximumValue: 30; stepSize: 1;updateValueWhileDragging: false
                         property bool firstTime: true
                         value: Car.ACTemp
@@ -186,7 +128,8 @@ Rectangle{
                             firstTime = false
                         }
                     }
-                    Text {height: itemHeight; text: slider.value;verticalAlignment: Text.AlignVCenter}
+                    Text { height: itemHeight; text: slider.value;verticalAlignment: Text.AlignVCenter}
+
                 }
             }
 
@@ -194,7 +137,7 @@ Rectangle{
 
         Grid{
             width: parent.width
-            height: 50
+            height: itemHeight * 2
             Item{width: (parent.width - cProBtn.width) / 2;height: parent.height}
             Rectangle{
                 property int btnHeight: parent.height
@@ -210,7 +153,7 @@ Rectangle{
                     id: cText
                     anchors.centerIn: parent
                     font.family: "microsoft yahei"
-                    font.pixelSize: 14
+                    font.pixelSize: parent.height * 0.5
                     text: Car.driving ? "熄火" : "启动"
                 }
                 MouseArea{

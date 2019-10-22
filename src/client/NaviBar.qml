@@ -31,6 +31,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Account.islogin() ? Type.Page_Account : Type.Page_Login)
         }
 
@@ -42,6 +43,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Type.Page_Car)
         }
 
@@ -53,6 +55,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Type.Page_PC)
         }
 
@@ -64,6 +67,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Type.Page_Cellphone)
         }
 
@@ -75,6 +79,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Type.Page_Message)
         }
 
@@ -86,6 +91,7 @@ Item{
             pressedColor: "#33003300"
             releaseColor: "#33965300"
             pressedTextColor:"green"
+            fontSize: height * 0.15
             onClicked: LayerManager.switchPage(Type.Page_Contacts)
         }
     }

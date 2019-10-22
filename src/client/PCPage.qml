@@ -6,35 +6,40 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
+    property int itemWidth: root.width * 0.12
+    property int itemHeight: root.height * 0.08
     Column{
         width: parent.width
         height: parent.height
-        spacing: 30
+        spacing: height * 0.035
         Text {
-            text: qsTr("我的电脑")
-            width: parent.width;height: 80
-            font.pixelSize: 32
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+            text: "我的电脑"
+            width: parent.width
+            height: root.height * 0.1
+            font.pointSize: height * 1 / 3
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
         Row{
             spacing: 10
-            width: parent.width; height: 30
-            Item{width: 30;height: parent.height}
+            width: parent.width; height: itemHeight
+            Item{width: itemWidth;height: itemHeight}
             Row{
-                width: 80
-                Text{ text: "在线状态："; width: 100; height: parent.height; font.pixelSize:20; verticalAlignment: Text.AlignVCenter }
-                Image{ width: 30;height: 30; source: Account.pcOnline ? "images/yes.png" : "images/cancel.png" }
+                width: parent.width
+                height: parent.height
+                Text{ text: "在线状态："; width: itemWidth; height: parent.height; font.pixelSize: height * 0.33; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                Image{ width: height;height: itemHeight; source: Account.pcOnline ? "images/yes.png" : "images/cancel.png" }
             }
 
         }
 
-        Row{
-            spacing: 10
-            width: parent.width; height: 50
-            Item{ width: (parent.width - btn.width) / 2; height: parent.height}
-            Button{ id:btn; width: 200; height: 50; text: "关机"; onClicked: pop.open(); }
+        Rectangle{
+            width: parent.width
+            height: itemHeight
+            Button{ id:btn; width: parent.width * 0.5; height: parent.height; anchors.centerIn: parent; text: "关机"; onClicked: pop.open(); }
         }
+
     }
 
     Pop{id:pop; autohide : 100000; mode:1; content: "该操作将关闭您的远程计算机，确定要这么做么？"

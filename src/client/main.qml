@@ -72,6 +72,8 @@ Window {
             }
 
             Pop{
+                width: parent.width
+                height: parent.height / 2
                 content: "请先登录"
                 autohide: 1500
                 visible: LayerManager.notLoginWarn

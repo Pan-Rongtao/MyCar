@@ -33,14 +33,14 @@ Rectangle{
             Text{
                 width: parent.width - img.width - cb.width - parent.spacing * 2
                 height: img.height
-                font.pixelSize: 20
+                font.pixelSize: height * 0.5
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
                 text:name
             }
             CheckBox{
                 id:cb
-                width: 30
+                width: parent.width * 0.1
                 height: width
                 anchors.verticalCenter: parent.verticalCenter
                 visible: canCheck
@@ -63,7 +63,7 @@ Rectangle{
                 text: "删除"
                 anchors.fill: parent
                 font.bold: true
-                font.pixelSize: 18
+                font.pixelSize: parent.height * 0.5
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 color: item.down ? "#AA0000" : "#148014"

@@ -10,10 +10,7 @@ Popup {
     signal btnClick(int btn)
 
     id: root
-    x: parent.width/2 - root.width/2
-    y: parent.height/2 - root.height/2
-    width: 530
-    height: 300
+    anchors.centerIn: parent
     modal: true
     focus: true
     //设置窗口关闭方式为按“Esc”键关闭
@@ -29,114 +26,85 @@ Popup {
         opacity: 1
         radius: 8
 
-        Rectangle{
-            width: parent.width-4
-            height: 2
-            anchors.top: parent.top
-            anchors.topMargin: 40
-            anchors.left: parent.left
-            anchors.leftMargin: 2
-            radius: 8
-        }
+        Column{
+            anchors.fill: parent
+            //设置标题栏区域为拖拽区域
+            Text {
+                id:tt
+                width: root.width
+                height: root.height * 0.2
+                text: title
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: height * 0.5
+                font.bold: true
 
-        //设置标题栏区域为拖拽区域
-        Text {
-            width: parent.width
-            height: 40
-            anchors.top: parent.top
-            text: title
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 22
-            font.bold: true
+            }
 
-            MouseArea {
-                property point clickPoint: "0,0"
+            Rectangle{
+                id:line
+                width: parent.width-4
+                height: 2
+                radius: 8
+            }
 
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton
-                onPressed: {
-                    clickPoint  = Qt.point(mouse.x, mouse.y)
+            Rectangle {
+                width: parent.width
+                height: parent.height - tt.height - tail.height - line.height
+                color: "transparent"
+                Text {
+                    text: content
+                    anchors.centerIn: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: tt.font.pixelSize * 0.8
+                    font.bold: true
                 }
-                onPositionChanged: {
-                    var offset = Qt.point(mouse.x - clickPoint.x, mouse.y - clickPoint.y)
-                    setDlgPoint(offset.x, offset.y)
+
+            }
+
+            Row{
+                id: tail
+                width: root.width
+                height: root.height * 0.3
+                Rectangle{
+                    width: parent.width / 2
+                    height: parent.height
+                    color: "transparent"
+                    Button {
+                        width: parent.width * 0.7
+                        height: parent.height * 0.7
+                        text: "取消"
+                        anchors.centerIn: parent
+                        visible: mode == 1
+                        font.bold: true
+                        onClicked: {
+                            root.close()
+                            btnClick(0)
+                        }
+                    }
                 }
+                Rectangle{
+                    width: parent.width / 2
+                    height: parent.height
+                    color: "transparent"
+                    Button {
+                        text: "确定"
+                        width: parent.width * 0.7
+                        height: parent.height * 0.7
+                        anchors.centerIn: parent
+                        visible: mode == 1
+                        font.bold: true
+                        onClicked: {
+                            root.close()
+                            btnClick(1)
+                        }
+                    }
+                }
+
             }
         }
 
-        Text {
-            x: 189
-            y: 128
-            width: 171
-            height: 15
-            text: content
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 14
-            font.bold: true
-        }
-/*
-        Label {
-            x: 189
-            y: 128
-            width: 171
-            height: 15
-            text: content
-        }
-*/
-        Button {
-            x: 103
-            y: 204
-            text: "取消"
-            visible: mode == 1
-            font.bold: true
-            onClicked: {
-                root.close()
-                btnClick(0)
-            }
-        }
-
-        Button {
-            x: 341
-            y: 204
-            text: qsTr("确定")
-            visible: mode == 1
-            font.bold: true
-            onClicked: {
-                root.close()
-                btnClick(1)
-            }
-        }
-    }
-
-    function setDlgPoint(dlgX ,dlgY)
-    {
-        //设置窗口拖拽不能超过父窗口
-        if(root.x + dlgX < 0)
-        {
-            root.x = 0
-        }
-        else if(root.x + dlgX > root.parent.width - root.width)
-        {
-            root.x = root.parent.width - root.width
-        }
-        else
-        {
-            root.x = root.x + dlgX
-        }
-        if(root.y + dlgY < 0)
-        {
-            root.y = 0
-        }
-        else if(root.y + dlgY > root.parent.height - root.height)
-        {
-            root.y = root.parent.height - root.height
-        }
-        else
-        {
-            root.y = root.y + dlgY
-        }
     }
 
     onOpened: timer.start()

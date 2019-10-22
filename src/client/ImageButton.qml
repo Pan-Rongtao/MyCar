@@ -39,6 +39,7 @@ Rectangle {
 
     Image {
         id: image
+        fillMode: Image.PreserveAspectFit
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: (parent.height - height - textId.height - 5) / 2

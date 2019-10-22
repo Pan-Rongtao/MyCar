@@ -8,26 +8,34 @@ Rectangle{
     color: "transparent"
 
     signal enterChat(string who)
+    property int itemWidth: root.width * 0.24
+    property int itemHeight: root.height * 0.1
 
     Column{
         width: parent.width
         height: parent.height
-        spacing: 30
+        spacing: height * 0.015
         Text {
-            text: qsTr("消息")
-            width: parent.width;height: 80
-            font.pixelSize: 32
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+            id:title
+            text: "消息"
+            width: parent.width
+            height: root.height * 0.1
+            font.pointSize: height * 1 / 3
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
+        Rectangle{
+            width: parent.width
+            height: parent.height - title.height
+            ListView{
+                id:list
+                anchors.fill: parent
+                anchors.margins: itemHeight / 2
+                model: MessageList
+                delegate: dlg
+            }
 
-        ListView{
-            id:list
-            anchors.fill: parent
-            anchors.leftMargin: 20;anchors.rightMargin: anchors.leftMargin
-            anchors.topMargin: 120;anchors.bottomMargin: anchors.topMargin
-            model: MessageList
-            delegate: dlg
         }
 
     }
@@ -38,7 +46,7 @@ Rectangle{
             id:bkg
             radius: 5
             width: list.width
-            height: 50
+            height: itemHeight
             Column{
                 width: list.width
                 height: parent.height
@@ -55,14 +63,14 @@ Rectangle{
                         height: parent.height
                         Text{
                             id:sender
-                            width: parent.width;height: 30
-                            font.pixelSize: 20;font.bold: true
+                            width: parent.width;height: parent.height * 0.7
+                            font.pixelSize: height * 0.5;font.bold: true
                             verticalAlignment: Text.AlignVCenter
                             text: name
                         }
                         Text {
                             width: parent.width; height: parent.height - sender.height
-                            font.bold: true; font.pixelSize: 14
+                            font.bold: true; font.pixelSize: height * 0.8
                             color: "gray"
                             verticalAlignment: Text.AlignVCenter
                             text: msg
@@ -70,8 +78,8 @@ Rectangle{
                     }
                     Text{
                         id:t
-                        width: 120; height: sender.height
-                        font.bold: true; font.pixelSize: 12
+                        width: parent.width * 0.3; height: sender.height
+                        font.bold: true; font.pixelSize: height * 0.3
                         color: "gray"
                         verticalAlignment: Text.AlignVCenter
                         text: time

@@ -7,30 +7,37 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    property int item0Width: 20
+    MouseArea{
+        anchors.fill: parent
+        onPressed: kb.visible = false
+    }
+
     signal leaveChat()
+    property int itemWidth: root.width * 0.24
+    property int itemHeight: root.height * 0.1
 
     Column{
         id:main
         width: parent.width
         height: parent.height
-        spacing: 30
+        spacing: height * 0.015
         Row{
-            width: parent.width;height: 80
-            Item{ width: item0Width;height: parent.height;  }
+            width: parent.width;height: itemHeight
+            Item{ width: itemWidth;height: parent.height;  }
             Rectangle{
                 id:head
-                width: parent.width - add.width - item0Width;height: parent.height
+                width: parent.width - add.width - itemWidth
+                height: parent.height
                 Text {
                     id:title
                     text: GroupChat.groupName
                     width: parent.width;height: parent.height
-                    font.pixelSize: 26; font.bold: true
+                    font.pixelSize: height *0.333; font.bold: true
                     horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
                 }
             }
 
-            Button{ id:add; width: 30;height:width;
+            Button{ id:add; width: itemHeight;height:width;
                 Image{width: parent.width;height: parent.height; source: "images/option.png"}
                 onClicked: LayerManager.switchPop(LayerManager.currentPop == Type.Pop_GroupInfo ? Type.Pop_None : Type.Pop_GroupInfo)
             }
@@ -54,18 +61,18 @@ Rectangle{
         }
         Row{
             id:tool
-            width:parent.width;height: 50
+            width:parent.width;height: itemHeight
             TextField{
                 id:txtMsg
                 width:parent.width-btnSend.width;height: parent.height
                 Keys.onReturnPressed: send()
-                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true
+                onPressed: if(Proxy.terminalType === Type.Terminal_Vehicle) kb.visible=true
             }
             Button{
                 id:btnSend
                 text:"发送"
-                font.bold: true;font.pixelSize: 24
-                width:80;height: parent.height
+                font.bold: true;font.pixelSize: height * 0.4
+                width:itemWidth;height: parent.height
                 onClicked: send()
             }
         }

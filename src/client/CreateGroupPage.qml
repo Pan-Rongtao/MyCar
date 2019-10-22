@@ -3,18 +3,21 @@ import QtQuick.Controls 2.0
 import UIT.Type 1.0
 
 Rectangle {
+    id:root
     anchors.fill: parent
     radius: 5
 
     property var checkItems: []
+    property int itemWidth: root.width * 0.24
+    property int itemHeight: root.height * 0.08
 
     Image{ anchors.fill: parent; source: "images/list_bg.png" }
 
     Text {
         width: parent.width
-        height: 50
+        height: itemHeight
         font.bold: true
-        font.pixelSize: 22
+        font.pixelSize: height * 0.5;
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         color: "blue"
@@ -28,7 +31,7 @@ Rectangle {
         model: Friends
         delegate: UserItemComponent{
             width: parent.width
-            height: 40
+            height: itemHeight
             canCheck: true
             onCheck:
             {

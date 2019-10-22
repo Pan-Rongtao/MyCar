@@ -11,26 +11,27 @@ Rectangle{
     signal enterP2PChat(string who)
     signal enterGroupChat()
 
-    property int item0Width: 20
+    property int itemWidth: root.width * 0.24
+    property int itemHeight: root.height * 0.08
     property int removeIndex: -1
 
     Column{
         id:cotactsLayout
         width: parent.width
         height: parent.height
-        spacing: 30
+        spacing: height * 0.015
         Row{
             id:head
             width: parent.width
-            height: 80
-            Item{ width: item0Width;height: parent.height;  }
+            height: root.height * 0.1
+            Item{ width: itemWidth;height: parent.height;  }
             Rectangle{
-                width: parent.width - add.width - item0Width
+                width: parent.width - add.width - itemWidth
                 height: parent.height
                 ToggleButton{
                     id:tb
-                    width: 100
-                    height: 30
+                    width: itemWidth
+                    height: itemHeight
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     leftString: "朋友" ;rightString: "群组"; rightColor: "deeppink"
@@ -40,21 +41,21 @@ Rectangle{
 
             Button{
                 id:add
-                width: 50
+                width: itemHeight
                 height:width
                 Image{width: parent.width;height: parent.height; source: "images/add_p.png"}
                 onClicked: menu.open()
                 Menu{
                     id:menu
-                    width: 100
+                    width: itemWidth
                     MenuItem {
                         id: menuItem0
                         width: menu.width
-                        height: 40
+                        height: itemHeight
                         Row{
                             width: parent.width;height: parent.height
                             Image {
-                                height: 30; width: 30
+                                height: height; width: parent.height
                                 source: "qrc:/images/add_group.png"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -62,6 +63,7 @@ Rectangle{
                                 width: parent.width;height: parent.height
                                 text: "添加群聊"
                                 color: menuItem0.down ? "#AA0000" : "#148014"
+                                font.pixelSize: height * 0.5
                                 horizontalAlignment: Text.AlignLeft
                                 verticalAlignment: Text.AlignVCenter
                                 anchors.verticalCenter: parent.verticalCenter
@@ -72,11 +74,11 @@ Rectangle{
                     MenuItem {
                         id: menuItem1
                         width: menu.width
-                        height: 40
+                        height: itemHeight
                         Row{
                             width: parent.width;height: parent.height
                             Image {
-                                height: 30; width: 30
+                                height: height; width: parent.height
                                 source: "qrc:/images/add_friend.png"
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -84,6 +86,7 @@ Rectangle{
                                 width: parent.width;height: parent.height
                                 text: "添加朋友"
                                 color: menuItem1.down ? "#AA0000" : "#148014"
+                                font.pixelSize: height * 0.5
                                 horizontalAlignment: Text.AlignLeft
                                 verticalAlignment: Text.AlignVCenter
                                 anchors.verticalCenter: parent.verticalCenter
@@ -111,7 +114,7 @@ Rectangle{
                 delegate: UserItemComponent
                 {
                     width: parent.width
-                    height: 45
+                    height: itemHeight
                     canEdit: true
                     onMenuTriggered: Friends.remove(itemIndex)
                     onClick: {
@@ -131,7 +134,7 @@ Rectangle{
                 delegate: UserItemComponent
                 {
                     width: parent.width
-                    height: 45
+                    height: itemHeight
                     canEdit: true
                     onMenuTriggered: Groups.remove(itemIndex)
                     onClick: {
@@ -146,8 +149,8 @@ Rectangle{
             id: tail
             text: "共有 " + (tb.toggle ? listFriend.count : listGroup.count) + (tb.toggle ? " 个朋友" : " 个群组")
             width: parent.width
-            height: 30
-            font.pixelSize: 18
+            height: itemHeight
+            font.pixelSize: height * 0.5
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

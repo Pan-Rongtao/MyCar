@@ -7,13 +7,14 @@ Rectangle{
     height: c.height
 
     Row{
-        width: list.width
+        width: parent.width
         height: c.height
         layoutDirection: iSend ? Qt.RightToLeft : Qt.LeftToRight
         spacing: 10
         Image{
-            id:img;width: height
-            height: 40
+            id:img
+            width: height
+            height: parent.width * 0.1
             source: "file:" + photo
         }
         Column{
@@ -23,8 +24,8 @@ Rectangle{
             Text{
                 id:sender
                 width: parent.width
-                height: 30
-                font.pixelSize: 16
+                height: img.height * 0.7
+                font.pixelSize: height * 0.6
                 font.bold: true
                 verticalAlignment: Text.AlignVCenter
                 color: "gray"
@@ -33,8 +34,8 @@ Rectangle{
             Rectangle
             {
                 id:content
-                width: Math.min(tt.contentWidth + 20, parent.width * 0.8)
-                height: tt.font.pixelSize*(tt.lineCount - 1) + 35
+                width: Math.min(tt.contentWidth + 20, root.width * 0.8)
+                height: tt.font.pixelSize*(tt.lineCount - 1) + tt.font.pixelSize * 1.5
                 radius: 5
                 x:iSend ? root.width - width - img.width : 0
                 color: iSend ? "limegreen" : "lavender"
@@ -43,7 +44,7 @@ Rectangle{
                     anchors.margins: 5
                     anchors.fill: parent
                     font.bold: true
-                    font.pixelSize: 18
+                    font.pixelSize: sender.font.pixelSize
                     horizontalAlignment: Text.AlignLeft
                     verticalAlignment: Text.AlignTop
                     onWidthChanged: if(width>parent.width*0.8) wrapMode=Text.WrapAnywhere

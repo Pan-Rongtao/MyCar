@@ -8,21 +8,24 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    property int item0Width: 100
-    property int item2Width: 80
-    property int item0Height: 30
+    property int itemWidth: root.width * 0.12
+    property int itemHeight: root.height * 0.075
     property bool loginSuccess: false
 
+    MouseArea{
+        anchors.fill: parent
+        onPressed: kb.visible = false
+    }
     Column{
         width: parent.width
         height: parent.height
-
+        spacing: height * 0.035
         Text {
             id:head
             text: "登录"
             width: parent.width
-            height: 80
-            font.pixelSize: 32
+            height: root.height * 0.1
+            font.pointSize: height * 1 / 3
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -35,42 +38,39 @@ Rectangle{
             height: parent.height - head.height
             verticalItemAlignment: Grid.AlignVCenter
             horizontalItemAlignment: Grid.AlignHCenter
-            rowSpacing: 30
-            columnSpacing: 0
+            rowSpacing: parent.spacing
 
-            Text{ text: "账号："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
+            Text{ text: "账号："; width: itemWidth; height: itemHeight; font.bold: true; font.pixelSize: height * 0.4; verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
             TextField{
                 id:userID
-                width: parent.width - item0Width - item2Width; height: item0Height
+                width: parent.width - itemWidth * 2; height: itemHeight
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.saveUseID
                 Keys.onReturnPressed: login()
-                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
-                onFocusChanged: if(!focus && !password.focus) kb.visible=false
+                onPressed: if(Proxy.terminalType === Type.Terminal_Vehicle) kb.visible = true
             }
-            Rectangle{ width: item2Width; height: item0Height  }
+            Rectangle{ width: itemWidth; height: itemHeight  }
 
-            Text{ text: "密码："; width: item0Width; font.bold: true; font.pixelSize:20; horizontalAlignment: Text.AlignHCenter }
+            Text{ text: "密码："; width: itemWidth; height: itemHeight; font.bold: true; font.pixelSize: height * 0.4; verticalAlignment: Text.AlignVCenter;horizontalAlignment: Text.AlignHCenter }
             TextField{
                 id:password
-                width: parent.width - item0Width - item2Width; height: item0Height
+                width: parent.width - itemWidth * 2; height: itemHeight
                 validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/}
                 text:setting.savePassword
                 Keys.onReturnPressed: login()
-                onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible = true
-                onFocusChanged: if(!focus && !userID.focus) kb.visible=false
+                onPressed: if(Proxy.terminalType === Type.Terminal_Vehicle) kb.visible = true
             }
-            Rectangle{ width: item2Width; height: item0Height }
+            Rectangle{ width: itemWidth; height: itemHeight }
 
-            Rectangle{width: item0Width;height: item0Height}
+            Rectangle{width: itemWidth;height: itemHeight}
             Button{
-                width: parent.width - item0Width - item2Width; height: 50
-                text: "登录"; font.bold: true; font.pixelSize: 28
+                width: parent.width - itemWidth * 2; height: itemHeight
+                text: "登录"; font.bold: true; font.pixelSize: height * 0.4
                 onClicked: login()
             }
-            Rectangle{width: item2Width;height: item0Height}
+            Rectangle{width: itemWidth;height: itemHeight}
 
-            Rectangle{width: item0Width;height: item0Height}
+            Rectangle{width: itemWidth;height: itemHeight}
             Text {
                 text: '<html></style><a href="http://www.baidu.com">没有账号？点击注册</a></html>'
                 MouseArea {
@@ -80,12 +80,14 @@ Rectangle{
                    onClicked: LayerManager.currentPage = Type.Page_Regist
                }
             }
-            Rectangle{width: item2Width;height: item0Height}
+            Rectangle{width: itemWidth;height: itemHeight}
         }
     }
 
     Pop{
         id:pop
+        width: parent.width
+        height: parent.height / 2
         onClosed:
         {
             userID.focus = true
@@ -130,6 +132,5 @@ Rectangle{
                 password.text = password.text.substring(0, password.text.length - 1)
         }
     }
-
 
 }

@@ -4,26 +4,31 @@ Rectangle{
     id:root
     anchors.fill: parent
     color: "transparent"
+    property int itemWidth: root.width * 0.12
+    property int itemHeight: root.height * 0.08
 
     Column{
         width: parent.width
         height: parent.height
-        spacing: 30
+        spacing: height * 0.035
         Text {
-            text: qsTr("我的手机")
-            width: parent.width;height: 80
-            font.pixelSize: 32
-            horizontalAlignment: Text.AlignHCenter;verticalAlignment: Text.AlignVCenter
+            text: "我的手机"
+            width: parent.width
+            height: root.height * 0.1
+            font.pointSize: height * 1 / 3
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
 
         Row{
             spacing: 10
-            width: parent.width; height: 30
-            Item{width: 30;height: parent.height}
+            width: parent.width; height: itemHeight
+            Item{width: itemWidth;height: itemHeight}
             Row{
-                width: 80
-                Text{ text: "在线状态："; width: 100; height: parent.height; font.pixelSize:20; verticalAlignment: Text.AlignVCenter }
-                Image{ width: 30;height: 30; source: Account.handeldOnline ? "images/yes.png" : "images/cancel.png" }
+                width: parent.width
+                height: parent.height
+                Text{ text: "在线状态："; width: itemWidth; height: parent.height; font.pixelSize: height * 0.33; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                Image{ width: height;height: itemHeight; source: Account.handeldOnline ? "images/yes.png" : "images/cancel.png" }
             }
 
         }
