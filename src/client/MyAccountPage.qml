@@ -72,7 +72,7 @@ Rectangle{
             Item{ width: itemWidth; height: itemHeight  }
 
             Text{ text: "密码："; width: itemWidth; height: itemHeight; font.bold: true; font.pixelSize:height * 0.4; verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
-            TextField{id:password; width: parent.width - itemWidth*2; height: itemHeight; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} onPressed: if(Proxy.terminalType != Type.Terminal_PC) kb.visible=true }
+            TextField{id:password; width: parent.width - itemWidth*2; height: itemHeight; text: Account.password; validator: RegExpValidator{regExp:/[0-9A-Za-z]{20}$/} onPressed: if(Proxy.terminalType === Type.Terminal_Vehicle) kb.visible=true}
             Button{ width: height;height:itemHeight ; onClicked: Account.modifyPassword(password.text); Image{width: parent.width;height: parent.height; source: "images/notes.png"} }
 
             Text{ text: "昵称："; width: itemWidth; height: itemHeight; font.bold: true; font.pixelSize:height * 0.4; verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter }
