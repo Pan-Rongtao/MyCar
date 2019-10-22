@@ -10,9 +10,10 @@ Popup {
     signal btnClick(int btn)
 
     id: root
-    anchors.centerIn: parent
     modal: true
     focus: true
+    x: parent.width/2 - root.width/2
+    y: parent.height/2 - root.height/2
     //设置窗口关闭方式为按“Esc”键关闭
     //closePolicy: Popup.OnEscape
     //设置窗口的背景控件，不设置的话Popup的边框会显示出来
