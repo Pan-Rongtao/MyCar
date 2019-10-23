@@ -7,11 +7,6 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    MouseArea{
-        anchors.fill: parent
-        onPressed: kb.visible = false
-    }
-
     signal leaveChat()
     property int itemWidth: root.width * 0.24
     property int itemHeight: root.height * 0.1

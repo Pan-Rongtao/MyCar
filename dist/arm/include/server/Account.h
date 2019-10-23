@@ -51,10 +51,13 @@ RCF_METHOD_R2(std::vector<ChatMessage>, getP2PMessages, const std::string &, con
 RCF_METHOD_V3(void, addGroupMessage, const std::string &, const std::string &, const std::string &);
 RCF_METHOD_R1(std::vector<ChatMessage>, getGroupMessages, const std::string &);
 
+RCF_METHOD_V1(void, shutdownPC, const std::string &);
+
 RCF_END(AccountInterface)
 
 RCF_BEGIN(AccountNotify, "AccountNotify")
 RCF_METHOD_V1(void, onAccountChanged, const UserInfo &);
 RCF_METHOD_V1(void, onMessageArrived, const ChatMessage &);
+RCF_METHOD_V1(void, onShutdownPC, const std::string &);
 RCF_END(AccountNotify)
 

@@ -7,11 +7,6 @@ Rectangle{
     anchors.fill: parent
     color: "transparent"
 
-    MouseArea{
-        anchors.fill: parent
-        onPressed: kb.visible = false
-    }
-
     signal leaveChat()
     property int itemWidth: root.width * 0.24
     property int itemHeight: root.height * 0.1
@@ -39,6 +34,11 @@ Rectangle{
                 width: parent.width
             }
             onCountChanged: list.positionViewAtEnd()
+            MouseArea{
+                anchors.fill: parent
+                onPressed: kb.visible = false
+            }
+
         }
         Row{
             id:tool
@@ -84,6 +84,7 @@ Rectangle{
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         onVisibleChanged: {
+            if(Proxy.terminalType !== Type.Terminal_Vehicle)    return
             if(visible)
                 main.height -= height
             else

@@ -96,7 +96,7 @@ Window {
         }
 
     }
-    Component.onCompleted: LayerManager.switchPage(Type.Page_Login)
+    Component.onCompleted: {LayerManager.switchPage(Type.Page_Login); if(Proxy.terminalType === Type.Terminal_Vehicle) window.flags = Qt.FramelessWindowHint }
     Component.onDestruction: Account.logout(Account.userID, Account.password)
 
 }
