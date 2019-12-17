@@ -35,7 +35,6 @@ public:
     void setconnected(bool connected);
     bool connected();
 
-    bool connectToServer(const std::string &ip, int interfacePort, int publisherPort);
     std::shared_ptr<RcfClient<AccountInterface>> accountProxy();
     std::shared_ptr<RcfClient<CarInterface>> carProxy();
 
@@ -47,6 +46,7 @@ signals:
 
 public slots:
     bool ping();
+    bool connectToServer(const QString &ip, int interfacePort, int publisherPort);
 
 private:
     Proxy();

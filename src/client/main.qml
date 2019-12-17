@@ -11,7 +11,7 @@ Window {
     height: Proxy.terminalType === Type.Terminal_PC ? 720 : (Proxy.terminalType === Type.Terminal_Vehicle ? 720 : 480)
     minimumWidth: 400
     minimumHeight: 720
-    title: "svcar"
+    title: Proxy.connected ? "connect success" : " connect fail"
 
     Rectangle{
         anchors.fill: parent

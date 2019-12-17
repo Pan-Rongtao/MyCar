@@ -36,12 +36,12 @@ int main(int argc, char *argv[])
         //std::string ip = Proxy::get()->getLocalIp();
         //auto interfacePort = 8888;
         //auto publisherPort = 9999;
-        std::string ip = "24l0x21424.qicp.vip";
-        auto interfacePort = 41617;
-        auto publisherPort = 14592;
+        QString ip = "24l0x21424.qicp.vip";
+        auto interfacePort = 50074;
+        auto publisherPort = 51191;
         printf("getLocalIp=%s\n", ip.data());
         Proxy::get()->connectToServer(ip, interfacePort, publisherPort);
-        qDebug() << "connected to [" << QString::fromStdString(ip) << ":" << interfacePort << "," << publisherPort << "]";
+        qDebug() << "connected to [" << ip << ":" << interfacePort << "," << publisherPort << "]";
     }
     catch (RCF::Exception &e)	{ qDebug() << "a RCF::Exception occur:" << e.what(); }
     return app.exec();
