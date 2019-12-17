@@ -71,17 +71,19 @@ bool Proxy::ping()
 
 bool Proxy::connectToServer(const QString &ip, int interfacePort, int publisherPort)
 {
-    m_accountProxy = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip.toStdString(), interfacePort));
-    m_accountProxy->getClientStub().setAutoReconnect(true);
-    m_carProxy = std::make_shared<RcfClient<CarInterface>>(RCF::TcpEndpoint(ip.toStdString(), interfacePort));
-    m_carProxy->getClientStub().setAutoReconnect(true);
-    m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
-    m_subscribServer->start();
-    RCF::SubscriptionParms subParms;
-    subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip.toStdString(), publisherPort));
-    m_accountSubscription = m_subscribServer->createSubscription<AccountNotify>(*Account::get(), subParms);
-    m_carSubscription = m_subscribServer->createSubscription<CarNotify>(*Car::get(), subParms);
-
+    try{
+        m_accountProxy = std::make_shared<RcfClient<AccountInterface>>(RCF::TcpEndpoint(ip.toStdString(), interfacePort));
+        m_accountProxy->getClientStub().setAutoReconnect(true);
+        m_carProxy = std::make_shared<RcfClient<CarInterface>>(RCF::TcpEndpoint(ip.toStdString(), interfacePort));
+        m_carProxy->getClientStub().setAutoReconnect(true);
+        m_subscribServer = std::make_shared<RCF::RcfServer>(RCF::TcpEndpoint(-1));
+        m_subscribServer->start();
+        RCF::SubscriptionParms subParms;
+        subParms.setPublisherEndpoint(RCF::TcpEndpoint(ip.toStdString(), publisherPort));
+        m_accountSubscription = m_subscribServer->createSubscription<AccountNotify>(*Account::get(), subParms);
+        m_carSubscription = m_subscribServer->createSubscription<CarNotify>(*Car::get(), subParms);
+    }
+    catch (RCF::Exception &e)	{ setconnected(false); return false; }
     bool b = ping();
     setconnected(b);
     return b;
