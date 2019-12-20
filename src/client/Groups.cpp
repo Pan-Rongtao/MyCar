@@ -78,7 +78,7 @@ void Groups::create(const QList<int> &indexs)
     QFile f("grouptemp.jpg");
     b = f.open(QFile::ReadOnly);
     auto buffer = f.readAll();
-    std::string groupID = proxy->addGroup(name.toStdString(), std::string(buffer.data(), buffer.size()));
+    std::string groupID = proxy->addGroup(name.toStdString(), std::string(buffer.data(), /*buffer.size() RCF size limit*/0));
     proxy->addGroupMember(groupID, Account::get()->userID().toStdString());
     for(auto index : indexs)
     {
